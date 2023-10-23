@@ -8,7 +8,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Models\" />
+    <PackageReference Include="LG.Microsoft.ML.FastTree" Version="1.6.0.4" />
+    <PackageReference Include="Microsoft.ML" Version="2.0.1" />
+    <PackageReference Include="Microsoft.ML.DataView" Version="2.0.1" />
   </ItemGroup>
 
 </Project>
