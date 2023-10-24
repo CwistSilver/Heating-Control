@@ -48,9 +48,9 @@ public sealed class TrainingDataProvider : ITrainingDataProvider
     // Quelle:https://www.viessmann-community.com/t5/Gas/Mathematische-Formel-fuer-Vorlauftemperatur-aus-den-vier/m-p/74706#M27562
     private float GenerateSupplyTemperature(TrainingDataOptions options, HeatingControlTrainingData data)
     {
-        var InaccuracyPercent = (float)_random.NextDouble() * options.SupplyTemperatureInaccuracy / 100f + 0.8f;
+        var inaccuracyPercent = (float)_random.NextDouble() * options.SupplyTemperatureInaccuracy / 100f + 0.8f;
         var insideOutsideTemperatureDifference = Math.Abs(data.PredictedOutdoorTemperature - data.OutdoorTemperature);
-        var insideOutsideTemperature = Math.Max(data.PredictedOutdoorTemperature, data.OutdoorTemperature) - insideOutsideTemperatureDifference * InaccuracyPercent;
+        var insideOutsideTemperature = Math.Max(data.PredictedOutdoorTemperature, data.OutdoorTemperature) - insideOutsideTemperatureDifference * inaccuracyPercent;
 
 
         var rtSoll = data.PreferredIndoorTemperature;
