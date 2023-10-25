@@ -13,14 +13,14 @@ public class HeatingControlInputData
     public float PreferredIndoorTemperature { get; set; } // GewuenschteZimmertemperatur
 
 
-    public static HeatingControlInputData CreateRandom(out float supplyTemperature)
-    {
-        var data = new HeatingControlInputData();
-        var heatingControlTrainingData = RandomTestDataGenerator.CreateData();
-        data.OutdoorTemperature = heatingControlTrainingData.OutdoorTemperature;
-        data.PredictedOutdoorTemperature = heatingControlTrainingData.PredictedOutdoorTemperature;
-        data.PreferredIndoorTemperature = heatingControlTrainingData.PreferredIndoorTemperature;
-        supplyTemperature = heatingControlTrainingData.SupplyTemperature;
-        return data;
-    }
+    //public static HeatingControlInputData CreateRandom(out float supplyTemperature)
+    //{
+    //    var data = new HeatingControlInputData();
+    //    var heatingControlTrainingData = RandomTestDataGenerator.CreateData();
+    //    data.OutdoorTemperature = heatingControlTrainingData.OutdoorTemperature;
+    //    data.PredictedOutdoorTemperature = heatingControlTrainingData.PredictedOutdoorTemperature;
+    //    data.PreferredIndoorTemperature = heatingControlTrainingData.PreferredIndoorTemperature;
+    //    supplyTemperature = heatingControlTrainingData.SupplyTemperature;
+    //    return data;
+    //}
 }

@@ -1,6 +1,7 @@
 ﻿using Heating_Control;
 using Heating_Control.Data;
 using Heating_Control.ML;
+using Heating_Control.ML.DataProvider;
 using Microsoft.Extensions.DependencyInjection;
 using System.Text.Json;
 
@@ -15,15 +16,16 @@ internal class Program
         HeatingControlEntry.ConfigureServices(services);
         var serviceProvider = services.BuildServiceProvider();
         var heatingControlNeuralNetwork = serviceProvider.GetRequiredService<IHeatingControlNeuralNetwork>();
+        var trainingDataProvider = serviceProvider.GetRequiredService<ITrainingDataProvider>();
 
         await heatingControlNeuralNetwork.Inizialize();
-
-        for (int i = 0; i < 20; i++)
+        var trainingDatas = await trainingDataProvider.GenerateAsync(new TrainingDataOptions() { RecordsToGenerate = 20 });
+        foreach (var trainingData in trainingDatas)
         {
-            var input = HeatingControlInputData.CreateRandom(out var supplyTemperature);
+            var input = new HeatingControlInputData() { OutdoorTemperature = trainingData.OutdoorTemperature, PredictedOutdoorTemperature = trainingData.PredictedOutdoorTemperature, PreferredIndoorTemperature = trainingData.PreferredIndoorTemperature };
             Console.WriteLine($"Get Temperature for: {JsonSerializer.Serialize(input)}");
             var prediction = heatingControlNeuralNetwork.Predict(input);
-            Console.WriteLine($"SupplyTemperature: {supplyTemperature} | SupplyTemperature (AI prediction): {prediction.SupplyTemperature}");
+            Console.WriteLine($"SupplyTemperature: {trainingData.SupplyTemperature} | SupplyTemperature (AI prediction): {prediction.SupplyTemperature}");
             Console.WriteLine();
         }
     }

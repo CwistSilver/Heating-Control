@@ -1,0 +1,21 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+			FontSize="17"
+			 
+	x:Class="Heating_Control_UI.LineChartView">
+	<Grid x:Name="GridTest">
+		<TextBlock x:Name="YTextBox" Text="AUSSENTEMPERATUR" Foreground="#94979c" FontWeight="SemiBold" HorizontalAlignment="Center" />
+		<Grid RowDefinitions="auto">
+		<!--TODO ADD Y-Achse-->
+
+
+		</Grid>
+
+
+
+
+	</Grid>
+</UserControl>

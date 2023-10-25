@@ -3,9 +3,19 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.7.34202.233
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Heating-Control", "Heating-Control\Heating-Control.csproj", "{84D2C377-2E04-4820-BBDB-86F71A212E21}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Heating-Control", "Heating-Control\Heating-Control.csproj", "{84D2C377-2E04-4820-BBDB-86F71A212E21}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Heating-Control-Console", "Heating-Control-Console\Heating-Control-Console.csproj", "{908E01F0-7AFE-42AC-9189-FFA13AB7BFB7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Heating-Control-Console", "Heating-Control-Console\Heating-Control-Console.csproj", "{908E01F0-7AFE-42AC-9189-FFA13AB7BFB7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Heating-Control-UI", "Heating-Control-UI\Heating-Control-UI\Heating-Control-UI.csproj", "{560A8321-A138-4E92-B90F-7DBFE64A27D9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Heating-Control-UI.Android", "Heating-Control-UI\Heating-Control-UI.Android\Heating-Control-UI.Android.csproj", "{26370E8B-673F-4C68-BE3E-91950E16D382}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Heating-Control-UI.Desktop", "Heating-Control-UI\Heating-Control-UI.Desktop\Heating-Control-UI.Desktop.csproj", "{894D375E-20F8-4C61-A73C-EC06C74E6391}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Heating-Control-UI.iOS", "Heating-Control-UI\Heating-Control-UI.iOS\Heating-Control-UI.iOS.csproj", "{F095CF83-A965-428C-B837-8F13B5A9212D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Heating-Control-UI.Browser", "Heating-Control-UI\Heating-Control-UI.Browser\Heating-Control-UI.Browser.csproj", "{5FAB02B1-FBF7-40AF-8F80-F5052F042320}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +31,30 @@ Global
 		{908E01F0-7AFE-42AC-9189-FFA13AB7BFB7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{908E01F0-7AFE-42AC-9189-FFA13AB7BFB7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{908E01F0-7AFE-42AC-9189-FFA13AB7BFB7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{560A8321-A138-4E92-B90F-7DBFE64A27D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{560A8321-A138-4E92-B90F-7DBFE64A27D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{560A8321-A138-4E92-B90F-7DBFE64A27D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{560A8321-A138-4E92-B90F-7DBFE64A27D9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{26370E8B-673F-4C68-BE3E-91950E16D382}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{26370E8B-673F-4C68-BE3E-91950E16D382}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{26370E8B-673F-4C68-BE3E-91950E16D382}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{26370E8B-673F-4C68-BE3E-91950E16D382}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{26370E8B-673F-4C68-BE3E-91950E16D382}.Release|Any CPU.Build.0 = Release|Any CPU
+		{26370E8B-673F-4C68-BE3E-91950E16D382}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{894D375E-20F8-4C61-A73C-EC06C74E6391}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{894D375E-20F8-4C61-A73C-EC06C74E6391}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{894D375E-20F8-4C61-A73C-EC06C74E6391}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{894D375E-20F8-4C61-A73C-EC06C74E6391}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F095CF83-A965-428C-B837-8F13B5A9212D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F095CF83-A965-428C-B837-8F13B5A9212D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F095CF83-A965-428C-B837-8F13B5A9212D}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{F095CF83-A965-428C-B837-8F13B5A9212D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F095CF83-A965-428C-B837-8F13B5A9212D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F095CF83-A965-428C-B837-8F13B5A9212D}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{5FAB02B1-FBF7-40AF-8F80-F5052F042320}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5FAB02B1-FBF7-40AF-8F80-F5052F042320}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5FAB02B1-FBF7-40AF-8F80-F5052F042320}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5FAB02B1-FBF7-40AF-8F80-F5052F042320}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
