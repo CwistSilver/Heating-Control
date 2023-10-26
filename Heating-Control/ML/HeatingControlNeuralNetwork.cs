@@ -27,13 +27,20 @@ public sealed class HeatingControlNeuralNetwork : IHeatingControlNeuralNetwork
         return predictionResult;
     }
 
-    public async Task Inizialize()
+    public async Task Inizialize(TrainingDataOptions? options = null, bool retrain = false)
     {
+        if (retrain)
+        {
+            _transformer = await _heatingControlTrainer.TrainNeuralNetworkAsync(options);
+            _predictionEngine = new MLContext().Model.CreatePredictionEngine<HeatingControlInputData, HeatingControlPrediction>(_transformer);
+            return;
+        }
+
         if (_transformer is not null)
             throw new Exception("Neural network has already been Inizialize");
 
         _transformer = _modelStorage.Load();
-        _transformer ??= await _heatingControlTrainer.TrainNeuralNetworkAsync();
+        _transformer ??= await _heatingControlTrainer.TrainNeuralNetworkAsync(options);
 
         _predictionEngine = new MLContext().Model.CreatePredictionEngine<HeatingControlInputData, HeatingControlPrediction>(_transformer);
     }
