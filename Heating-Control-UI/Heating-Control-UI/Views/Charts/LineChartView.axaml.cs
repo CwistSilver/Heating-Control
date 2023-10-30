@@ -78,8 +78,10 @@ public partial class LineChartView : UserControl
         this.PointerReleased += LineChartView_PointerReleased;
         this.PointerMoved += LineChartView_PointerMoved;
         Temperatures.CollectionChanged += Temperatures_CollectionChanged;
-
-
+        TemperaturesProperty.Changed.AddClassHandler<LineChartView>((element, e) =>
+        {
+            Temperatures.CollectionChanged += Temperatures_CollectionChanged;
+        });
     }
 
     private void Temperatures_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
@@ -146,6 +148,7 @@ public partial class LineChartView : UserControl
 
     public override void Render(DrawingContext context)
     {
+        if(Temperatures.Count != 6) return;
         context.DrawRectangle(ChartBackground, null, Bounds);
         DrawXLines(context);
         DrawLinesBetweenPoints(context);

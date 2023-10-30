@@ -6,5 +6,5 @@ public class HeatingControlPrediction
 {
     [ColumnName("Score")]
     [JsonPropertyName("supplyTemperature")]
-    public float SupplyTemperature { get; set; } // AktuelleVorlauftemperatur
+    public float SupplyTemperature { get; set; }
 }

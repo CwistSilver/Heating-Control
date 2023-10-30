@@ -4,9 +4,16 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:views="clr-namespace:Heating_Control_UI.Views"
+		xmlns:views2="clr-namespace:Heating_Control_UI"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="Heating_Control_UI.Views.MainWindow"
         Icon="/Assets/avalonia-logo.ico"
         Title="Heating_Control_UI">
-        <views:MainView />
+
+		<!--
+		 <views2:ShellControl>
+			<views:MainView/>
+		</views2:ShellControl>
+	<views:MainView/>-->
+	<views:MainView/>
 </Window>

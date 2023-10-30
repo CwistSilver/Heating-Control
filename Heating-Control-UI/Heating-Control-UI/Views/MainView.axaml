@@ -7,39 +7,5 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Heating_Control_UI.Views.MainView"
              x:DataType="vm:MainViewModel">
-  <Design.DataContext>
-    <!-- This only sets the DataContext for the previewer in an IDE,
-         to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
-    <vm:MainViewModel />
-  </Design.DataContext>
-	<Grid RowDefinitions="*,auto">
-		
-		<views:LineChartView x:Name="LineChartViewVar" />
-		<StackPanel Grid.Row="1" >
-			<Button Click="Button_Click" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center">
-				AI Generate
-			</Button>
-			<Grid ColumnDefinitions="*,*,*">
-				<StackPanel>
-					<Label>Niveau</Label>
-					<TextBox x:Name="NiveauTextBox" Watermark ="Niveau default(1,5)"/>
-				</StackPanel>
-
-				<StackPanel Grid.Column="1">
-					<Label>Neigung</Label>
-					<TextBox x:Name="NeigungTextBox"  Watermark ="Neigung default(1,5)"/>
-				</StackPanel>
-
-				<StackPanel Grid.Column="2">
-					<Label>Wohlfühl Temp</Label>
-					<TextBox x:Name="TempTextBox"  Watermark ="Wohlfühl Temp default(23)" Text="23"/>
-				</StackPanel>
-
-			
-			</Grid>
-
-		</StackPanel>
-		
-	</Grid>
-
+	<ContentControl x:Name="PART_ContentPresenter" RenderOptions.BitmapInterpolationMode="None"/>
 </UserControl>

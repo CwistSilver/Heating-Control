@@ -1,0 +1,32 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:views="clr-namespace:Heating_Control_UI"
+			 xmlns:vm="clr-namespace:Heating_Control_UI.ViewModels"
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Heating_Control_UI.HeatingControlView"
+			 x:DataType="vm:HeatingControlViewModel">
+	<Design.DataContext>
+		<!-- This only sets the DataContext for the previewer in an IDE,
+         to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+		<vm:HeatingControlViewModel />
+	</Design.DataContext>
+	<Grid RowDefinitions="*,auto">
+		<Grid RowDefinitions="*,2*">
+
+			<Viewbox>
+				<views:TemperatureSelector CurrentTemperature="{Binding PreferredIndoorTemperature}" Title="Wohlfühltemperatur" Postfix="°C"  />
+			</Viewbox>
+
+		
+
+			<views:LineChartView Grid.Row="1" Temperatures="{Binding Temperatures}"  x:Name="LineChartViewVar" />
+		
+		</Grid>
+
+		<Button Command="{Binding ButtonAction}" VerticalAlignment="Top" HorizontalAlignment="Right" Background="Red" Content="{Binding Settings}"/>
+
+	</Grid>
+	
+</UserControl>

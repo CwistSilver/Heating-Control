@@ -23,4 +23,8 @@
 	<ItemGroup>
 	  <ProjectReference Include="..\..\Heating-Control\Heating-Control.csproj" />
 	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Utilities\ValueConverter\" />
+	</ItemGroup>
 </Project>
