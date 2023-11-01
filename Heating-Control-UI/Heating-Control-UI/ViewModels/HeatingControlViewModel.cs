@@ -1,4 +1,6 @@
-﻿using Heating_Control.Data;
+﻿using Avalonia.Controls.Platform;
+using Avalonia.Platform.Storage;
+using Heating_Control.Data;
 using Heating_Control.ML;
 using ReactiveUI;
 using System;
@@ -12,6 +14,8 @@ public class HeatingControlViewModel : ViewModelBase
 
     public HeatingControlViewModel(IHeatingControlNeuralNetwork heatingControlNeuralNetwork)
     {
+        
+
         if (heatingControlNeuralNetwork is null) return;
         this.PropertyChanged += HeatingControlViewModel_PropertyChanged;
         _heatingControlNeuralNetwork = heatingControlNeuralNetwork;
@@ -25,6 +29,7 @@ public class HeatingControlViewModel : ViewModelBase
     private void HeatingControlViewModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
         Calculate();
+        // TODO save to App settings when changed!
     }
 
     private ObservableCollection<int> _temperatures = new ObservableCollection<int>() { 20, 35, 47, 57, 68, 80 };

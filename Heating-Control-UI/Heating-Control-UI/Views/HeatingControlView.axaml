@@ -25,7 +25,9 @@
 		
 		</Grid>
 
-		<Button Command="{Binding ButtonAction}" VerticalAlignment="Top" HorizontalAlignment="Right" Background="Red" Content="{Binding Settings}"/>
+		<Button Command="{Binding ButtonAction}" VerticalAlignment="Top" HorizontalAlignment="Right" Height="50" Width="50">
+			<Svg Path="/Assets/settings.svg" />
+		</Button>
 
 	</Grid>
 	

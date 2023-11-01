@@ -1,7 +1,9 @@
 ﻿using Avalonia;
 using Avalonia.Browser;
 using Avalonia.ReactiveUI;
+using Avalonia.Svg;
 using Heating_Control_UI;
+using System;
 using System.Runtime.Versioning;
 using System.Threading.Tasks;
 
@@ -15,5 +17,7 @@ internal partial class Program
             .StartBrowserAppAsync("out");
 
     public static AppBuilder BuildAvaloniaApp()
-        => AppBuilder.Configure<App>();
+    {
+        return AppBuilder.Configure<App>();
+    }
 }

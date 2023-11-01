@@ -29,8 +29,8 @@ public partial class TemperatureSelector : UserControl
 
 
 
-    public static readonly StyledProperty<int> CurrentTemperatureProperty = AvaloniaProperty.Register<TemperatureSelector, int>(nameof(CurrentTemperature), 23, defaultBindingMode: BindingMode.TwoWay);
-    public int CurrentTemperature
+    public static readonly StyledProperty<float> CurrentTemperatureProperty = AvaloniaProperty.Register<TemperatureSelector, float>(nameof(CurrentTemperature), 23f, defaultBindingMode: BindingMode.TwoWay);
+    public float CurrentTemperature
     {
         get => GetValue(CurrentTemperatureProperty);
         set => SetValue(CurrentTemperatureProperty, value);

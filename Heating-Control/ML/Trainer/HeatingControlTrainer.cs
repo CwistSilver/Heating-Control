@@ -18,7 +18,7 @@ public sealed class HeatingControlTrainer : IHeatingControlTrainer
 
     public async Task<ITransformer> TrainNeuralNetworkAsync(TrainingDataOptions? options = null)
     {
-        options ??= new TrainingDataOptions() { RecordsToGenerate = 1_000_000 };
+        options ??= new TrainingDataOptions() { RecordsToGenerate = 10_000 };     
 
         Console.WriteLine($"Create {options.RecordsToGenerate} training datas");
         var startTime = DateTime.Now;
@@ -36,7 +36,7 @@ public sealed class HeatingControlTrainer : IHeatingControlTrainer
         var end = DateTime.Now - start;
         Console.WriteLine($"Finished! Duration: {end}");
 
-        _modelStorage.Save(model, dataView.Schema);
+        _modelStorage.Save(new ModelData() { Transformer = model, Options = options}, dataView.Schema);
 
         return model;
     }

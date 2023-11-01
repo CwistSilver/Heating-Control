@@ -82,6 +82,7 @@ public partial class LineChartView : UserControl
         {
             Temperatures.CollectionChanged += Temperatures_CollectionChanged;
         });
+
     }
 
     private void Temperatures_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)

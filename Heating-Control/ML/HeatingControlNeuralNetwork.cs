@@ -6,6 +6,8 @@ using Microsoft.ML;
 namespace Heating_Control.ML;
 public sealed class HeatingControlNeuralNetwork : IHeatingControlNeuralNetwork
 {
+    public TrainingDataOptions? UsedTrainingDataOptions { get; private set; }
+
     private ITransformer? _transformer;
     private PredictionEngine<HeatingControlInputData, HeatingControlPrediction>? _predictionEngine;
 
@@ -31,17 +33,30 @@ public sealed class HeatingControlNeuralNetwork : IHeatingControlNeuralNetwork
     {
         if (retrain)
         {
-            _transformer = await _heatingControlTrainer.TrainNeuralNetworkAsync(options);
-            _predictionEngine = new MLContext().Model.CreatePredictionEngine<HeatingControlInputData, HeatingControlPrediction>(_transformer);
+            await TrainModel(options);
             return;
         }
 
         if (_transformer is not null)
             throw new Exception("Neural network has already been Inizialize");
 
-        _transformer = _modelStorage.Load();
-        _transformer ??= await _heatingControlTrainer.TrainNeuralNetworkAsync(options);
+        var modelData = _modelStorage.Load();
+        if (modelData is null)
+        {
+            await TrainModel(options);
+            return;
+        }
+
+        _transformer = modelData.Transformer;
+        UsedTrainingDataOptions = modelData.Options;
 
         _predictionEngine = new MLContext().Model.CreatePredictionEngine<HeatingControlInputData, HeatingControlPrediction>(_transformer);
+    }
+
+    private async Task TrainModel(TrainingDataOptions? options)
+    {
+        _transformer = await _heatingControlTrainer.TrainNeuralNetworkAsync(options);
+        _predictionEngine = new MLContext().Model.CreatePredictionEngine<HeatingControlInputData, HeatingControlPrediction>(_transformer);
+        UsedTrainingDataOptions = options is null ? new TrainingDataOptions() : options;
     }
 }

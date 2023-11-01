@@ -7,8 +7,18 @@
 	<Application.Styles>
 		<StyleInclude Source="/Views/ShellControl.axaml"/>
 	</Application.Styles>
-	
-    <Application.DataTemplates>
+
+	<Application.Resources>
+		<ResourceDictionary>
+			<ResourceDictionary.MergedDictionaries>
+				<ResourceInclude Source="/Accents/ApplicationResourceDictionary.axaml"/>
+			</ResourceDictionary.MergedDictionaries>
+		</ResourceDictionary>
+
+	</Application.Resources>
+
+
+	<Application.DataTemplates>
         <local:ViewLocator/>
     </Application.DataTemplates>
 
