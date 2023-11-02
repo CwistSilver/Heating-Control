@@ -28,7 +28,6 @@ public partial class TemperatureSelector : UserControl
     }
 
 
-
     public static readonly StyledProperty<float> CurrentTemperatureProperty = AvaloniaProperty.Register<TemperatureSelector, float>(nameof(CurrentTemperature), 23f, defaultBindingMode: BindingMode.TwoWay);
     public float CurrentTemperature
     {
@@ -36,15 +35,15 @@ public partial class TemperatureSelector : UserControl
         set => SetValue(CurrentTemperatureProperty, value);
     }
 
-    public static readonly StyledProperty<int> MinTemperatureProperty = AvaloniaProperty.Register<TemperatureSelector, int>(nameof(MinTemperature), 0);
-    public int MinTemperature
+    public static readonly StyledProperty<float> MinTemperatureProperty = AvaloniaProperty.Register<TemperatureSelector, float>(nameof(MinTemperature), 0);
+    public float MinTemperature
     {
         get => GetValue(MinTemperatureProperty);
         set => SetValue(MinTemperatureProperty, value);
     }
 
-    public static readonly StyledProperty<int> MaxTemperatureProperty = AvaloniaProperty.Register<TemperatureSelector, int>(nameof(MaxTemperature), 32);
-    public int MaxTemperature
+    public static readonly StyledProperty<float> MaxTemperatureProperty = AvaloniaProperty.Register<TemperatureSelector, float>(nameof(MaxTemperature), 32);
+    public float MaxTemperature
     {
         get => GetValue(MaxTemperatureProperty);
         set => SetValue(MaxTemperatureProperty, value);
@@ -95,4 +94,33 @@ public partial class TemperatureSelector : UserControl
         RaiseEvent(new RoutedEventArgs(TemperatureChangedEvent));
     }
 
+    private void TextBlock_DoubleTapped(object? sender, Avalonia.Input.TappedEventArgs e)
+    {
+        ValueTextBox.Text = CurrentTemperature.ToString();
+        ValueTextBox.IsVisible = true;
+        ValueTextBox.Focus();
+    }
+
+    private void TextBox_LostFocus(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        ValueTextBox.IsVisible = false;
+    }
+
+    private void TextBox_KeyDown(object? sender, Avalonia.Input.KeyEventArgs e)
+    {
+        if (e.Key == Avalonia.Input.Key.Enter)
+        {
+            ValueTextBox.IsVisible = false;
+
+            if(float.TryParse(ValueTextBox.Text, out var floatValue))
+            {
+                
+                var v = Math.Clamp(floatValue, MinTemperature, MaxTemperature);
+                CurrentTemperature = Math.Clamp(floatValue, MinTemperature, MaxTemperature);
+            }
+        }
+    }
+
+
+    
 }

@@ -33,13 +33,22 @@ public class HeatingControlSettingsViewModel : ViewModelBase
         {
             Baseline = _heatingControlNeuralNetwork.UsedTrainingDataOptions.Baseline;
             Gradient = _heatingControlNeuralNetwork.UsedTrainingDataOptions.Gradient;
-        }      
+            MaxSupplyTemperature = _heatingControlNeuralNetwork.UsedTrainingDataOptions.MaxSupplyTemperature;
+        }
 
         Save = ReactiveCommand.CreateFromTask(SaveImpl);
         Save.IsExecuting.ToProperty(this, x => x.IsSaving, out _isSaving);
         Save.ThrownExceptions.Subscribe(ex => this.Log().ErrorException("Something went wrong", ex));
     }
 
+
+
+    private float _maxSupplyTemperature = 90f;
+    public float MaxSupplyTemperature
+    {
+        get => _maxSupplyTemperature;
+        set => this.RaiseAndSetIfChanged(ref _maxSupplyTemperature, value);
+    }
     private float _gradient = 1.5f;
     public float Gradient
     {
@@ -75,7 +84,7 @@ public class HeatingControlSettingsViewModel : ViewModelBase
 
         var tasks = new Task[2]
         {
-            Task.Delay(1_000),
+            Task.Delay(3_000),
             _heatingControlNeuralNetwork.Inizialize(options, true)
         };
 

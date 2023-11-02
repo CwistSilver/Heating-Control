@@ -19,10 +19,11 @@
 				<views:TemperatureSelector CurrentTemperature="{Binding PreferredIndoorTemperature}" Title="Wohlfühltemperatur" Postfix="°C"  />
 			</Viewbox>
 
-		
 
 			<views:LineChartView Grid.Row="1" Temperatures="{Binding Temperatures}"  x:Name="LineChartViewVar" />
-		
+
+
+
 		</Grid>
 
 		<Button Command="{Binding ButtonAction}" VerticalAlignment="Top" HorizontalAlignment="Right" Height="50" Width="50">
@@ -30,5 +31,5 @@
 		</Button>
 
 	</Grid>
-	
+
 </UserControl>

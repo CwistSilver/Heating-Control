@@ -1,5 +1,6 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Media;
+using Avalonia.Media.Immutable;
 using Avalonia.Threading;
 using System;
 using System.Threading.Tasks;
@@ -15,8 +16,9 @@ public class ProgressIndicator : Control
     public ProgressIndicator()
     {
         //InitializeComponent();
-        _brush = new SolidColorBrush(new Color(100, 255, 0, 0));
-
+        var solidColorBrush = App.GetResourceFromThemeDictionarie<ImmutableSolidColorBrush>("Accent");
+        _brush = new SolidColorBrush(solidColorBrush.Color,0.5);
+       
         Dispatcher.UIThread.Post(() => LongRunningTask(), DispatcherPriority.Background);
     }
 

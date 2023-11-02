@@ -1,14 +1,10 @@
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Controls.Shapes;
 using Avalonia.Media;
-using DynamicData;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
-using System.Linq;
 using System.Numerics;
 
 namespace Heating_Control_UI;
@@ -18,6 +14,8 @@ public partial class LineChartView : UserControl
     static LineChartView()
     {
         AffectsRender<LineChartView>(
+            ForegroundProperty,
+            ChartForegroundProperty,
             ChartBackgroundProperty,
             TemperatureStartProperty,
             TemperatureEndProperty,
@@ -31,6 +29,13 @@ public partial class LineChartView : UserControl
     {
         get => GetValue(ChartBackgroundProperty);
         set => SetValue(ChartBackgroundProperty, value);
+    }
+
+    public static readonly StyledProperty<IBrush> ChartForegroundProperty = AvaloniaProperty.Register<LineChartView, IBrush>(nameof(ChartForeground), Brushes.Black);
+    public IBrush ChartForeground
+    {
+        get => GetValue(ChartForegroundProperty);
+        set => SetValue(ChartForegroundProperty, value);
     }
 
     public static readonly StyledProperty<int> TemperatureStartProperty = AvaloniaProperty.Register<LineChartView, int>(nameof(TemperatureStart), 20);
@@ -268,7 +273,7 @@ public partial class LineChartView : UserControl
     private void DrawLinesBetweenPoints(DrawingContext context)
     {
         var points = GetPoints();
-        var pen = new Pen(new SolidColorBrush(_lineRed));
+        var pen = new Pen(ChartForeground);
         pen.Thickness = 5;
 
         for (int i = 1; i < points.Length; i++)
@@ -283,7 +288,7 @@ public partial class LineChartView : UserControl
     //private Color heatRed = new Color(100, 255, 105, 105);
     private void DrawGradiand(DrawingContext context, Point a, Point b)
     {
-        var pen = new Pen(Brushes.Red);
+        var pen = new Pen(ChartForeground);
         pen.Thickness = 5;
 
         // Gradient unter der Linie zeichnen
@@ -312,7 +317,7 @@ public partial class LineChartView : UserControl
     private void DrawPoints(DrawingContext context)
     {
         var points = GetPoints();
-        var pen = new Pen(new SolidColorBrush(_lineRed));
+        var pen = new Pen(ChartForeground);
         pen.LineCap = PenLineCap.Round;
         pen.Thickness = 3;
 

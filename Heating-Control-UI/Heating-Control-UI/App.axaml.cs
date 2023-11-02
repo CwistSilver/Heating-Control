@@ -2,6 +2,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using Avalonia.Media;
 using Heating_Control;
 using Heating_Control_UI.Utilities;
 using Heating_Control_UI.ViewModels;
@@ -16,8 +17,21 @@ public partial class App : Application
 {
     public ServiceProvider Services { get; private set; }
     ServiceCollection services = new ServiceCollection();
-    public static PageNavigator Navigator => ((App)Current)._pageNavigator;
+    public static PageNavigator Navigator => ((App)Current!)._pageNavigator;
     private PageNavigator _pageNavigator;
+
+    public static T? GetResourceFromThemeDictionarie<T>(string name)
+    {        
+        var mergedDictionaries = (ResourceDictionary) Application.Current!.Resources.MergedDictionaries[0];
+
+        if (!mergedDictionaries.ThemeDictionaries.TryGetValue(Application.Current.ActualThemeVariant, out var themeVariantProvider))
+            return default(T?);
+        if(!themeVariantProvider.TryGetResource(name, null,out var resource))
+            return default(T?);
+
+        return (T?)resource;
+    }
+
 
     public static TopLevel? GetTopLevel()
     {

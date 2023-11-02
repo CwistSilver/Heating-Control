@@ -2,5 +2,18 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 					xmlns:converters="clr-namespace:Heating_Control_UI.Converters"
 					>
+
 	<converters:MinSizeConverter x:Key="MinSizeConverter"/>
+	
+	<ResourceDictionary.ThemeDictionaries>
+		<ResourceDictionary x:Key="Dark">
+			<SolidColorBrush x:Key="Accent">#88304E</SolidColorBrush>			
+			<SolidColorBrush x:Key="RegionColor">#1F1F1F</SolidColorBrush>
+		</ResourceDictionary>
+		<ResourceDictionary x:Key="Light">
+			<SolidColorBrush x:Key="Accent">#24009c</SolidColorBrush>
+			<SolidColorBrush x:Key="RegionColor">#311D3F</SolidColorBrush>
+		</ResourceDictionary>
+	</ResourceDictionary.ThemeDictionaries>
+
 </ResourceDictionary>

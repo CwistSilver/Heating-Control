@@ -1,6 +1,4 @@
-﻿using Avalonia.Controls.Platform;
-using Avalonia.Platform.Storage;
-using Heating_Control.Data;
+﻿using Heating_Control.Data;
 using Heating_Control.ML;
 using ReactiveUI;
 using System;
