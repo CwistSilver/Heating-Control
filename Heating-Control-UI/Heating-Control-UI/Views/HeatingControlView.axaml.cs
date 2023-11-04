@@ -18,4 +18,10 @@ public partial class HeatingControlView : UserControl
         DataContext = new HeatingControlViewModel(null);
     }
 
+    private void UserControl_AttachedToVisualTree(object? sender, Avalonia.VisualTreeAttachmentEventArgs e)
+    {
+        if (this.DataContext is HeatingControlViewModel viewModel)
+            viewModel.AttachedToVisualTree(sender, e);
+    }
+
 }

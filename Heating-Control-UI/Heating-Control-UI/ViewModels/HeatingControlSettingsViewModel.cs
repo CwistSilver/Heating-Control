@@ -79,7 +79,8 @@ public class HeatingControlSettingsViewModel : ViewModelBase
         var options = new TrainingDataOptions()
         {
             Baseline = _baseline,
-            Gradient = _gradient
+            Gradient = _gradient,
+            MaxSupplyTemperature = _maxSupplyTemperature,
         };
 
         var tasks = new Task[2]

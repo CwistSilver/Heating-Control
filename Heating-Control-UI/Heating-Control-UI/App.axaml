@@ -25,7 +25,7 @@
 	<Application.Styles>
 		<FluentTheme>
 			<FluentTheme.Palettes>
-				<ColorPaletteResources x:Key="Light" Accent="Green" RegionColor="White" ErrorText="Red" />
+				<ColorPaletteResources x:Key="Light" Accent="#705697" RegionColor="#F5F5F5" ErrorText="Red" />
 
 				<ColorPaletteResources x:Key="Dark" Accent="#88304E" RegionColor="#1F1F1F" ErrorText="Yellow" />
 			</FluentTheme.Palettes>

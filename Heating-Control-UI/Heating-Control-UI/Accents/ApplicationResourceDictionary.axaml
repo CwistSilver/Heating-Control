@@ -7,12 +7,14 @@
 	
 	<ResourceDictionary.ThemeDictionaries>
 		<ResourceDictionary x:Key="Dark">
+			<SolidColorBrush x:Key="FontColor">#ffffff</SolidColorBrush>
 			<SolidColorBrush x:Key="Accent">#88304E</SolidColorBrush>			
 			<SolidColorBrush x:Key="RegionColor">#1F1F1F</SolidColorBrush>
 		</ResourceDictionary>
 		<ResourceDictionary x:Key="Light">
-			<SolidColorBrush x:Key="Accent">#24009c</SolidColorBrush>
-			<SolidColorBrush x:Key="RegionColor">#311D3F</SolidColorBrush>
+			<SolidColorBrush x:Key="FontColor">#000000</SolidColorBrush>
+			<SolidColorBrush x:Key="Accent">#705697</SolidColorBrush>
+			<SolidColorBrush x:Key="RegionColor">#F5F5F5</SolidColorBrush>
 		</ResourceDictionary>
 	</ResourceDictionary.ThemeDictionaries>
 

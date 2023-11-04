@@ -6,6 +6,7 @@
 			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Heating_Control_UI.HeatingControlView"
+			 AttachedToVisualTree="UserControl_AttachedToVisualTree"
 			 x:DataType="vm:HeatingControlViewModel">
 	<Design.DataContext>
 		<!-- This only sets the DataContext for the previewer in an IDE,
@@ -15,12 +16,13 @@
 	<Grid RowDefinitions="*,auto">
 		<Grid RowDefinitions="*,2*">
 
+			
 			<Viewbox>
-				<views:TemperatureSelector CurrentTemperature="{Binding PreferredIndoorTemperature}" Title="Wohlfühltemperatur" Postfix="°C"  />
+				<views:TemperatureSelector CurrentTemperature="{Binding PreferredIndoorTemperature}"  Title="Wohlfühltemperatur"  />
 			</Viewbox>
 
 
-			<views:LineChartView Grid.Row="1" Temperatures="{Binding Temperatures}"  x:Name="LineChartViewVar" />
+			<views:LineChartView Grid.Row="1" Values="{Binding Temperatures}" YTitle="AUSSENTEMPERATUR" XTitle="VORLAUFTEMPERATUR" ShowSign="True" YPostfix="°C" ValuePostfix="°" MaxY="{Binding MaxTemperatur}" x:Name="LineChartViewVar" />
 
 
 

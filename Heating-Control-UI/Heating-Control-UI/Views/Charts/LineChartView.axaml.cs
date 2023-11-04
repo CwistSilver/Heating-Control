@@ -17,11 +17,59 @@ public partial class LineChartView : UserControl
             ForegroundProperty,
             ChartForegroundProperty,
             ChartBackgroundProperty,
-            TemperatureStartProperty,
-            TemperatureEndProperty,
-            TemperatureSpacingProperty,
-            MaxTemperatureProperty,
-            TemperaturesProperty);
+            XStartValueProperty,
+            XStartValueProperty,
+            XSpacingProperty,
+            MaxYProperty,
+            ShowSignProperty,
+            YPostfixProperty,
+            ValuePostfixProperty,
+            YTitleProperty,
+            XTitleProperty,
+            ValuesProperty);
+    }
+
+    public static readonly StyledProperty<float> ValueRadiusProperty = AvaloniaProperty.Register<LineChartView, float>(nameof(ValueRadius), 18);
+    public float ValueRadius
+    {
+        get => GetValue(ValueRadiusProperty);
+        set => SetValue(ValueRadiusProperty, value);
+    }
+
+    public static readonly StyledProperty<bool> ShowSignProperty = AvaloniaProperty.Register<LineChartView, bool>(nameof(ShowSign), false);
+    public bool ShowSign
+    {
+        get => GetValue(ShowSignProperty);
+        set => SetValue(ShowSignProperty, value);
+    }
+
+    public static readonly StyledProperty<string> YPostfixProperty = AvaloniaProperty.Register<LineChartView, string>(nameof(YPostfix), string.Empty);
+    public string YPostfix
+    {
+        get => GetValue(YPostfixProperty);
+        set => SetValue(YPostfixProperty, value);
+    }
+
+    public static readonly StyledProperty<string> ValuePostfixProperty = AvaloniaProperty.Register<LineChartView, string>(nameof(ValuePostfix), string.Empty);
+    public string ValuePostfix
+    {
+        get => GetValue(ValuePostfixProperty);
+        set => SetValue(ValuePostfixProperty, value);
+    }
+
+    public static readonly StyledProperty<string> YTitleProperty = AvaloniaProperty.Register<LineChartView, string>(nameof(YTitle), string.Empty);
+    public string YTitle
+    {
+        get => GetValue(YTitleProperty);
+        set => SetValue(YTitleProperty, value);
+    }
+
+
+    public static readonly StyledProperty<string> XTitleProperty = AvaloniaProperty.Register<LineChartView, string>(nameof(XTitle), string.Empty);
+    public string XTitle
+    {
+        get => GetValue(XTitleProperty);
+        set => SetValue(XTitleProperty, value);
     }
 
     public static readonly StyledProperty<IBrush> ChartBackgroundProperty = AvaloniaProperty.Register<LineChartView, IBrush>(nameof(ChartBackground), Brushes.Black);
@@ -38,56 +86,58 @@ public partial class LineChartView : UserControl
         set => SetValue(ChartForegroundProperty, value);
     }
 
-    public static readonly StyledProperty<int> TemperatureStartProperty = AvaloniaProperty.Register<LineChartView, int>(nameof(TemperatureStart), 20);
-    public int TemperatureStart
+    public static readonly StyledProperty<float> XStartValueProperty = AvaloniaProperty.Register<LineChartView, float>(nameof(XStartValue), 20);
+    public float XStartValue
     {
-        get => GetValue(TemperatureStartProperty);
-        set => SetValue(TemperatureStartProperty, value);
+        get => GetValue(XStartValueProperty);
+        set => SetValue(XStartValueProperty, value);
     }
 
-    public static readonly StyledProperty<int> TemperatureEndProperty = AvaloniaProperty.Register<LineChartView, int>(nameof(TemperatureEnd), -30);
-    public int TemperatureEnd
+    public static readonly StyledProperty<float> XEndValueProperty = AvaloniaProperty.Register<LineChartView, float>(nameof(XEndValue), -30);
+    public float XEndValue
     {
-        get => GetValue(TemperatureEndProperty);
-        set => SetValue(TemperatureEndProperty, value);
+        get => GetValue(XEndValueProperty);
+        set => SetValue(XEndValueProperty, value);
     }
 
-    public static readonly StyledProperty<int> TemperatureSpacingProperty = AvaloniaProperty.Register<LineChartView, int>(nameof(TemperatureSpacing), 10);
-    public int TemperatureSpacing
+    public static readonly StyledProperty<float> XSpacingProperty = AvaloniaProperty.Register<LineChartView, float>(nameof(XSpacing), 10f);
+    public float XSpacing
     {
-        get => GetValue(TemperatureSpacingProperty);
-        set => SetValue(TemperatureSpacingProperty, value);
+        get => GetValue(XSpacingProperty);
+        set => SetValue(XSpacingProperty, value);
     }
 
-    public static readonly StyledProperty<int> MaxTemperatureProperty = AvaloniaProperty.Register<LineChartView, int>(nameof(MaxTemperature), 90);
-    public int MaxTemperature
+    public static readonly StyledProperty<float> MaxYProperty = AvaloniaProperty.Register<LineChartView, float>(nameof(MaxY), 90f);
+    public float MaxY
     {
-        get => GetValue(MaxTemperatureProperty);
-        set => SetValue(MaxTemperatureProperty, value);
+        get => GetValue(MaxYProperty);
+        set => SetValue(MaxYProperty, value);
     }
 
-    public static readonly StyledProperty<ObservableCollection<int>> TemperaturesProperty =
-        AvaloniaProperty.Register<LineChartView, ObservableCollection<int>>(nameof(Temperatures),
-        new ObservableCollection<int>() { 20, 35, 47, 57, 68, 80 });
-    public ObservableCollection<int> Temperatures
+    public static readonly StyledProperty<ObservableCollection<float>> ValuesProperty = AvaloniaProperty.Register<LineChartView, ObservableCollection<float>>(nameof(Values), new ObservableCollection<float>() { 20, 35, 47, 57, 68, 80 });
+    public ObservableCollection<float> Values
     {
-        get => GetValue(TemperaturesProperty);
-        set => SetValue(TemperaturesProperty, value);
+        get => GetValue(ValuesProperty);
+        set => SetValue(ValuesProperty, value);
     }
 
 
     public LineChartView()
     {
         InitializeComponent();
+        this.GetObservable(YTitleProperty).Subscribe(newTitle => YTextBox.Text = newTitle);
+        this.GetObservable(XTitleProperty).Subscribe(newTitle => XTextBox.Text = newTitle);
+        this.GetObservable(ValuesProperty).Subscribe(newCollection =>
+        {
+            Values.CollectionChanged -= Temperatures_CollectionChanged;
+            newCollection.CollectionChanged += Temperatures_CollectionChanged;
+            InvalidateVisual();
+        });
+
         this.PointerPressed += LineChartView_PointerPressed;
         this.PointerReleased += LineChartView_PointerReleased;
         this.PointerMoved += LineChartView_PointerMoved;
-        Temperatures.CollectionChanged += Temperatures_CollectionChanged;
-        TemperaturesProperty.Changed.AddClassHandler<LineChartView>((element, e) =>
-        {
-            Temperatures.CollectionChanged += Temperatures_CollectionChanged;
-        });
-
+        Values.CollectionChanged += Temperatures_CollectionChanged;
     }
 
     private void Temperatures_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
@@ -97,8 +147,6 @@ public partial class LineChartView : UserControl
 
     private void LineChartView_PointerMoved(object? sender, Avalonia.Input.PointerEventArgs e)
     {
-
-
         if (_selectedIndex == -1)
             return;
 
@@ -107,11 +155,11 @@ public partial class LineChartView : UserControl
         var x = point.Position.X;
         var y = point.Position.Y;
 
-        Temperatures[_selectedIndex] = PointToCelsius(new Point(x, y));
+        Values[_selectedIndex] = PointToCelsius(new Point(x, y));
         //Temperatures.Insert(_selectedIndex, newTemp);
     }
 
-    private int PointToCelsius(Point point)
+    private float PointToCelsius(Point point)
     {
         var h = Bounds.Height;
         var w = Bounds.Width;
@@ -121,7 +169,7 @@ public partial class LineChartView : UserControl
 
         // Überprüfen, ob der Punkt außerhalb des Diagrammbereichs liegt
         if (point.Y <= yStart)
-            return MaxTemperature;
+            return MaxY;
 
         if (point.Y >= yEnd)
             return 0;
@@ -130,7 +178,7 @@ public partial class LineChartView : UserControl
         var proportion = (point.Y - yStart) / (yEnd - yStart);
 
         // Diesen Anteil verwenden, um den entsprechenden Temperaturwert zu berechnen
-        var celsius = (1 - proportion) * MaxTemperature;
+        var celsius = (1 - proportion) * MaxY;
 
         return (int)celsius;
     }
@@ -154,7 +202,7 @@ public partial class LineChartView : UserControl
 
     public override void Render(DrawingContext context)
     {
-        if(Temperatures.Count != 6) return;
+        if (Values.Count != 6) return;
         context.DrawRectangle(ChartBackground, null, Bounds);
         DrawXLines(context);
         DrawLinesBetweenPoints(context);
@@ -171,9 +219,9 @@ public partial class LineChartView : UserControl
         var h = Bounds.Height;
         var w = Bounds.Width - MarginLines * 2;
 
-        var min = Math.Min(TemperatureStart, TemperatureEnd);
-        var max = Math.Max(TemperatureStart, TemperatureEnd);
-        var lines = Math.Abs(min - max) / TemperatureSpacing;
+        var min = Math.Min(XStartValue, XEndValue);
+        var max = Math.Max(XStartValue, XEndValue);
+        var lines = Math.Abs(min - max) / XSpacing;
 
         var lineSpacingW = w / lines;
 
@@ -189,17 +237,32 @@ public partial class LineChartView : UserControl
             var typeface = new Typeface(this.FontFamily.Name, FontStyle.Normal, FontWeight.Bold);
             var de = new CultureInfo("de-DE");
 
-            var temp = max - i * TemperatureSpacing;
+            var temp = max - i * XSpacing;
             var text = string.Empty;
             var textP = string.Empty;
-            if (temp > 0)
+
+            if (ShowSign)
             {
-                textP = text = "+";
+                if (temp > 0)
+                {
+                    textP = text = "+";
+                }
             }
 
+            var tempStringValue = temp.ToString();
+            if (!ShowSign)
+            {
+                if (temp < 0)
+                {
+                    tempStringValue = temp.ToString().Replace("-", null);
+                }
+            }
+          
 
-            text += $"{temp}°C";
-            textP += $"{temp}";
+            text += $"{tempStringValue}{YPostfix}";
+            textP += $"{tempStringValue}";
+
+          
 
             var formattedText = new FormattedText(text, de, FlowDirection.LeftToRight, typeface, this.FontSize, GridColor);
             formattedText.TextAlignment = TextAlignment.Left;
@@ -223,7 +286,7 @@ public partial class LineChartView : UserControl
         }
     }
 
-    public int PointRadius { get; set; } = 18;
+
 
     private int IsHit(Point point)
     {
@@ -233,7 +296,7 @@ public partial class LineChartView : UserControl
         {
             var vector = new Vector2((float)points[i].X, (float)points[i].Y);
             var distance = Vector2.Distance(currentVector, vector);
-            if (distance <= PointRadius)
+            if (distance <= ValueRadius)
                 return i;
         }
 
@@ -242,21 +305,23 @@ public partial class LineChartView : UserControl
 
     private Point[] GetPoints()
     {
-        var boxes = new Point[Temperatures.Count];
+        var boxes = new Point[Values.Count];
 
         var h = Bounds.Height;
         var w = Bounds.Width - MarginLines * 2;
 
-        var min = Math.Min(TemperatureStart, TemperatureEnd);
-        var max = Math.Max(TemperatureStart, TemperatureEnd);
-        var lines = Math.Abs(min - max) / TemperatureSpacing;
+        var min = Math.Min(XStartValue, XEndValue);
+        var max = Math.Max(XStartValue, XEndValue);
+        var lines = Math.Abs(min - max) / XSpacing;
 
         var lineSpacingW = w / lines;
 
 
         for (int i = 0; i <= lines; i++)
         {
-            var tempInP = Temperatures[i] / (float)MaxTemperature;
+            if (i >= Values.Count) break;
+
+            var tempInP = Values[i] / (float)MaxY;
             var totalMargin = YTextBox.DesiredSize.Height + MarginBottom;
             var difference = h - totalMargin;
 
@@ -283,21 +348,19 @@ public partial class LineChartView : UserControl
         }
     }
 
-    private Color _lineRed = new Color(255, 255, 105, 105);
+
     private Color _gradientRed = new Color(100, 255, 105, 105);
-    //private Color heatRed = new Color(100, 255, 105, 105);
     private void DrawGradiand(DrawingContext context, Point a, Point b)
     {
         var pen = new Pen(ChartForeground);
         pen.Thickness = 5;
 
-        // Gradient unter der Linie zeichnen
         var gradientBrush = new LinearGradientBrush
         {
             StartPoint = new RelativePoint(0, 0, RelativeUnit.Absolute),
             EndPoint = new RelativePoint(0, Bounds.Height, RelativeUnit.Absolute)
         };
-        //double relativeHeight = a.Y / Bounds.Height;rgb(255, 105, 105)
+
         gradientBrush.GradientStops.Add(new GradientStop(_gradientRed, 0));
         gradientBrush.GradientStops.Add(new GradientStop(Colors.Transparent, 1));
 
@@ -310,7 +373,7 @@ public partial class LineChartView : UserControl
     };
 
         PolylineGeometry polylineGeometry = new PolylineGeometry(polygonPoints, true);
-        // Zeichnen Sie die erstellte Geometrie
+
         context.DrawGeometry(gradientBrush, null, polylineGeometry);
     }
 
@@ -323,15 +386,15 @@ public partial class LineChartView : UserControl
 
         for (int i = 0; i < points.Length; i++)
         {
-            context.DrawEllipse(this.ChartBackground, pen, new Point(points[i].X, points[i].Y), PointRadius, PointRadius);
+            context.DrawEllipse(this.ChartBackground, pen, new Point(points[i].X, points[i].Y), ValueRadius, ValueRadius);
 
             var typeface = new Typeface(this.FontFamily.Name, FontStyle.Normal, FontWeight.ExtraBold);
             var de = new CultureInfo("de-DE");
 
-            var temp = Temperatures[i];
+            var temp = Values[i];
             var text = string.Empty;
 
-            text += $"{temp}°".Replace("-", null); ;
+            text += $"{temp}{ValuePostfix}".Replace("-", null); ;
 
             var formattedText = new FormattedText(text, de, FlowDirection.LeftToRight, typeface, this.FontSize, GridColor);
             var tempNumberTextGeometry = formattedText.BuildGeometry(new Point(0, 0));

@@ -21,12 +21,12 @@ public partial class App : Application
     private PageNavigator _pageNavigator;
 
     public static T? GetResourceFromThemeDictionarie<T>(string name)
-    {        
-        var mergedDictionaries = (ResourceDictionary) Application.Current!.Resources.MergedDictionaries[0];
+    {
+        var mergedDictionaries = (ResourceDictionary)Application.Current!.Resources.MergedDictionaries[0];
 
         if (!mergedDictionaries.ThemeDictionaries.TryGetValue(Application.Current.ActualThemeVariant, out var themeVariantProvider))
             return default(T?);
-        if(!themeVariantProvider.TryGetResource(name, null,out var resource))
+        if (!themeVariantProvider.TryGetResource(name, null, out var resource))
             return default(T?);
 
         return (T?)resource;
@@ -79,7 +79,8 @@ public partial class App : Application
         }
 
         if (!_isPrewview)
-            Navigator.Push<HeatingControlView>();
+            //Navigator.Push<HeatingControlView>();
+            Navigator.Push<LoadingView>();
 
         base.OnFrameworkInitializationCompleted();
     }

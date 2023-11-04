@@ -3,17 +3,21 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-			ChartBackground="{DynamicResource RegionColor}"
+			 ChartBackground="{DynamicResource RegionColor}"
 			 ChartForeground="{DynamicResource Accent}"
 			 FontSize="17"
 			 
 	x:Class="Heating_Control_UI.LineChartView">
 	<Grid x:Name="GridTest">
-		<TextBlock x:Name="YTextBox" Text="AUSSENTEMPERATUR" Foreground="{DynamicResource Accent}" FontWeight="SemiBold" HorizontalAlignment="Center" />
-		<Grid RowDefinitions="auto">
+		<TextBlock x:Name="YTextBox" Foreground="{DynamicResource Accent}" FontWeight="SemiBold" HorizontalAlignment="Center" />
+	
 		<!--TODO ADD Y-Achse-->
+			<TextBlock x:Name="XTextBox" Text="XTextBox" Foreground="{DynamicResource Accent}" FontWeight="SemiBold" Background="Transparent" TextAlignment="Center" VerticalAlignment="Stretch" Height="{Binding #GridTest.Bounds.Width}">
+				<TextBlock.RenderTransform>
+					<RotateTransform Angle="-90"/>
+				</TextBlock.RenderTransform>
+			</TextBlock>
 
-		</Grid>
 
 
 
