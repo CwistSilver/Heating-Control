@@ -6,6 +6,7 @@ using Splat;
 using System.Threading.Tasks;
 using Heating_Control.Data;
 using Heating_Control.ML;
+using Heating_Control_UI.Utilities;
 
 namespace Heating_Control_UI.ViewModels;
 public class HeatingControlSettingsViewModel : ViewModelBase
@@ -66,7 +67,8 @@ public class HeatingControlSettingsViewModel : ViewModelBase
 
     public void CancelAction()
     {
-        App.Navigator.Pop();
+        //App.Navigator.Pop();
+        App.Navigator.Pop(PageNavigator.DefaultSlideTransition);
     }
 
     public ReactiveCommand<Unit, Unit> Save { get; private set; }
@@ -90,7 +92,7 @@ public class HeatingControlSettingsViewModel : ViewModelBase
         };
 
         await Task.WhenAll(tasks);
-        await App.Navigator.PopAsync();
+        await App.Navigator.PopAsync(PageNavigator.DefaultSlideTransition);
 
     }
 }

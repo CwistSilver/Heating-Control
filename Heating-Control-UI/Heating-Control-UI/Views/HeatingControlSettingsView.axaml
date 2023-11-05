@@ -9,8 +9,8 @@
 			 x:Class="Heating_Control_UI.HeatingControlSettingsView">
 	<Grid RowDefinitions="*,auto">
 		<StackPanel>
-			<views:TemperatureSelector CurrentTemperature="{Binding Gradient}" Title="Neigung" />
-			<views:TemperatureSelector CurrentTemperature="{Binding Baseline}" Title="Level" />
+			<views:TemperatureSelector CurrentTemperature="{Binding Gradient}" Title="Neigung" ValueStep="0.5" />
+			<views:TemperatureSelector CurrentTemperature="{Binding Baseline}" Title="Level" ValueStep="0.5"/>
 			<views:TemperatureSelector CurrentTemperature="{Binding MaxSupplyTemperature}" Title="Max Supply Temperature" MinTemperature="0" MaxTemperature="300" />
 		</StackPanel>
 

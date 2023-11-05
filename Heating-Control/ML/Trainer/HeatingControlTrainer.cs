@@ -18,7 +18,7 @@ public sealed class HeatingControlTrainer : IHeatingControlTrainer
 
     public async Task<ITransformer> TrainNeuralNetworkAsync(TrainingDataOptions? options = null)
     {
-        options ??= new TrainingDataOptions() { RecordsToGenerate = 10_000 };     
+        options ??= new TrainingDataOptions() { RecordsToGenerate = 100_000 };     
 
         Console.WriteLine($"Create {options.RecordsToGenerate} training datas");
         var startTime = DateTime.Now;
@@ -28,16 +28,22 @@ public sealed class HeatingControlTrainer : IHeatingControlTrainer
 
         var context = new MLContext();
         var dataView = context.Data.LoadFromEnumerable(trainingData);
-        var pipeline = CreatePipeline(context);
+        var dataViewSchema = dataView.Schema;
 
-        Console.WriteLine($"Start Training.");
-        var start = DateTime.Now;
-        var model = pipeline.Fit(dataView);
-        var end = DateTime.Now - start;
-        Console.WriteLine($"Finished! Duration: {end}");
+        var model = await Task.Run(() =>
+        {
+            var pipeline = CreatePipeline(context);
+
+            Console.WriteLine($"Start Training.");
+            var start = DateTime.Now;
+            var trainedModel = pipeline.Fit(dataView);
+            var end = DateTime.Now - start;
+            Console.WriteLine($"Finished! Duration: {end}");
+
+            return trainedModel;
+        });
 
         _modelStorage.Save(new ModelData() { Transformer = model, Options = options}, dataView.Schema);
-
         return model;
     }
 

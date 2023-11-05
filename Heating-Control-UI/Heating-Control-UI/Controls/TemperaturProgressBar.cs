@@ -27,15 +27,24 @@ public class TemperaturProgressBar : Control
     private static SKPath OuterPath = SKPath.ParseSvgPathData(OuterSvgPath);
     private static SKPath InnerPath = SKPath.ParseSvgPathData(InnerSvgPath);
     private readonly static TimeSpan _glowTimeSpan = TimeSpan.FromMilliseconds(2_000);
+    private readonly static TimeSpan _afterGlowTimeSpan = TimeSpan.FromMilliseconds(2_000);
 
     private readonly Stopwatch _glowStopwatch = new();
+    private readonly Stopwatch _afterGlowStopwatch = new();
     private readonly Stopwatch _controlStart = new();
-    private readonly SKColor _thermometerColor = new(229, 97, 62, 255);
+    //private readonly SKColor _thermometerColor = new(229, 97, 62, 255);
+    private SKColor ThermometerColor
+    {
+        get => new(229, 97, 62, (byte)(_renderSaveOpacity * 255));
+    }
+
     private readonly FastNoiseLite noise = new();
     private readonly TimeSpan duration = TimeSpan.FromSeconds(3);
 
     private float _xOffset;
+    private double _renderSaveOpacity = 1.0;
     private SKColor _renderSaveForegroundColor;
+    private SKColor _renderSaveBackgroundColor;
     private float _renderSavePercentages;
     private bool _isFinished;
 
@@ -54,6 +63,8 @@ public class TemperaturProgressBar : Control
     }
 
 
+
+
     public static readonly RoutedEvent<RoutedEventArgs> FinishedEvent = RoutedEvent.Register<TemperaturProgressBar, RoutedEventArgs>(nameof(Finished), RoutingStrategies.Direct);
     public event EventHandler<RoutedEventArgs> Finished
     {
@@ -69,6 +80,13 @@ public class TemperaturProgressBar : Control
         set => SetValue(ForegroundProperty, value);
     }
 
+    public static readonly StyledProperty<IBrush> BackgroundProperty = AvaloniaProperty.Register<LineChartView, IBrush>(nameof(Background), Brushes.Green);
+    public IBrush Background
+    {
+        get => GetValue(BackgroundProperty);
+        set => SetValue(BackgroundProperty, value);
+    }
+
 
     public static readonly StyledProperty<float> PercentagesProperty = AvaloniaProperty.Register<LineChartView, float>(nameof(Percentages), 0f);
     public float Percentages
@@ -80,7 +98,7 @@ public class TemperaturProgressBar : Control
 
     public TemperaturProgressBar()
     {
-
+        this.GetObservable(OpacityProperty).Subscribe(newValue => _renderSaveOpacity = newValue);
         noise.SetNoiseType(FastNoiseLite.NoiseType.OpenSimplex2);
 
         renderingLogic = new RenderingLogic();
@@ -115,7 +133,13 @@ public class TemperaturProgressBar : Control
     public override void Render(DrawingContext context)
     {
         var foregroundColor = ((ImmutableSolidColorBrush)Foreground).Color;
-        _renderSaveForegroundColor = new SKColor(foregroundColor.R, foregroundColor.G, foregroundColor.B, foregroundColor.A);
+        _renderSaveForegroundColor = new SKColor(foregroundColor.R, foregroundColor.G, foregroundColor.B, (byte)(_renderSaveOpacity * 255));
+
+        var backgroundColor = ((ImmutableSolidColorBrush)Background).Color;
+        _renderSaveBackgroundColor = new SKColor(backgroundColor.R, backgroundColor.G, backgroundColor.B, backgroundColor.A);
+
+
+
         _renderSavePercentages = Percentages;
         renderingLogic.Bounds = new Rect(0, 0, Bounds.Width, Bounds.Height);
         context.Custom(renderingLogic);
@@ -124,6 +148,13 @@ public class TemperaturProgressBar : Control
 
     private void RenderSkia(SKCanvas canvas)
     {
+        using var paintBackground = new SKPaint
+        {
+            Color = _renderSaveBackgroundColor,
+            Style = SKPaintStyle.Fill,
+        };
+        canvas.DrawRect(canvas.LocalClipBounds, paintBackground);
+
         var glowPercent = GetProgress(_glowTimeSpan, _glowStopwatch, true);
 
         using var paintOutline = new SKPaint
@@ -137,21 +168,32 @@ public class TemperaturProgressBar : Control
 
         using var paintFillMargin = new SKPaint
         {
-            Color = _thermometerColor,
+            Color = ThermometerColor,
             IsAntialias = true,
             Style = SKPaintStyle.Fill
         };
+
+
+        var afterGlow = 0f;
+        var afterGlowStroke = 0f;
+        //if (_renderSavePercentages >= 0.95f)
+        //{
+        //    var p = GetProgress(_afterGlowTimeSpan, _afterGlowStopwatch, autoRestart: false);
+        //    //afterGlow = p * 6f;
+        //    afterGlowStroke = p * 1.5f;
+        //}
 
         if (_renderSavePercentages >= 0.10)
         {
             var strokeGrow = Math.Clamp((_renderSavePercentages / 0.50f), 0f, 1f);
             paintFillMargin.Style = SKPaintStyle.StrokeAndFill;
-            paintFillMargin.StrokeWidth = (0.2f + (glowPercent * 0.15f)) * strokeGrow;
+            paintFillMargin.StrokeWidth = afterGlowStroke + ((0.2f + (glowPercent * 0.15f)) * strokeGrow);
         }
 
         DrawLoadingRec(canvas, paintFillMargin, 1f - _renderSavePercentages);
 
-        paintFillMargin.MaskFilter = SKMaskFilter.CreateBlur(SKBlurStyle.Outer, 1 + (glowPercent * (1.5f * _renderSavePercentages)));
+       
+        paintFillMargin.MaskFilter = SKMaskFilter.CreateBlur(SKBlurStyle.Outer, afterGlow+ 1f + (glowPercent * (1.5f * _renderSavePercentages)));
         DrawLoadingRec(canvas, paintFillMargin, 1f - _renderSavePercentages);
 
 

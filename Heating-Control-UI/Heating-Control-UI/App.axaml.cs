@@ -2,13 +2,11 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
-using Avalonia.Media;
 using Heating_Control;
 using Heating_Control_UI.Utilities;
 using Heating_Control_UI.ViewModels;
 using Heating_Control_UI.Views;
 using Microsoft.Extensions.DependencyInjection;
-using System;
 using System.Diagnostics;
 using System.Linq;
 
@@ -57,12 +55,15 @@ public partial class App : Application
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            desktop.MainWindow = new MainWindow
+            var mainWindow = new MainWindow
             {
                 DataContext = new MainViewModel()
             };
 
-            _pageNavigator = new PageNavigator(desktop.MainWindow, Services);
+            desktop.MainWindow = mainWindow;
+
+
+            _pageNavigator = new PageNavigator(mainWindow.TransitioningContentControlConvtrol, Services);
         }
         else if (ApplicationLifetime is ISingleViewApplicationLifetime singleViewPlatform)
         {
@@ -73,7 +74,7 @@ public partial class App : Application
                 DataContext = new MainViewModel()
             };
 
-            _pageNavigator = new PageNavigator(mainView.PART_ContentPresenter, Services);
+            _pageNavigator = new PageNavigator(mainView.TransitioningContentControlConvtrol, Services);
 
             singleViewPlatform.MainView = mainView;
         }

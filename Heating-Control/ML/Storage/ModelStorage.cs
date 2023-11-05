@@ -6,7 +6,7 @@ using System.Text.Json;
 namespace Heating_Control.ML.Storage;
 public sealed class ModelStorage : IModelStorage
 {
-    private const string FileName = "HeatingControl.ml";
+    private const string FileName = "HeatingControl.zip";
     private const string OptionsFileName = "HeatingControl-Options.json";
     private readonly string _storagePath;
     private readonly string _optionsStoragePath;

@@ -15,5 +15,8 @@
 			<views:MainView/>
 		</views2:ShellControl>
 	<views:MainView/>-->
-	<views:MainView/>
+
+	<Carousel x:Name="TransitioningContentControlConvtrol">
+		
+	</Carousel>
 </Window>

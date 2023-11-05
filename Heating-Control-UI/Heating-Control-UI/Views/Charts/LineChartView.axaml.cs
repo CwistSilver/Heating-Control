@@ -203,7 +203,7 @@ public partial class LineChartView : UserControl
     public override void Render(DrawingContext context)
     {
         if (Values.Count != 6) return;
-        context.DrawRectangle(ChartBackground, null, Bounds);
+        //context.DrawRectangle(ChartBackground, null, Bounds);
         DrawXLines(context);
         DrawLinesBetweenPoints(context);
         DrawPoints(context);

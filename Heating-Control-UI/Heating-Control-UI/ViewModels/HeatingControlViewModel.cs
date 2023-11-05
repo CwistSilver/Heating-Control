@@ -1,5 +1,6 @@
 ﻿using Heating_Control.Data;
 using Heating_Control.ML;
+using Heating_Control_UI.Utilities;
 using ReactiveUI;
 using System;
 using System.Collections.ObjectModel;
@@ -19,8 +20,8 @@ public class HeatingControlViewModel : ViewModelBase
 
     private async Task Inizialize()
     {
-        await _heatingControlNeuralNetwork.Inizialize();
         MaxTemperatur = _heatingControlNeuralNetwork.UsedTrainingDataOptions.MaxSupplyTemperature;
+        Calculate();
     }
 
     public HeatingControlViewModel()
@@ -47,9 +48,10 @@ public class HeatingControlViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _temperatures, value);
     }
 
-    public void AttachedToVisualTree(object? sender, Avalonia.VisualTreeAttachmentEventArgs e)
+    public void NavigatedTo()
     {
         MaxTemperatur = _heatingControlNeuralNetwork.UsedTrainingDataOptions.MaxSupplyTemperature;
+        Calculate();
     }
 
     private void Calculate()
@@ -86,7 +88,7 @@ public class HeatingControlViewModel : ViewModelBase
     {
 
         Settings = $"{Settings}2";
-        App.Navigator.Push<HeatingControlSettingsView>();
+        App.Navigator.Push<HeatingControlSettingsView>(PageNavigator.DefaultSlideTransition);
     }
 
 

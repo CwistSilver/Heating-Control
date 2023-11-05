@@ -35,6 +35,13 @@ public partial class TemperatureSelector : UserControl
         set => SetValue(CurrentTemperatureProperty, value);
     }
 
+    public static readonly StyledProperty<float> ValueStepProperty = AvaloniaProperty.Register<TemperatureSelector, float>(nameof(ValueStep), 1f, defaultBindingMode: BindingMode.TwoWay);
+    public float ValueStep
+    {
+        get => GetValue(ValueStepProperty);
+        set => SetValue(ValueStepProperty, value);
+    }
+
     public static readonly StyledProperty<float> MinTemperatureProperty = AvaloniaProperty.Register<TemperatureSelector, float>(nameof(MinTemperature), 0);
     public float MinTemperature
     {
@@ -68,6 +75,7 @@ public partial class TemperatureSelector : UserControl
         InitializeComponent();
         this.GetObservable(TitleProperty).Subscribe(newTitle => TitleLabel.Content = newTitle);
         this.GetObservable(CurrentTemperatureProperty).Subscribe(newValue => CurrentTemperatureText.Text = $"{newValue}{Postfix}");
+
     }
 
 
@@ -76,7 +84,8 @@ public partial class TemperatureSelector : UserControl
         if (MaxTemperature <= CurrentTemperature)
             return;
 
-        CurrentTemperature++;
+        var newValue = CurrentTemperature + ValueStep;
+        CurrentTemperature = Math.Clamp(newValue, MinTemperature, MaxTemperature);
         this.OnTemperatureChanged();
     }
 
@@ -85,7 +94,8 @@ public partial class TemperatureSelector : UserControl
         if (MinTemperature >= CurrentTemperature)
             return;
 
-        CurrentTemperature--;
+        var newValue = CurrentTemperature - ValueStep;
+        CurrentTemperature = Math.Clamp(newValue, MinTemperature, MaxTemperature);
         this.OnTemperatureChanged();
     }
 
@@ -101,26 +111,23 @@ public partial class TemperatureSelector : UserControl
         ValueTextBox.Focus();
     }
 
-    private void TextBox_LostFocus(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    private void TextBox_LostFocus(object? sender, RoutedEventArgs e)
     {
-        ValueTextBox.IsVisible = false;
+        CloseTextBox();
     }
 
     private void TextBox_KeyDown(object? sender, Avalonia.Input.KeyEventArgs e)
     {
         if (e.Key == Avalonia.Input.Key.Enter)
-        {
-            ValueTextBox.IsVisible = false;
+            CloseTextBox();
+    }
 
-            if(float.TryParse(ValueTextBox.Text, out var floatValue))
-            {
-                
-                var v = Math.Clamp(floatValue, MinTemperature, MaxTemperature);
-                CurrentTemperature = Math.Clamp(floatValue, MinTemperature, MaxTemperature);
-            }
-        }
+    private void CloseTextBox()
+    {
+        ValueTextBox.IsVisible = false;
+        if (float.TryParse(ValueTextBox.Text, out var floatValue))
+            CurrentTemperature = Math.Clamp(floatValue, MinTemperature, MaxTemperature);
     }
 
 
-    
 }
