@@ -1,6 +1,7 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Media;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -24,6 +25,7 @@ public partial class LineChartView : UserControl
             ShowSignProperty,
             YPostfixProperty,
             ValuePostfixProperty,
+            SecondValuesProperty,
             YTitleProperty,
             XTitleProperty,
             ValuesProperty);
@@ -79,6 +81,13 @@ public partial class LineChartView : UserControl
         set => SetValue(ChartBackgroundProperty, value);
     }
 
+    public static readonly StyledProperty<IBrush> SecondChartBackgroundProperty = AvaloniaProperty.Register<LineChartView, IBrush>(nameof(SecondChartBackground), Brushes.Green);
+    public IBrush SecondChartBackground
+    {
+        get => GetValue(SecondChartBackgroundProperty);
+        set => SetValue(SecondChartBackgroundProperty, value);
+    }
+
     public static readonly StyledProperty<IBrush> ChartForegroundProperty = AvaloniaProperty.Register<LineChartView, IBrush>(nameof(ChartForeground), Brushes.Black);
     public IBrush ChartForeground
     {
@@ -121,6 +130,13 @@ public partial class LineChartView : UserControl
         set => SetValue(ValuesProperty, value);
     }
 
+    public static readonly StyledProperty<ObservableCollection<float>> SecondValuesProperty = AvaloniaProperty.Register<LineChartView, ObservableCollection<float>>(nameof(SecondValues), new ObservableCollection<float>());
+    public ObservableCollection<float> SecondValues
+    {
+        get => GetValue(SecondValuesProperty);
+        set => SetValue(SecondValuesProperty, value);
+    }
+
 
     public LineChartView()
     {
@@ -134,10 +150,18 @@ public partial class LineChartView : UserControl
             InvalidateVisual();
         });
 
+        this.GetObservable(SecondValuesProperty).Subscribe(newCollection =>
+        {
+            SecondValues.CollectionChanged -= Temperatures_CollectionChanged;
+            newCollection.CollectionChanged += Temperatures_CollectionChanged;
+            InvalidateVisual();
+        });
+
         this.PointerPressed += LineChartView_PointerPressed;
         this.PointerReleased += LineChartView_PointerReleased;
         this.PointerMoved += LineChartView_PointerMoved;
         Values.CollectionChanged += Temperatures_CollectionChanged;
+        SecondValues.CollectionChanged += Temperatures_CollectionChanged;
     }
 
     private void Temperatures_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
@@ -154,8 +178,15 @@ public partial class LineChartView : UserControl
 
         var x = point.Position.X;
         var y = point.Position.Y;
+        if (focuedLine == 0)
+        {
+            Values[_selectedIndex] = PointToCelsius(new Point(x, y));
+        }
+        else if (focuedLine == 1)
+        {
+            SecondValues[_selectedIndex] = PointToCelsius(new Point(x, y));
+        }
 
-        Values[_selectedIndex] = PointToCelsius(new Point(x, y));
         //Temperatures.Insert(_selectedIndex, newTemp);
     }
 
@@ -191,22 +222,68 @@ public partial class LineChartView : UserControl
         _selectedIndex = -1;
     }
 
+
+    private int focuedLine = 0;
     private void LineChartView_PointerPressed(object? sender, Avalonia.Input.PointerPressedEventArgs e)
     {
         var point = e.GetCurrentPoint(sender as Control);
         var x = point.Position.X;
         var y = point.Position.Y;
 
-        _selectedIndex = IsHit(new Point(x, y));
+        var isHit = IsHit(new Point(x, y));
+        if (isHit != -1)
+        {
+            _selectedIndex = isHit;
+            focuedLine = 0;
+            InvalidateVisual();
+            return;
+        }
+
+        var isSecondHit = _selectedIndex = IsSecondHit(new Point(x, y));
+        if (isSecondHit != -1)
+        {
+            focuedLine = 1;
+            InvalidateVisual();
+        }
+    }
+
+    private int TotalXLines()
+    {
+        var min = Math.Min(XStartValue, XEndValue);
+        var max = Math.Max(XStartValue, XEndValue);
+        return (int)(Math.Abs(min - max) / XSpacing) + 1;
     }
 
     public override void Render(DrawingContext context)
     {
-        if (Values.Count != 6) return;
+        var totalLines = TotalXLines();
+        if (Values.Count != totalLines) return;
         //context.DrawRectangle(ChartBackground, null, Bounds);
         DrawXLines(context);
         DrawLinesBetweenPoints(context);
-        DrawPoints(context);
+
+
+        //DrawSecondXLines(context);
+
+
+
+        if (SecondValues.Count == 0)
+            DrawPoints(context);
+        else
+        {
+            if (focuedLine == 0)
+            {
+                DrawSecondPoints(context);
+                DrawPoints(context);
+            }
+            else if (focuedLine == 1)
+            {
+                DrawPoints(context);
+                DrawSecondPoints(context);
+            }
+        }
+
+
 
         base.Render(context);
     }
@@ -219,8 +296,13 @@ public partial class LineChartView : UserControl
         var h = Bounds.Height;
         var w = Bounds.Width - MarginLines * 2;
 
+        var lowToHeigh = true;
+
         var min = Math.Min(XStartValue, XEndValue);
         var max = Math.Max(XStartValue, XEndValue);
+        if (min != XStartValue)
+            lowToHeigh = false;
+
         var lines = Math.Abs(min - max) / XSpacing;
 
         var lineSpacingW = w / lines;
@@ -237,7 +319,12 @@ public partial class LineChartView : UserControl
             var typeface = new Typeface(this.FontFamily.Name, FontStyle.Normal, FontWeight.Bold);
             var de = new CultureInfo("de-DE");
 
-            var temp = max - i * XSpacing;
+            float temp;
+            if (lowToHeigh)
+                temp = min + i * XSpacing;
+            else
+                temp = max - i * XSpacing;
+
             var text = string.Empty;
             var textP = string.Empty;
 
@@ -257,12 +344,12 @@ public partial class LineChartView : UserControl
                     tempStringValue = temp.ToString().Replace("-", null);
                 }
             }
-          
+
 
             text += $"{tempStringValue}{YPostfix}";
             textP += $"{tempStringValue}";
 
-          
+
 
             var formattedText = new FormattedText(text, de, FlowDirection.LeftToRight, typeface, this.FontSize, GridColor);
             formattedText.TextAlignment = TextAlignment.Left;
@@ -286,12 +373,40 @@ public partial class LineChartView : UserControl
         }
     }
 
+    private void DrawSecondXLines(DrawingContext context)
+    {
+        var points = GetSecondPoints();
+        var pen = new Pen(new SolidColorBrush(Colors.Green));
+        pen.Thickness = 6;
 
+        for (int i = 1; i < points.Length; i++)
+        {
+            context.DrawLine(pen, points[i], points[i - 1]);
+        }
+    }
 
     private int IsHit(Point point)
     {
         var currentVector = new Vector2((float)point.X, (float)point.Y);
         var points = GetPoints();
+        for (int i = 0; i < points.Length; i++)
+        {
+            var vector = new Vector2((float)points[i].X, (float)points[i].Y);
+            var distance = Vector2.Distance(currentVector, vector);
+            if (distance <= ValueRadius)
+                return i;
+        }
+
+        return -1;
+    }
+
+
+    private int IsSecondHit(Point point)
+    {
+        var currentVector = new Vector2((float)point.X, (float)point.Y);
+        var points = GetSecondPoints();
+        if (points is null) return -1;
+
         for (int i = 0; i < points.Length; i++)
         {
             var vector = new Vector2((float)points[i].X, (float)points[i].Y);
@@ -335,26 +450,81 @@ public partial class LineChartView : UserControl
     }
 
 
+    private Point[]? GetSecondPoints()
+    {
+        if (SecondValues.Count == 0) return null;
+        var boxes = new Point[SecondValues.Count];
+
+        var h = Bounds.Height;
+        var w = Bounds.Width - MarginLines * 2;
+
+        var min = Math.Min(XStartValue, XEndValue);
+        var max = Math.Max(XStartValue, XEndValue);
+        var lines = Math.Abs(min - max) / XSpacing;
+
+        var lineSpacingW = w / lines;
+
+
+        for (int i = 0; i <= lines; i++)
+        {
+            if (i >= SecondValues.Count) break;
+
+            var tempInP = SecondValues[i] / (float)MaxY;
+            var totalMargin = YTextBox.DesiredSize.Height + MarginBottom;
+            var difference = h - totalMargin;
+
+            var y = h - difference * tempInP - MarginBottom;
+            var x = MarginLines + i * lineSpacingW;
+
+            boxes[i] = new Point(x, y);
+        }
+
+        return boxes;
+    }
+
+
+
     private void DrawLinesBetweenPoints(DrawingContext context)
     {
         var points = GetPoints();
+        var secondPoints = GetSecondPoints();
         var pen = new Pen(ChartForeground);
-        pen.Thickness = 5;
+        pen.Thickness = 4;
+
+        var secondPen = new Pen(SecondChartBackground);
+        secondPen.Thickness = 4;
 
         for (int i = 1; i < points.Length; i++)
         {
-            context.DrawLine(pen, points[i], points[i - 1]);
-            DrawGradiand(context, points[i], points[i - 1]);
+            //DrawGradiand(context, points[i], points[i - 1]);
+
+
+            if (focuedLine == 0)
+            {
+                DrawGradiand(context, points[i], points[i - 1]);
+
+                if (secondPoints is not null)
+                    context.DrawLine(secondPen, secondPoints[i], secondPoints[i - 1]);
+
+                context.DrawLine(pen, points[i], points[i - 1]);
+            }
+            else if (focuedLine == 1)
+            {
+                DrawSecondGradiand(context, secondPoints![i], secondPoints[i - 1]);
+
+                context.DrawLine(pen, points[i], points[i - 1]);
+                context.DrawLine(secondPen, secondPoints![i], secondPoints[i - 1]);
+            }
+
+
+
         }
     }
 
 
-    private Color _gradientRed = new Color(100, 255, 105, 105);
+    private Color _gradientRed = new(100, 255, 105, 105);
     private void DrawGradiand(DrawingContext context, Point a, Point b)
     {
-        var pen = new Pen(ChartForeground);
-        pen.Thickness = 5;
-
         var gradientBrush = new LinearGradientBrush
         {
             StartPoint = new RelativePoint(0, 0, RelativeUnit.Absolute),
@@ -362,6 +532,31 @@ public partial class LineChartView : UserControl
         };
 
         gradientBrush.GradientStops.Add(new GradientStop(_gradientRed, 0));
+        gradientBrush.GradientStops.Add(new GradientStop(Colors.Transparent, 1));
+
+        var polygonPoints = new List<Point>
+    {
+        b,
+        a,
+        new Point(a.X, Bounds.Height),
+        new Point(b.X, Bounds.Height)
+    };
+
+        PolylineGeometry polylineGeometry = new PolylineGeometry(polygonPoints, true);
+
+        context.DrawGeometry(gradientBrush, null, polylineGeometry);
+    }
+
+
+    private void DrawSecondGradiand(DrawingContext context, Point a, Point b)
+    {
+        var gradientBrush = new LinearGradientBrush
+        {
+            StartPoint = new RelativePoint(0, 0, RelativeUnit.Absolute),
+            EndPoint = new RelativePoint(0, Bounds.Height, RelativeUnit.Absolute)
+        };
+
+        gradientBrush.GradientStops.Add(new GradientStop(Colors.Green, 0));
         gradientBrush.GradientStops.Add(new GradientStop(Colors.Transparent, 1));
 
         var polygonPoints = new List<Point>
@@ -392,6 +587,34 @@ public partial class LineChartView : UserControl
             var de = new CultureInfo("de-DE");
 
             var temp = Values[i];
+            var text = string.Empty;
+
+            text += $"{temp}{ValuePostfix}".Replace("-", null); ;
+
+            var formattedText = new FormattedText(text, de, FlowDirection.LeftToRight, typeface, this.FontSize, GridColor);
+            var tempNumberTextGeometry = formattedText.BuildGeometry(new Point(0, 0));
+
+            var xOffset = tempNumberTextGeometry.Bounds.Width / 2f;
+            context.DrawText(formattedText, new Point(points[i].X - xOffset, points[i].Y - tempNumberTextGeometry.Bounds.Height));
+        }
+    }
+
+
+    private void DrawSecondPoints(DrawingContext context)
+    {
+        var points = GetSecondPoints();
+        var pen = new Pen(SecondChartBackground);
+        pen.LineCap = PenLineCap.Round;
+        pen.Thickness = 3;
+
+        for (int i = 0; i < points.Length; i++)
+        {
+            context.DrawEllipse(this.ChartBackground, pen, new Point(points[i].X, points[i].Y), ValueRadius, ValueRadius);
+
+            var typeface = new Typeface(this.FontFamily.Name, FontStyle.Normal, FontWeight.ExtraBold);
+            var de = new CultureInfo("de-DE");
+
+            var temp = SecondValues[i];
             var text = string.Empty;
 
             text += $"{temp}{ValuePostfix}".Replace("-", null); ;

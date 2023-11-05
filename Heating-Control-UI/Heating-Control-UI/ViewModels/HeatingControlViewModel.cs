@@ -18,7 +18,7 @@ public class HeatingControlViewModel : ViewModelBase
         Inizialize();
     }
 
-    private async Task Inizialize()
+    private void Inizialize()
     {
         MaxTemperatur = _heatingControlNeuralNetwork.UsedTrainingDataOptions.MaxSupplyTemperature;
         Calculate();

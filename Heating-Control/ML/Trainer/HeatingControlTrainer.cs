@@ -18,7 +18,7 @@ public sealed class HeatingControlTrainer : IHeatingControlTrainer
 
     public async Task<ITransformer> TrainNeuralNetworkAsync(TrainingDataOptions? options = null)
     {
-        options ??= new TrainingDataOptions() { RecordsToGenerate = 100_000 };     
+        options ??= new TrainingDataOptions() { RecordsToGenerate = 10_000 };     
 
         Console.WriteLine($"Create {options.RecordsToGenerate} training datas");
         var startTime = DateTime.Now;
