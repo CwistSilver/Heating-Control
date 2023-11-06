@@ -289,7 +289,7 @@ public partial class LineChartView : UserControl
     }
 
     public int MarginLines { get; set; } = 40;
-    public int MarginBottom { get; set; } = 50;
+    public int MarginBottom { get; set; } = 80;
     public IBrush GridColor { get; set; } = new SolidColorBrush(Color.FromArgb(255, 148, 151, 156));
     private void DrawXLines(DrawingContext context)
     {

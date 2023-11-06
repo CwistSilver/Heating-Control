@@ -9,7 +9,7 @@
 			 
 	x:Class="Heating_Control_UI.LineChartView">
 	<Grid x:Name="GridTest">
-		<TextBlock x:Name="YTextBox" Foreground="{DynamicResource Accent}" FontWeight="SemiBold" HorizontalAlignment="Center" />
+		<TextBlock x:Name="YTextBox" Foreground="{DynamicResource Accent}" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Bottom" />
 	
 		<!--TODO ADD Y-Achse-->
 			<TextBlock x:Name="XTextBox" Text="XTextBox" Foreground="{DynamicResource Accent}" FontWeight="SemiBold" Background="Transparent" TextAlignment="Center" VerticalAlignment="Stretch" Height="{Binding #GridTest.Bounds.Width}">
