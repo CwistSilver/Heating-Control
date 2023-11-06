@@ -21,8 +21,8 @@
 				<TextBlock x:Name="YAxisTextBox" Text="Y-Axis" Foreground="{DynamicResource Accent}" FontWeight="SemiBold" TextAlignment="Center" />
 			</Viewbox>
 
-			<Viewbox Grid.Column="1" VerticalAlignment="Top" HorizontalAlignment="Center" StretchDirection="DownOnly">
-				<TextBlock  x:Name="SecondYAxisTextBox" Text="Second Y-Axis"  Foreground="Red" FontWeight="SemiBold" TextAlignment="Center"/>
+			<Viewbox x:Name="SecondaryYAxisTextBoxViewbox" VerticalAlignment="Top" HorizontalAlignment="Center" StretchDirection="DownOnly">
+				<TextBlock  x:Name="SecondaryYAxisTextBox" Text="Secondary Y-Axis"  Foreground="Red" FontWeight="SemiBold" TextAlignment="Center"/>
 			</Viewbox>
 		</Grid>
 

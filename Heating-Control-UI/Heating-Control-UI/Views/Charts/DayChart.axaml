@@ -29,7 +29,7 @@
 		
 
 
-			<views:LineChartView Grid.Row="1" Values="{Binding Temperatures}" YTitle="VORLAUFTEMPERATUR" SecondYTitle="Außentemperatur" SecondValues="{Binding TemperaturesToday}" XTitle="Tageszeit" YPostfix="h" ValuePostfix="°" MaxY="90" XValues="{Binding Times}" x:Name="LineChartViewVar" />
+			<views:LineChartView Grid.Row="1" Values="{Binding Temperatures}" SecondaryBrush="Teal" YTitle="VORLAUFTEMPERATUR" SecondYTitle="Außentemperatur" SecondaryValues="{Binding TemperaturesToday}" XTitle="Tageszeit" YPostfix="h" ValuePostfix="°" MaxY="90" XValues="{Binding Times}" x:Name="LineChartViewVar" />
 
 
 		</Grid>
