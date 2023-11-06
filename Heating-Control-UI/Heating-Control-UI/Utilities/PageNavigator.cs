@@ -3,9 +3,11 @@ using Avalonia.Animation.Easings;
 using Avalonia.Controls;
 using DynamicData;
 using Microsoft.Extensions.DependencyInjection;
+using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -138,6 +140,35 @@ public class PageNavigator
         }
     }
 
+
+    private TimeSpan TryGetAnimationDuration(IPageTransition pageTransition)
+    {
+        if (pageTransition is null)
+            throw new ArgumentNullException(nameof(pageTransition));
+
+
+        Type pageTransitionType = pageTransition.GetType();
+
+        PropertyInfo durationProperty = pageTransitionType.GetProperty("Duration");
+
+        if (durationProperty is not null && durationProperty.PropertyType == typeof(TimeSpan))
+        {
+            object durationValue = durationProperty.GetValue(pageTransition);
+
+            if (durationValue != null)
+            {
+                return (TimeSpan)durationValue;
+            }
+        }
+
+        return TimeSpan.Zero;
+    }
+    public void DestroyPage(ContentControl contentControl)
+    {
+        _stack.Remove(contentControl);
+        _mainContentControl.Items.Remove(contentControl);       
+    }
+
     public async Task<viewT> PushAsync<viewT>(IPageTransition? pageTransition = null) where viewT : ContentControl
     {
         var view = _serviceProvider.GetService<viewT>();
@@ -156,7 +187,12 @@ public class PageNavigator
             _stack.Add(contentControl);
             SetPageTransition(pageTransition);
             Next(contentControl);
-            //CurrentPage = contentControl;
+
+            if(pageTransition is not null)
+            {
+                var duration = TryGetAnimationDuration(pageTransition);
+                await Task.Delay(duration);
+            }            
         }
         finally
         {

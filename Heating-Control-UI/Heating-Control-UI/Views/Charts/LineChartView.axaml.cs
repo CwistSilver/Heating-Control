@@ -270,6 +270,7 @@ public partial class LineChartView : UserControl
             newCollection.CollectionChanged += RedrawOnCollectionChange;
             InvalidateVisual();
         });
+             
 
         this.GetObservable(SecondaryValuesProperty).Subscribe(newCollection =>
         {
@@ -283,7 +284,7 @@ public partial class LineChartView : UserControl
         PointerMoved += LineChartView_PointerMoved;
         Values.CollectionChanged += RedrawOnCollectionChange;
         XValues.CollectionChanged += RedrawOnCollectionChange;
-        SecondaryValues.CollectionChanged += RedrawOnCollectionChange;
+        SecondaryValues.CollectionChanged += RedrawOnCollectionChange;        
     }
 
     #region Render Logic
@@ -375,7 +376,7 @@ public partial class LineChartView : UserControl
             {
                 DrawGradiand(context, points[i], points[i - 1], PrimaryGradiand);
 
-                if (secondPoints is not null)
+                if (secondPoints is not null && secondPoints.Length != 0)
                     context.DrawLine(SecondaryPen, secondPoints[i], secondPoints[i - 1]);
 
                 context.DrawLine(PrimaryPen, points[i], points[i - 1]);
@@ -534,6 +535,8 @@ public partial class LineChartView : UserControl
             InvalidateVisual();
         }
     }
+
+    private void LineChartView_Loaded(object? sender, Avalonia.Interactivity.RoutedEventArgs e) => InvalidateVisual();   
 
     #endregion
 }

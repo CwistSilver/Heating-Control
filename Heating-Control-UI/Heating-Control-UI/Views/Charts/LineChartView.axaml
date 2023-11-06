@@ -6,7 +6,7 @@
 			 ChartBackground="{DynamicResource RegionColor}"
 			 ChartForeground="{DynamicResource Accent}"
 			 FontSize="17"
-			 
+			 Loaded="LineChartView_Loaded"
 	x:Class="Heating_Control_UI.LineChartView">
 	<Grid x:Name="GridTest">
 		<TextBlock x:Name="XAxisTextBox"  FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Bottom" />

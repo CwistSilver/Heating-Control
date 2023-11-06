@@ -7,21 +7,25 @@
 			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
 			 FontSize="80"
              x:Class="Heating_Control_UI.TemperatureSelector">
-	<Grid RowDefinitions="auto,*" ColumnDefinitions="*,*,*">
-		<Label x:Name="TitleLabel" FontWeight="Bold" FontSize="50" HorizontalAlignment="Center" Grid.ColumnSpan="3" />
+	<Grid RowDefinitions="auto,*" >
+		<Label x:Name="TitleLabel" FontWeight="Bold"  HorizontalAlignment="Center" Grid.ColumnSpan="3" />
 
 
-		<TextBlock Grid.Row="1" Grid.Column="1" DoubleTapped="TextBlock_DoubleTapped" VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center" x:Name="CurrentTemperatureText" />
-		<TextBox x:Name="ValueTextBox" LostFocus="TextBox_LostFocus" KeyDown="TextBox_KeyDown" TextAlignment="Center" FontSize="{Binding #CurrentTemperatureText.FontSize}" IsVisible="False" Grid.Row="1" Grid.Column="1"/>
+		<Grid  Grid.Row="1" ColumnDefinitions="*,*,*">
+			<TextBlock  Grid.Column="1" DoubleTapped="TextBlock_DoubleTapped" VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center" x:Name="CurrentTemperatureText" />
+			<TextBox x:Name="ValueTextBox" LostFocus="TextBox_LostFocus" KeyDown="TextBox_KeyDown" TextAlignment="Center" FontSize="{Binding #CurrentTemperatureText.FontSize}" IsVisible="False" Grid.Row="1" Grid.Column="1"/>
 
-		<Rectangle x:Name="ItemRectangle" Grid.Row="1" Grid.Column="0"  Fill="Transparent"/>
-		<Button Grid.Row="1" Grid.Column="0"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Click="Remove_Click" MaxHeight="{Binding #ItemRectangle.Bounds, Converter={StaticResource MinSizeConverter}}" MaxWidth="{Binding #ItemRectangle.Bounds, Converter={StaticResource MinSizeConverter}}">
-			<Svg Path="/Assets/remove.svg" />
-		</Button>
+			<Rectangle x:Name="ItemRectangle" Grid.Column="0"  Fill="Transparent"/>
+			<Button Grid.Column="0"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Click="Remove_Click" MaxHeight="{Binding #ItemRectangle.Bounds, Converter={StaticResource MinSizeConverter}}" MaxWidth="{Binding #ItemRectangle.Bounds, Converter={StaticResource MinSizeConverter}}">
+				<Svg Path="/Assets/remove.svg" />
+			</Button>
 
-		<Button Grid.Row="1" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Click="Add_Click" MaxHeight="{Binding #ItemRectangle.Bounds, Converter={StaticResource MinSizeConverter}}" MaxWidth="{Binding #ItemRectangle.Bounds, Converter={StaticResource MinSizeConverter}}">
-			<Svg Path="/Assets/add.svg"/>
-		</Button>
+			<Button Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Click="Add_Click" MaxHeight="{Binding #ItemRectangle.Bounds, Converter={StaticResource MinSizeConverter}}" MaxWidth="{Binding #ItemRectangle.Bounds, Converter={StaticResource MinSizeConverter}}">
+				<Svg Path="/Assets/add.svg"/>
+			</Button>
+
+		</Grid>
+
 
 
 	</Grid>

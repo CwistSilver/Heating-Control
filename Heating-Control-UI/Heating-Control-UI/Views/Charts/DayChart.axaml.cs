@@ -1,4 +1,3 @@
-using Avalonia.Controls;
 using Heating_Control_UI.Utilities;
 using Heating_Control_UI.ViewModels;
 

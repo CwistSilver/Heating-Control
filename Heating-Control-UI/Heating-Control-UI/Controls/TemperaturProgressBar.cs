@@ -17,8 +17,8 @@ using System.Threading.Tasks;
 namespace Heating_Control_UI;
 public class TemperaturProgressBar : Control
 {
-    RenderingLogic renderingLogic;
-    private event Action<SKCanvas> _skiaRenderAction;
+    RenderingLogic1 renderingLogic;
+    private event Action<SKCanvas, int> _skiaRenderAction;
 
     private const float SvgScale = 0.9f;
     private const float OuterBlur = 6f;
@@ -101,12 +101,25 @@ public class TemperaturProgressBar : Control
         this.GetObservable(OpacityProperty).Subscribe(newValue => _renderSaveOpacity = newValue);
         noise.SetNoiseType(FastNoiseLite.NoiseType.OpenSimplex2);
 
-        renderingLogic = new RenderingLogic();
-        renderingLogic.RenderCall += (canvas) => _skiaRenderAction?.Invoke(canvas);
-        _skiaRenderAction += RenderSkia;
+        renderingLogic = new RenderingLogic1();
+        renderingLogic.RenderCall += RenderSkia;
+        //_skiaRenderAction += RenderSkia;
 
         Dispatcher.UIThread.Post(() => LongRunningTask(), DispatcherPriority.Render);
+        this.DetachedFromLogicalTree += TemperaturProgressBar_DetachedFromLogicalTree;
+
     }
+
+    private bool _isRunning = true;
+    private void TemperaturProgressBar_DetachedFromLogicalTree(object? sender, Avalonia.LogicalTree.LogicalTreeAttachmentEventArgs e)
+    {
+        _isRunning = false;
+        renderingLogic.Dispose();
+        _afterGlowStopwatch.Stop();
+        _glowStopwatch.Stop();
+    }
+
+
 
     protected virtual void OnFinish()
     {
@@ -119,7 +132,7 @@ public class TemperaturProgressBar : Control
 
     private async Task LongRunningTask()
     {
-        while (true)
+        while (_isRunning)
         {
             Percentages = GetProgress(duration, _controlStart, autoRestart: false);
             if (Percentages == 1f)
@@ -130,8 +143,11 @@ public class TemperaturProgressBar : Control
         }
     }
 
+    long calledRender = 0;
+    long calledSkiaRender = 0;
     public override void Render(DrawingContext context)
     {
+        calledRender++;
         var foregroundColor = ((ImmutableSolidColorBrush)Foreground).Color;
         _renderSaveForegroundColor = new SKColor(foregroundColor.R, foregroundColor.G, foregroundColor.B, (byte)(_renderSaveOpacity * 255));
 
@@ -139,15 +155,21 @@ public class TemperaturProgressBar : Control
         _renderSaveBackgroundColor = new SKColor(backgroundColor.R, backgroundColor.G, backgroundColor.B, backgroundColor.A);
 
 
-
+        renderingLogic.NeedRedraw = true;
         _renderSavePercentages = Percentages;
         renderingLogic.Bounds = new Rect(0, 0, Bounds.Width, Bounds.Height);
+
+
         context.Custom(renderingLogic);
+
+
+
     }
 
 
-    private void RenderSkia(SKCanvas canvas)
+    private void RenderSkia(SKCanvas canvas, int id)
     {
+        calledSkiaRender++;
         using var paintBackground = new SKPaint
         {
             Color = _renderSaveBackgroundColor,
@@ -192,8 +214,8 @@ public class TemperaturProgressBar : Control
 
         DrawLoadingRec(canvas, paintFillMargin, 1f - _renderSavePercentages);
 
-       
-        paintFillMargin.MaskFilter = SKMaskFilter.CreateBlur(SKBlurStyle.Outer, afterGlow+ 1f + (glowPercent * (1.5f * _renderSavePercentages)));
+
+        paintFillMargin.MaskFilter = SKMaskFilter.CreateBlur(SKBlurStyle.Outer, afterGlow + 1f + (glowPercent * (1.5f * _renderSavePercentages)));
         DrawLoadingRec(canvas, paintFillMargin, 1f - _renderSavePercentages);
 
 
@@ -304,9 +326,20 @@ public class TemperaturProgressBar : Control
 
 
 
-public class RenderingLogic : ICustomDrawOperation
+public class RenderingLogic1 : ICustomDrawOperation
 {
-    public Action<SKCanvas> RenderCall;
+
+    public RenderingLogic1()
+    {
+        Id = instance = instance + 1;
+    }
+
+    public bool NeedRedraw { get; set; } = true;
+
+    private static int instance = 0;
+    public int Id { get; private set; }
+
+    public Action<SKCanvas, int> RenderCall;
     public Rect Bounds { get; set; }
 
     public void Dispose() { }
@@ -317,6 +350,9 @@ public class RenderingLogic : ICustomDrawOperation
 
     public void Render(ImmediateDrawingContext context)
     {
+        //if (!NeedRedraw)
+        //    return;
+
         var leaseFeature = context.TryGetFeature<ISkiaSharpApiLeaseFeature>();
         if (leaseFeature == null)
         {
@@ -326,7 +362,8 @@ public class RenderingLogic : ICustomDrawOperation
         {
             using var lease = leaseFeature.Lease();
             var canvas = lease.SkCanvas;
-            RenderCall?.Invoke(canvas);
+            RenderCall?.Invoke(canvas, Id);
+            NeedRedraw = false;
         }
     }
 }

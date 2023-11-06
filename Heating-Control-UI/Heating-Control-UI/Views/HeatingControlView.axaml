@@ -18,9 +18,8 @@
 		<Grid RowDefinitions="*,2*">
 
 			
-			<Viewbox>
-				<views:TemperatureSelector CurrentTemperature="{Binding PreferredIndoorTemperature}"  Title="Wohlfühltemperatur"  />
-			</Viewbox>
+				<views:TemperatureSelector CurrentTemperature="{Binding PreferredIndoorTemperature}" FontSize="30" Title="Wohlfühltemperatur"  />
+			
 
 		
 			<views:LineChartView Grid.Row="1" Values="{Binding Temperatures}" YTitle="AUSSENTEMPERATUR" XTitle="VORLAUFTEMPERATUR" ShowSign="True" YPostfix="°C" ValuePostfix="°" MaxY="{Binding MaxTemperatur}" x:Name="LineChartViewVar" />
@@ -29,7 +28,7 @@
 		</Grid>
 
 		<Button Command="{Binding ButtonAction}" VerticalAlignment="Top" HorizontalAlignment="Right" Height="50" Width="50">
-			<Svg Path="/Assets/settings.svg" />
+			<views:SvgImage Source="/Assets/settings.svg"/>
 		</Button>
 
 	</Grid>

@@ -12,6 +12,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <AvaloniaResource Remove="Assets\settings.svg" />
+	</ItemGroup>
+
+	<ItemGroup>
 	  <None Remove="Assets\add.svg" />
 	  <None Remove="Assets\remove.svg" />
 	  <None Remove="Assets\settings.svg" />
@@ -28,6 +32,7 @@
 		<PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.0.5" />
 		<PackageReference Include="OpenWeatherMap4NET" Version="1.0.5" />
 		<PackageReference Include="SkiaSharp" Version="2.88.6" />
+		<PackageReference Include="SkiaSharp.Svg" Version="1.60.0" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -36,5 +41,11 @@
 
 	<ItemGroup>
 	  <Folder Include="Utilities\ValueConverter\" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <EmbeddedResource Include="Assets\settings.svg">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
 	</ItemGroup>
 </Project>
