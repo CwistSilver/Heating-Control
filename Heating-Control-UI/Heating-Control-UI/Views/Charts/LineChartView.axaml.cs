@@ -18,9 +18,9 @@ public partial class LineChartView : UserControl
             ForegroundProperty,
             ChartForegroundProperty,
             ChartBackgroundProperty,
-            XStartValueProperty,
-            XStartValueProperty,
-            XSpacingProperty,
+            //XStartValueProperty,
+            //XStartValueProperty,
+            //XSpacingProperty,
             MaxYProperty,
             ShowSignProperty,
             YPostfixProperty,
@@ -28,7 +28,8 @@ public partial class LineChartView : UserControl
             SecondValuesProperty,
             YTitleProperty,
             XTitleProperty,
-            ValuesProperty);
+            ValuesProperty,
+            XValuesProperty);
     }
 
     public static readonly StyledProperty<float> ValueRadiusProperty = AvaloniaProperty.Register<LineChartView, float>(nameof(ValueRadius), 18);
@@ -66,6 +67,13 @@ public partial class LineChartView : UserControl
         set => SetValue(YTitleProperty, value);
     }
 
+    public static readonly StyledProperty<string> SecondYTitleProperty = AvaloniaProperty.Register<LineChartView, string>(nameof(SecondYTitle), string.Empty);
+    public string SecondYTitle
+    {
+        get => GetValue(SecondYTitleProperty);
+        set => SetValue(SecondYTitleProperty, value);
+    }
+
 
     public static readonly StyledProperty<string> XTitleProperty = AvaloniaProperty.Register<LineChartView, string>(nameof(XTitle), string.Empty);
     public string XTitle
@@ -81,11 +89,11 @@ public partial class LineChartView : UserControl
         set => SetValue(ChartBackgroundProperty, value);
     }
 
-    public static readonly StyledProperty<IBrush> SecondChartBackgroundProperty = AvaloniaProperty.Register<LineChartView, IBrush>(nameof(SecondChartBackground), Brushes.Green);
-    public IBrush SecondChartBackground
+    public static readonly StyledProperty<IBrush> SecondChartForegroundProperty = AvaloniaProperty.Register<LineChartView, IBrush>(nameof(SecondChartForeground), Brushes.Green);
+    public IBrush SecondChartForeground
     {
-        get => GetValue(SecondChartBackgroundProperty);
-        set => SetValue(SecondChartBackgroundProperty, value);
+        get => GetValue(SecondChartForegroundProperty);
+        set => SetValue(SecondChartForegroundProperty, value);
     }
 
     public static readonly StyledProperty<IBrush> ChartForegroundProperty = AvaloniaProperty.Register<LineChartView, IBrush>(nameof(ChartForeground), Brushes.Black);
@@ -93,27 +101,6 @@ public partial class LineChartView : UserControl
     {
         get => GetValue(ChartForegroundProperty);
         set => SetValue(ChartForegroundProperty, value);
-    }
-
-    public static readonly StyledProperty<float> XStartValueProperty = AvaloniaProperty.Register<LineChartView, float>(nameof(XStartValue), 20);
-    public float XStartValue
-    {
-        get => GetValue(XStartValueProperty);
-        set => SetValue(XStartValueProperty, value);
-    }
-
-    public static readonly StyledProperty<float> XEndValueProperty = AvaloniaProperty.Register<LineChartView, float>(nameof(XEndValue), -30);
-    public float XEndValue
-    {
-        get => GetValue(XEndValueProperty);
-        set => SetValue(XEndValueProperty, value);
-    }
-
-    public static readonly StyledProperty<float> XSpacingProperty = AvaloniaProperty.Register<LineChartView, float>(nameof(XSpacing), 10f);
-    public float XSpacing
-    {
-        get => GetValue(XSpacingProperty);
-        set => SetValue(XSpacingProperty, value);
     }
 
     public static readonly StyledProperty<float> MaxYProperty = AvaloniaProperty.Register<LineChartView, float>(nameof(MaxY), 90f);
@@ -130,6 +117,13 @@ public partial class LineChartView : UserControl
         set => SetValue(ValuesProperty, value);
     }
 
+    public static readonly StyledProperty<ObservableCollection<float>> XValuesProperty = AvaloniaProperty.Register<LineChartView, ObservableCollection<float>>(nameof(XValues), new ObservableCollection<float>() { 20, 10, 0, -10, -20, -30 });
+    public ObservableCollection<float> XValues
+    {
+        get => GetValue(XValuesProperty);
+        set => SetValue(XValuesProperty, value);
+    }
+
     public static readonly StyledProperty<ObservableCollection<float>> SecondValuesProperty = AvaloniaProperty.Register<LineChartView, ObservableCollection<float>>(nameof(SecondValues), new ObservableCollection<float>());
     public ObservableCollection<float> SecondValues
     {
@@ -141,8 +135,27 @@ public partial class LineChartView : UserControl
     public LineChartView()
     {
         InitializeComponent();
-        this.GetObservable(YTitleProperty).Subscribe(newTitle => YTextBox.Text = newTitle);
-        this.GetObservable(XTitleProperty).Subscribe(newTitle => XTextBox.Text = newTitle);
+        XAxisTextBox.Foreground = GridColor;
+        this.GetObservable(SecondChartForegroundProperty).Subscribe(newTitle => SecondYAxisTextBox.Foreground = newTitle);
+        this.GetObservable(XTitleProperty).Subscribe(newTitle => XAxisTextBox.Text = newTitle);
+        this.GetObservable(YTitleProperty).Subscribe(newTitle => YAxisTextBox.Text = newTitle);
+        this.GetObservable(SecondYTitleProperty).Subscribe(newTitle =>
+        {
+            if (string.IsNullOrEmpty(newTitle))
+                Grid.SetColumnSpan(YAxisTextBoxViewbox, 2);
+            else
+                Grid.SetColumnSpan(YAxisTextBoxViewbox, 1);
+
+            SecondYAxisTextBox.Text = newTitle;
+        });
+
+        this.GetObservable(XValuesProperty).Subscribe(newCollection =>
+        {
+            XValues.CollectionChanged -= NewCollection_CollectionChanged;
+            newCollection.CollectionChanged += NewCollection_CollectionChanged ;
+            InvalidateVisual();
+        });
+
         this.GetObservable(ValuesProperty).Subscribe(newCollection =>
         {
             Values.CollectionChanged -= Temperatures_CollectionChanged;
@@ -161,7 +174,13 @@ public partial class LineChartView : UserControl
         this.PointerReleased += LineChartView_PointerReleased;
         this.PointerMoved += LineChartView_PointerMoved;
         Values.CollectionChanged += Temperatures_CollectionChanged;
+        XValues.CollectionChanged += NewCollection_CollectionChanged;
         SecondValues.CollectionChanged += Temperatures_CollectionChanged;
+    }
+
+    private void NewCollection_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+    {
+        InvalidateVisual();
     }
 
     private void Temperatures_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
@@ -187,7 +206,6 @@ public partial class LineChartView : UserControl
             SecondValues[_selectedIndex] = PointToCelsius(new Point(x, y));
         }
 
-        //Temperatures.Insert(_selectedIndex, newTemp);
     }
 
     private float PointToCelsius(Point point)
@@ -195,7 +213,7 @@ public partial class LineChartView : UserControl
         var h = Bounds.Height;
         var w = Bounds.Width;
 
-        var yStart = YTextBox.DesiredSize.Height;
+        var yStart = XAxisTextBox.DesiredSize.Height;
         var yEnd = h - MarginBottom;
 
         // Überprüfen, ob der Punkt außerhalb des Diagrammbereichs liegt
@@ -249,15 +267,15 @@ public partial class LineChartView : UserControl
 
     private int TotalXLines()
     {
-        var min = Math.Min(XStartValue, XEndValue);
-        var max = Math.Max(XStartValue, XEndValue);
-        return (int)(Math.Abs(min - max) / XSpacing) + 1;
+        return XValues.Count;
     }
 
     public override void Render(DrawingContext context)
     {
         var totalLines = TotalXLines();
         if (Values.Count != totalLines) return;
+
+        context.Dispose();
         //context.DrawRectangle(ChartBackground, null, Bounds);
         DrawXLines(context);
         DrawLinesBetweenPoints(context);
@@ -298,32 +316,28 @@ public partial class LineChartView : UserControl
 
         var lowToHeigh = true;
 
-        var min = Math.Min(XStartValue, XEndValue);
-        var max = Math.Max(XStartValue, XEndValue);
-        if (min != XStartValue)
-            lowToHeigh = false;
+        //var min = Math.Min(XStartValue, XEndValue);
+        //var max = Math.Max(XStartValue, XEndValue);
+        //if (min != XStartValue)
+        //    lowToHeigh = false;
 
-        var lines = Math.Abs(min - max) / XSpacing;
+        var lines = XValues.Count;
 
-        var lineSpacingW = w / lines;
+        var lineSpacingW = w / (lines - 1);
 
         var pen = new Pen(GridColor);
         pen.LineCap = PenLineCap.Round;
         pen.Thickness = 3;
 
-        for (int i = 0; i <= lines; i++)
+        for (int i = 0; i < lines; i++)
         {
             var x = MarginLines + i * lineSpacingW;
-            context.DrawLine(pen, new Point(x, 0 + YTextBox.DesiredSize.Height), new Point(x, h - MarginBottom));
+            context.DrawLine(pen, new Point(x, 0 + XAxisTextBox.DesiredSize.Height), new Point(x, h - MarginBottom));
 
             var typeface = new Typeface(this.FontFamily.Name, FontStyle.Normal, FontWeight.Bold);
             var de = new CultureInfo("de-DE");
 
-            float temp;
-            if (lowToHeigh)
-                temp = min + i * XSpacing;
-            else
-                temp = max - i * XSpacing;
+            float temp = XValues[i];
 
             var text = string.Empty;
             var textP = string.Empty;
@@ -425,11 +439,11 @@ public partial class LineChartView : UserControl
         var h = Bounds.Height;
         var w = Bounds.Width - MarginLines * 2;
 
-        var min = Math.Min(XStartValue, XEndValue);
-        var max = Math.Max(XStartValue, XEndValue);
-        var lines = Math.Abs(min - max) / XSpacing;
+        //var min = Math.Min(XStartValue, XEndValue);
+        //var max = Math.Max(XStartValue, XEndValue);
+        var lines = XValues.Count;
 
-        var lineSpacingW = w / lines;
+        var lineSpacingW = w / (lines - 1);
 
 
         for (int i = 0; i <= lines; i++)
@@ -437,7 +451,7 @@ public partial class LineChartView : UserControl
             if (i >= Values.Count) break;
 
             var tempInP = Values[i] / (float)MaxY;
-            var totalMargin = YTextBox.DesiredSize.Height + MarginBottom;
+            var totalMargin = XAxisTextBox.DesiredSize.Height + MarginBottom;
             var difference = h - totalMargin;
 
             var y = h - difference * tempInP - MarginBottom;
@@ -458,11 +472,11 @@ public partial class LineChartView : UserControl
         var h = Bounds.Height;
         var w = Bounds.Width - MarginLines * 2;
 
-        var min = Math.Min(XStartValue, XEndValue);
-        var max = Math.Max(XStartValue, XEndValue);
-        var lines = Math.Abs(min - max) / XSpacing;
+        //var min = Math.Min(XStartValue, XEndValue);
+        //var max = Math.Max(XStartValue, XEndValue);
+        var lines = XValues.Count;
 
-        var lineSpacingW = w / lines;
+        var lineSpacingW = w / (lines - 1);
 
 
         for (int i = 0; i <= lines; i++)
@@ -470,7 +484,7 @@ public partial class LineChartView : UserControl
             if (i >= SecondValues.Count) break;
 
             var tempInP = SecondValues[i] / (float)MaxY;
-            var totalMargin = YTextBox.DesiredSize.Height + MarginBottom;
+            var totalMargin = XAxisTextBox.DesiredSize.Height + MarginBottom;
             var difference = h - totalMargin;
 
             var y = h - difference * tempInP - MarginBottom;
@@ -491,7 +505,7 @@ public partial class LineChartView : UserControl
         var pen = new Pen(ChartForeground);
         pen.Thickness = 4;
 
-        var secondPen = new Pen(SecondChartBackground);
+        var secondPen = new Pen(SecondChartForeground);
         secondPen.Thickness = 4;
 
         for (int i = 1; i < points.Length; i++)
@@ -603,7 +617,7 @@ public partial class LineChartView : UserControl
     private void DrawSecondPoints(DrawingContext context)
     {
         var points = GetSecondPoints();
-        var pen = new Pen(SecondChartBackground);
+        var pen = new Pen(SecondChartForeground);
         pen.LineCap = PenLineCap.Round;
         pen.Thickness = 3;
 

@@ -63,7 +63,7 @@ public partial class LoadingView : UserControl
         var pageTransition = new CrossFade(TimeSpan.FromMilliseconds(duration));
         pageTransition.FadeOutEasing = new QuinticEaseOut();
         pageTransition.FadeInEasing = new QuinticEaseIn();
-        await App.Navigator.PushAsync<HeatingControlView>(pageTransition);
+        await App.Navigator.PushAsync<DayChart>(pageTransition);
     }
 
     //private async void UserControl_Loaded_1(object? sender, Avalonia.Interactivity.RoutedEventArgs e)

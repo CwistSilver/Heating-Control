@@ -9,14 +9,23 @@
 			 
 	x:Class="Heating_Control_UI.LineChartView">
 	<Grid x:Name="GridTest">
-		<TextBlock x:Name="YTextBox" Foreground="{DynamicResource Accent}" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Bottom" />
-	
+		<TextBlock x:Name="XAxisTextBox"  FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Bottom" />
+
 		<!--TODO ADD Y-Achse-->
-			<TextBlock x:Name="XTextBox" Text="XTextBox" Foreground="{DynamicResource Accent}" FontWeight="SemiBold" Background="Transparent" TextAlignment="Center" VerticalAlignment="Stretch" Height="{Binding #GridTest.Bounds.Width}">
-				<TextBlock.RenderTransform>
-					<RotateTransform Angle="-90"/>
-				</TextBlock.RenderTransform>
-			</TextBlock>
+		<Grid x:Name="YAxisGrid" ColumnDefinitions="*,*" Background="Transparent" Width="{Binding #GridTest.Bounds.Height}" Height="{Binding #GridTest.Bounds.Width}" >
+			<Grid.RenderTransform>
+				<RotateTransform Angle="-90"/>
+			</Grid.RenderTransform>
+
+			<Viewbox x:Name="YAxisTextBoxViewbox" VerticalAlignment="Top" HorizontalAlignment="Center" StretchDirection="DownOnly">
+				<TextBlock x:Name="YAxisTextBox" Text="Y-Axis" Foreground="{DynamicResource Accent}" FontWeight="SemiBold" TextAlignment="Center" />
+			</Viewbox>
+
+			<Viewbox Grid.Column="1" VerticalAlignment="Top" HorizontalAlignment="Center" StretchDirection="DownOnly">
+				<TextBlock  x:Name="SecondYAxisTextBox" Text="Second Y-Axis"  Foreground="Red" FontWeight="SemiBold" TextAlignment="Center"/>
+			</Viewbox>
+		</Grid>
+
 
 
 

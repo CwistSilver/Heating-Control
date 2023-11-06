@@ -1,11 +1,11 @@
-﻿using DynamicData;
-using Heating_Control.Data;
+﻿using Heating_Control.Data;
 using Heating_Control.ML;
 using OpenWeatherMap;
 using OpenWeatherMap.Util;
 using ReactiveUI;
 using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Heating_Control_UI.ViewModels;
@@ -41,7 +41,6 @@ public class DayChartModel : ViewModelBase
     private void HeatingControlViewModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
         Calculate();
-        // TODO save to App settings when changed!
     }
 
     private void Calculate()
@@ -75,9 +74,15 @@ public class DayChartModel : ViewModelBase
             _temperatures.Add(Predict(6));
             _temperatures.Add(Predict(7));
             _temperatures.Add(Predict(8));
-
         }
     }
+
+
+    private int GetHourFor(DateTime dateTime)
+    {
+        return dateTime.Hour / 3;
+    }
+
 
     private async Task SetRealToday()
     {
@@ -89,35 +94,28 @@ public class DayChartModel : ViewModelBase
 
         try
         {
-            var weather = await service.GetWeatherForecastAsync("Krefeld", forecastType:ForecastType.ThreeHour);
-            var weather2 = await service.GetCurrentWeatherAsync("Krefeld");
+            var weatherForecast = await service.GetWeatherForecastAsync("Krefeld", forecastType: ForecastType.ThreeHour);
+            var nextDay = weatherForecast.List.Where(weather => (DateTime.Now - weather.CalculationTime.Value.LocalDateTime) >= TimeSpan.FromHours(24));
+            var currentWeather = await service.GetCurrentWeatherAsync("Krefeld");
 
-            foreach (var item in weather.List)
-            {
-                var time = item.CalculationTime;
-                int i = 0;
-            }
-            //var weather = await service.GetCurrentWeatherAsync("Krefeld");
-            //var query = await openWeatherAPI.QueryAsync("city/krefeld");
             _temperaturesToday.Clear();
-            _temperaturesToday.Add(6);
-            _temperaturesToday.Add(10);
-            _temperaturesToday.Add(13);
-            _temperaturesToday.Add(15);
-            _temperaturesToday.Add(18);
-            _temperaturesToday.Add(12);
-            _temperaturesToday.Add(11);
-            _temperaturesToday.Add(8);
-            _temperaturesToday.Add(4);
+            _times.Clear();
+            _temperaturesToday.Add((int)currentWeather.Temperature.Value);
+            _times.Add(GetHourFor(DateTime.Now));
 
+            foreach (var weather in weatherForecast.List)
+            {                
+                var time = weather.CalculationTime;
+                _times.Add(time!.Value.LocalDateTime.Hour);
+                _temperaturesToday.Add((int)weather.Temperature.Value);
+
+                if (_times.Count == 9) break;
+            }
         }
         catch (Exception ex)
         {
             return;
         }
-
-
-
     }
 
     private void SetToday()
@@ -179,6 +177,22 @@ public class DayChartModel : ViewModelBase
     {
         get => _temperaturesToday;
         set => this.RaiseAndSetIfChanged(ref _temperaturesToday, value);
+    }
+
+    private ObservableCollection<float> _times = new ObservableCollection<float>() {
+        0,
+        2,
+        6,
+        9,
+        12,
+        15,
+        18,
+        21,
+        24 };
+    public ObservableCollection<float> Times
+    {
+        get => _times;
+        set => this.RaiseAndSetIfChanged(ref _times, value);
     }
 
     private int _preferredIndoorTemperature = 26;
