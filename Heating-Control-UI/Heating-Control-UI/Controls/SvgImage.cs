@@ -15,7 +15,7 @@ public class SvgImage : Control
 {
     static SvgImage()
     {
-        AffectsRender<LineChartView>(ForegroundProperty);
+        AffectsRender<SvgImage>(ForegroundProperty);
     }
 
     public static readonly StyledProperty<IBrush> ForegroundProperty = AvaloniaProperty.Register<SvgImage, IBrush>(nameof(Foreground), Brushes.Black);
