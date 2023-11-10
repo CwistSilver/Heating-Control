@@ -1,6 +1,7 @@
 ﻿using Avalonia.Animation;
 using Avalonia.Animation.Easings;
 using Avalonia.Controls;
+using Avalonia.Threading;
 using DynamicData;
 using Microsoft.Extensions.DependencyInjection;
 using ReactiveUI;
@@ -29,13 +30,18 @@ public class PageNavigator
 
     private void Next(ContentControl contentControl)
     {
-        _mainContentControl.Items.Add(contentControl);
-        _mainContentControl.Next();
+        Dispatcher.UIThread.Post(() =>
+        {
+            _mainContentControl.Items.Add(contentControl);
+            _mainContentControl.Next();
 
-        var type = contentControl.GetType();
-        if (type.BaseType == typeof(PageControl))
-            ((PageControl)contentControl).TriggerNavigatedTo();
+            var type = contentControl.GetType();
+            if (type.BaseType == typeof(PageControl))
+                ((PageControl)contentControl).TriggerNavigatedTo();
+
+        });
     }
+
 
     private async Task Previous()
     {
@@ -45,13 +51,13 @@ public class PageNavigator
 
         var current = _mainContentControl.Items[_mainContentControl.Items.Count - 2];
         var type = current.GetType();
-        if (type.BaseType == typeof(PageControl))        
-            ((PageControl)current).TriggerNavigatedTo();        
+        if (type.BaseType == typeof(PageControl))
+            ((PageControl)current).TriggerNavigatedTo();
 
         await Task.Delay(2_000);
         _mainContentControl.Items.RemoveAt(_mainContentControl.Items.Count - 1);
 
-       
+
 
         //_mainContentControl.
     }
@@ -166,7 +172,7 @@ public class PageNavigator
     public void DestroyPage(ContentControl contentControl)
     {
         _stack.Remove(contentControl);
-        _mainContentControl.Items.Remove(contentControl);       
+        _mainContentControl.Items.Remove(contentControl);
     }
 
     public async Task<viewT> PushAsync<viewT>(IPageTransition? pageTransition = null) where viewT : ContentControl
@@ -188,11 +194,11 @@ public class PageNavigator
             SetPageTransition(pageTransition);
             Next(contentControl);
 
-            if(pageTransition is not null)
+            if (pageTransition is not null)
             {
                 var duration = TryGetAnimationDuration(pageTransition);
                 await Task.Delay(duration);
-            }            
+            }
         }
         finally
         {

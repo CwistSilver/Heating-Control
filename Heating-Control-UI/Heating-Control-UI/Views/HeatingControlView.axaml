@@ -15,6 +15,9 @@
 		<vm:HeatingControlViewModel />
 	</Design.DataContext>
 	<Grid RowDefinitions="*,auto">
+
+
+
 		<Grid RowDefinitions="*,2*">
 
 			
@@ -28,9 +31,11 @@
 		</Grid>
 
 		<Button Command="{Binding ButtonAction}" VerticalAlignment="Top" HorizontalAlignment="Right" Height="50" Width="50">
-			<views:SvgImage Source="/Assets/settings.svg"/>
+			<Viewbox>
+				<views:SvgImage Source="/Assets/settings.svg" Stretch="Uniform"  HorizontalAlignment="Center" VerticalAlignment="Center" />
+			</Viewbox>
+			
 		</Button>
-
 	</Grid>
 
 </UserControl>

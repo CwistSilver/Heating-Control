@@ -1,38 +1,30 @@
 ﻿using Avalonia;
-using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Media.Immutable;
-using Avalonia.Platform;
-using Avalonia.Rendering.SceneGraph;
-using Avalonia.Skia;
-using Avalonia.Threading;
+using Heating_Control_UI.Controls;
 using Heating_Control_UI.Utilities;
 using SkiaSharp;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Threading.Tasks;
 
 namespace Heating_Control_UI;
-public class TemperaturProgressBar : Control
+public class TemperaturProgressBar : SkiaControl
 {
-    RenderingLogic1 renderingLogic;
-    private event Action<SKCanvas, int> _skiaRenderAction;
-
     private const float SvgScale = 0.9f;
     private const float OuterBlur = 6f;
     private const string OuterSvgPath = "M15 13.9997C16.2144 14.9119 17 16.3642 17 18C17 20.7614 14.7614 23 12 23C9.23858 23 7 20.7614 7 18C7 16.3642 7.78555 14.9119 9 13.9997V4C9 2.34315 10.3431 1 12 1C13.6569 1 15 2.34315 15 4V13.9997Z";
     private const string InnerSvgPath = "M13 4V15.1707C14.1652 15.5826 15 16.6938 15 18C15 19.6569 13.6569 21 12 21C10.3431 21 9 19.6569 9 18C9 16.6938 9.83481 15.5826 11 15.1707V4C11 3.44772 11.4477 3 12 3C12.5523 3 13 3.44772 13 4Z";
-    private static SKPath OuterPath = SKPath.ParseSvgPathData(OuterSvgPath);
-    private static SKPath InnerPath = SKPath.ParseSvgPathData(InnerSvgPath);
+    private readonly static SKPath OuterPath = SKPath.ParseSvgPathData(OuterSvgPath);
+    private readonly static SKPath InnerPath = SKPath.ParseSvgPathData(InnerSvgPath);
     private readonly static TimeSpan _glowTimeSpan = TimeSpan.FromMilliseconds(2_000);
     private readonly static TimeSpan _afterGlowTimeSpan = TimeSpan.FromMilliseconds(2_000);
 
     private readonly Stopwatch _glowStopwatch = new();
     private readonly Stopwatch _afterGlowStopwatch = new();
     private readonly Stopwatch _controlStart = new();
-    //private readonly SKColor _thermometerColor = new(229, 97, 62, 255);
+
     private SKColor ThermometerColor
     {
         get => new(229, 97, 62, (byte)(_renderSaveOpacity * 255));
@@ -95,31 +87,26 @@ public class TemperaturProgressBar : Control
         set => SetValue(PercentagesProperty, value);
     }
 
+    private readonly List<IDisposable> _disposables = new();
 
     public TemperaturProgressBar()
     {
-        this.GetObservable(OpacityProperty).Subscribe(newValue => _renderSaveOpacity = newValue);
+        _disposables.Add(this.GetObservable(OpacityProperty).Subscribe(newValue => _renderSaveOpacity = newValue));
         noise.SetNoiseType(FastNoiseLite.NoiseType.OpenSimplex2);
-
-        renderingLogic = new RenderingLogic1();
-        renderingLogic.RenderCall += RenderSkia;
-        //_skiaRenderAction += RenderSkia;
-
-        Dispatcher.UIThread.Post(() => LongRunningTask(), DispatcherPriority.Render);
-        this.DetachedFromLogicalTree += TemperaturProgressBar_DetachedFromLogicalTree;
-
+        InvalidateSkia = TimeSpan.FromMilliseconds(10);
     }
 
-    private bool _isRunning = true;
-    private void TemperaturProgressBar_DetachedFromLogicalTree(object? sender, Avalonia.LogicalTree.LogicalTreeAttachmentEventArgs e)
+
+    protected override void OnDispose()
     {
-        _isRunning = false;
-        renderingLogic.Dispose();
         _afterGlowStopwatch.Stop();
         _glowStopwatch.Stop();
+
+        foreach (var disposable in _disposables)
+        {
+            disposable.Dispose();
+        }
     }
-
-
 
     protected virtual void OnFinish()
     {
@@ -130,46 +117,24 @@ public class TemperaturProgressBar : Control
         _isFinished = true;
     }
 
-    private async Task LongRunningTask()
-    {
-        while (_isRunning)
-        {
-            Percentages = GetProgress(duration, _controlStart, autoRestart: false);
-            if (Percentages == 1f)
-                OnFinish();
 
-            InvalidateVisual();
-            await Task.Delay(10);
-        }
-    }
-
-    long calledRender = 0;
-    long calledSkiaRender = 0;
-    public override void Render(DrawingContext context)
+    protected override void OnBeforRender()
     {
-        calledRender++;
         var foregroundColor = ((ImmutableSolidColorBrush)Foreground).Color;
         _renderSaveForegroundColor = new SKColor(foregroundColor.R, foregroundColor.G, foregroundColor.B, (byte)(_renderSaveOpacity * 255));
 
         var backgroundColor = ((ImmutableSolidColorBrush)Background).Color;
         _renderSaveBackgroundColor = new SKColor(backgroundColor.R, backgroundColor.G, backgroundColor.B, backgroundColor.A);
 
+        Percentages = GetProgress(duration, _controlStart, autoRestart: false);
+        if (Percentages == 1f)
+            OnFinish();
 
-        renderingLogic.NeedRedraw = true;
         _renderSavePercentages = Percentages;
-        renderingLogic.Bounds = new Rect(0, 0, Bounds.Width, Bounds.Height);
-
-
-        context.Custom(renderingLogic);
-
-
-
     }
 
-
-    private void RenderSkia(SKCanvas canvas, int id)
+    protected override void RenderSkia(SKCanvas canvas)
     {
-        calledSkiaRender++;
         using var paintBackground = new SKPaint
         {
             Color = _renderSaveBackgroundColor,
@@ -198,12 +163,12 @@ public class TemperaturProgressBar : Control
 
         var afterGlow = 0f;
         var afterGlowStroke = 0f;
-        //if (_renderSavePercentages >= 0.95f)
-        //{
-        //    var p = GetProgress(_afterGlowTimeSpan, _afterGlowStopwatch, autoRestart: false);
-        //    //afterGlow = p * 6f;
-        //    afterGlowStroke = p * 1.5f;
-        //}
+        if (_renderSavePercentages >= 0.95f)
+        {
+            var p = GetProgress(_afterGlowTimeSpan, _afterGlowStopwatch, autoRestart: false);
+            afterGlow = p * 6f;
+            afterGlowStroke = p * 1.5f;
+        }
 
         if (_renderSavePercentages >= 0.10)
         {
@@ -321,49 +286,5 @@ public class TemperaturProgressBar : Control
             return 1f;
         }
         return percentage;
-    }
-}
-
-
-
-public class RenderingLogic1 : ICustomDrawOperation
-{
-
-    public RenderingLogic1()
-    {
-        Id = instance = instance + 1;
-    }
-
-    public bool NeedRedraw { get; set; } = true;
-
-    private static int instance = 0;
-    public int Id { get; private set; }
-
-    public Action<SKCanvas, int> RenderCall;
-    public Rect Bounds { get; set; }
-
-    public void Dispose() { }
-
-    public bool Equals(ICustomDrawOperation? other) => other == this;
-
-    public bool HitTest(Point p) { return false; }
-
-    public void Render(ImmediateDrawingContext context)
-    {
-        //if (!NeedRedraw)
-        //    return;
-
-        var leaseFeature = context.TryGetFeature<ISkiaSharpApiLeaseFeature>();
-        if (leaseFeature == null)
-        {
-            return;
-        }
-        else
-        {
-            using var lease = leaseFeature.Lease();
-            var canvas = lease.SkCanvas;
-            RenderCall?.Invoke(canvas, Id);
-            NeedRedraw = false;
-        }
     }
 }

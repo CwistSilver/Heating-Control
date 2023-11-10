@@ -1,43 +1,37 @@
 ﻿using Avalonia;
-using Avalonia.Controls;
+using Avalonia.Interactivity;
 using Avalonia.Media;
-using Avalonia.Media.Immutable;
-using Avalonia.Platform;
-using Avalonia.Rendering.SceneGraph;
-using Avalonia.Skia;
+using Heating_Control_UI.Controls;
+using Heating_Control_UI.Utilities;
 using SkiaSharp;
 using System;
-using System.Linq;
-using System.Reflection;
+using System.Collections.Generic;
+using System.IO;
+using System.Reactive.Linq;
 
 namespace Heating_Control_UI;
-public class SvgImage : Control
+public class SvgImage : SkiaControl
 {
     static SvgImage()
     {
-        AffectsRender<SvgImage>(ForegroundProperty);
+        AffectsRender<TemperatureSelector>(
+            SourceProperty,
+            StretchProperty
+            );
     }
 
-    public static readonly StyledProperty<IBrush> ForegroundProperty = AvaloniaProperty.Register<SvgImage, IBrush>(nameof(Foreground), Brushes.Black);
-    public IBrush Foreground
-    {
-        get => GetValue(ForegroundProperty);
-        set => SetValue(ForegroundProperty, value);
-    }
+    public static readonly StyledProperty<string> SourceProperty =
+         AvaloniaProperty.Register<SvgImage, string>(nameof(Source));
 
-    private SKColor _renderSaveForegroundColor;
-    private Stretch _renderSaveStretch = Stretch.None;
-    private string _renderSaveSource;
-    private double _renderSaveOpacity = 1.0;
-
-    public static readonly StyledProperty<string> SourceProperty = AvaloniaProperty.Register<SvgImage, string>(nameof(Source), string.Empty);
     public string Source
     {
         get => GetValue(SourceProperty);
         set => SetValue(SourceProperty, value);
     }
 
-    public static readonly StyledProperty<Stretch> StretchProperty = AvaloniaProperty.Register<SvgImage, Stretch>(nameof(Stretch), Stretch.Fill);
+    public static readonly StyledProperty<Stretch> StretchProperty =
+       AvaloniaProperty.Register<SvgImage, Stretch>(nameof(Stretch), Stretch.None);
+
     public Stretch Stretch
     {
         get => GetValue(StretchProperty);
@@ -45,88 +39,113 @@ public class SvgImage : Control
     }
 
 
+    private Size _imageSize;
 
-    RenderingLogic2 renderingLogic;
-    private event Action<SKCanvas, int> _skiaRenderAction;
 
+    private readonly List<IDisposable> _disposables = new();
     public SvgImage()
     {
-        this.GetObservable(OpacityProperty).Subscribe(newValue => _renderSaveOpacity = newValue);
-        this.GetObservable(SourceProperty).Subscribe(newValue => CreateSvgPath(newValue));
-        this.GetObservable(StretchProperty).Subscribe(newValue => _renderSaveStretch = newValue);
+        var sourceDisposable = this.GetObservable(SourceProperty).Subscribe(OnSourceChanged);
+        var stretchDisposably = this.GetObservable(StretchProperty).Subscribe(OnStretchChanged);
 
-        renderingLogic = new RenderingLogic2();
-        renderingLogic.RenderCall2 += RenderSkia;
-        //_skiaRenderAction += RenderSkia;
-
-        Unloaded += SvgImage_Unloaded;
+        _disposables.Add(sourceDisposable);
+        _disposables.Add(stretchDisposably);
     }
 
-    private void SvgImage_Unloaded(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    protected override void RenderSkia(SKCanvas canvas)
     {
-        _svgImage.Picture.Dispose();
-    }
-
-    long calledRender = 0;
-    long calledSkiaRender = 0;
-    public override void Render(DrawingContext context)
-    {
-        calledRender++;
-        var foregroundColor = ((ImmutableSolidColorBrush)Foreground).Color;
-        _renderSaveForegroundColor = new SKColor(foregroundColor.R, foregroundColor.G, foregroundColor.B, (byte)(_renderSaveOpacity * 255));
-        _renderSaveSource = Source;
-
-        renderingLogic.Bounds = new Rect(0, 0, Bounds.Width, Bounds.Height);
-        renderingLogic.NeedRedraw = true;
-        //var test = new RenderingLogic2();
-        //test.Bounds = new Rect(0, 0, Bounds.Width, Bounds.Height);
-        //test.RenderCall2 += RenderSkia;
-        context.Custom(renderingLogic);
-    }
-    private void RenderSkia(SKCanvas canvas, int id)
-    {
-        //if(renderingLogic.Id != id)
-        //{
-        //    int i = 0;
-        //}
-        calledSkiaRender++;
-        if (string.IsNullOrEmpty(_renderSaveSource)) return;
+        if (_sourceStream is null) return;
 
         if (_renderSaveStretch != Stretch.None)
             ScaleCanvas(canvas);
 
         SKPaint sKPaint = new SKPaint();
-        //sKPaint.Color = SKColors.White;
         sKPaint.IsAntialias = true;
-        canvas.DrawPicture(_svgImage.Picture, sKPaint);
+        if (_svgImage.Picture is null)
+        {
+            var point = new SKPoint(0, 0);
 
+            canvas.DrawBitmap(_resourceBitmap, point, sKPaint);
+        }
+        else
+        {
+            canvas.DrawPicture(_svgImage.Picture, sKPaint);
+        }
     }
 
-    private readonly SkiaSharp.Extended.Svg.SKSvg _svgImage = new();
-    private void CreateSvgPath(string source)
+    protected override void OnDispose()
     {
-        if (string.IsNullOrEmpty(source)) return;
-        var assembly = Assembly.GetCallingAssembly();
+        if (_sourceStream is not null)
+            _sourceStream.Dispose();
 
-        var names = assembly.GetManifestResourceNames();
-        var assemblySourceName = source.ToLower().Replace('/', '.');
-        var resourceName = names.FirstOrDefault(name => name.ToLower().Contains(assemblySourceName));
-        if (string.IsNullOrEmpty(resourceName)) return;
+        if (_resourceBitmap is not null)
+            _resourceBitmap.Dispose();
 
-        using var assemblyStream = assembly.GetManifestResourceStream(resourceName)!;
-        var box = _svgImage.Load(assemblyStream);
-        box.Dispose();
-
-        if (_svgImage.Picture is null) return;
-        _imageSize = new Size(_svgImage.ViewBox.Width, _svgImage.ViewBox.Height);
+        foreach (var disposable in _disposables)
+        {
+            disposable.Dispose();
+        }
     }
 
-    private Size _imageSize = new Size(0, 0);
+
+    private Stream? _sourceStream;
+    private readonly SkiaSharp.Extended.Svg.SKSvg _svgImage = new();
+
+    private Stretch _renderSaveStretch = Stretch.None;
+    private SKBitmap? _resourceBitmap;
+
+    private void OnStretchChanged(Stretch stretch)
+    {
+        _renderSaveStretch = Stretch;
+    }
+
+    private void OnSourceChanged(string source)
+    {
+        if (string.IsNullOrEmpty(Source)) return;
+
+        var fileExtension = Path.GetExtension(Source);
+
+        if (fileExtension is null) return;
+
+        _sourceStream = GlobalCache.GetStream(Source);
+        if (_sourceStream is null) return;
+
+        switch (fileExtension)
+        {
+            case ".png":
+                _resourceBitmap = SKBitmap.Decode(_sourceStream);
+
+                if (_resourceBitmap is null) return;
+                _imageSize = new Size(_resourceBitmap.Info.Width, _resourceBitmap.Info.Height);
+
+
+                break;
+
+            case ".svg":
+                _svgImage.Load(_sourceStream);
+
+                if (_svgImage.Picture is null) return;
+                _imageSize = new Size(_svgImage.Picture.CullRect.Width, _svgImage.Picture.CullRect.Height);
+                break;
+        }
+
+        if (SkiaBounds.Height == 0 || SkiaBounds.Height == double.NaN)
+        {
+            SkiaBounds = new Rect(SkiaBounds.X, SkiaBounds.Y, SkiaBounds.Width, _imageSize.Height);
+            MinHeight = _imageSize.Height;
+        }
+
+        if (SkiaBounds.Width == 0 || SkiaBounds.Width == double.NaN)
+        {
+            SkiaBounds = new Rect(SkiaBounds.X, SkiaBounds.Y, _imageSize.Width, SkiaBounds.Height);
+            MinWidth = _imageSize.Width;
+        }
+    }
 
     private void ScaleCanvas(SKCanvas canvas)
     {
-        float imageHeight = (float)_imageSize.Height;
-        float imageWidth = (float)_imageSize.Width;
+        var imageHeight = (float)_imageSize.Height;
+        var imageWidth = (float)_imageSize.Width;
 
         var destHeight = (float)Bounds.Height;
         var destWidth = (float)Bounds.Width;
@@ -136,8 +155,8 @@ public class SvgImage : Control
             destWidth = imageWidth;
 
 
-        float scaleX = 1;
-        float scaleY = 1;
+        var scaleX = 1f;
+        var scaleY = 1f;
 
         switch (_renderSaveStretch)
         {
@@ -160,55 +179,6 @@ public class SvgImage : Control
                 break;
         }
 
-
         canvas.Scale(scaleX, scaleY);
-    }
-
-}
-
-
-public class RenderingLogic2 : ICustomDrawOperation
-{
-    public RenderingLogic2()
-    {
-        Id = instance = instance + 1;
-    }
-
-    public bool NeedRedraw {  get; set; } = true;
-
-    private static int instance = 0;
-    public int Id { get; private set; }
-
-    public Action<SKCanvas, int> RenderCall2;
-    public Rect Bounds { get; set; }
-
-    public void Dispose() { }
-
-    public bool Equals(ICustomDrawOperation? other) => other == this;
-
-    public bool HitTest(Point p) { return false; }
-
-    public void Render(ImmediateDrawingContext context)
-    {
-        //if (!NeedRedraw) return;
-
-        if (Id == 2)
-        {
-            int i = 0;
-        }
-
-        var leaseFeature = context.TryGetFeature<ISkiaSharpApiLeaseFeature>();
-        if (leaseFeature == null)
-        {
-            return;
-        }
-        else
-        {
-           
-            using var lease = leaseFeature.Lease();
-            var canvas = lease.SkCanvas;
-            RenderCall2?.Invoke(canvas, Id);
-            NeedRedraw = false;
-        }
     }
 }
