@@ -1,4 +1,6 @@
-﻿using Heating_Control.Data;
+﻿using Avalonia.Animation.Easings;
+using Avalonia.Animation;
+using Heating_Control.Data;
 using Heating_Control.ML;
 using OpenWeatherMap;
 using OpenWeatherMap.Util;
@@ -36,6 +38,17 @@ public class DayChartModel : ViewModelBase
         this.PropertyChanged += HeatingControlViewModel_PropertyChanged;
         //_heatingControlNeuralNetwork = heatingControlNeuralNetwork;
         Inizialize();
+       
+            _temperatures.Add(1);
+            _temperatures.Add(3);
+            _temperatures.Add(6);
+            _temperatures.Add(9);
+            _temperatures.Add(12);
+            _temperatures.Add(15);
+            _temperatures.Add(18);
+            _temperatures.Add(21);
+            _temperatures.Add(24);
+
     }
 
     private void HeatingControlViewModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -50,31 +63,16 @@ public class DayChartModel : ViewModelBase
 
         SetToday();
 
+        _temperatures.Add(Predict(0));
+        _temperatures.Add(Predict(1));
+        _temperatures.Add(Predict(2));
+        _temperatures.Add(Predict(3));
+        _temperatures.Add(Predict(4));
+        _temperatures.Add(Predict(5));
+        _temperatures.Add(Predict(6));
+        _temperatures.Add(Predict(7));
+        _temperatures.Add(Predict(8));
 
-        if (_heatingControlNeuralNetwork is null)
-        {
-            _temperatures.Add(1);
-            _temperatures.Add(3);
-            _temperatures.Add(6);
-            _temperatures.Add(9);
-            _temperatures.Add(12);
-            _temperatures.Add(15);
-            _temperatures.Add(18);
-            _temperatures.Add(21);
-            _temperatures.Add(24);
-        }
-        else
-        {
-            _temperatures.Add(Predict(0));
-            _temperatures.Add(Predict(1));
-            _temperatures.Add(Predict(2));
-            _temperatures.Add(Predict(3));
-            _temperatures.Add(Predict(4));
-            _temperatures.Add(Predict(5));
-            _temperatures.Add(Predict(6));
-            _temperatures.Add(Predict(7));
-            _temperatures.Add(Predict(8));
-        }
     }
 
 
@@ -120,16 +118,16 @@ public class DayChartModel : ViewModelBase
 
     private void SetToday()
     {
-        _temperaturesToday.Clear();
-        _temperaturesToday.Add(6);
-        _temperaturesToday.Add(10);
-        _temperaturesToday.Add(13);
-        _temperaturesToday.Add(15);
-        _temperaturesToday.Add(18);
-        _temperaturesToday.Add(12);
-        _temperaturesToday.Add(11);
-        _temperaturesToday.Add(8);
-        _temperaturesToday.Add(4);
+        //_temperaturesToday.Clear();
+        //_temperaturesToday.Add(6);
+        //_temperaturesToday.Add(10);
+        //_temperaturesToday.Add(13);
+        //_temperaturesToday.Add(15);
+        //_temperaturesToday.Add(18);
+        //_temperaturesToday.Add(12);
+        //_temperaturesToday.Add(11);
+        //_temperaturesToday.Add(8);
+        //_temperaturesToday.Add(4);
     }
 
     private float Predict(int index)
@@ -207,5 +205,16 @@ public class DayChartModel : ViewModelBase
     {
         get => _predictedOutdoorTemperature;
         set => this.RaiseAndSetIfChanged(ref _predictedOutdoorTemperature, value);
+    }
+
+
+    public void SwitchSuplayView()
+    {
+        var pageTransition = new PageSlide(TimeSpan.FromMilliseconds(1_000), PageSlide.SlideAxis.Vertical);
+
+        pageTransition.SlideOutEasing = new SineEaseInOut();
+        pageTransition.SlideInEasing = new SineEaseInOut();
+        App.Navigator.Push<HeatingControlView>(pageTransition);
+        
     }
 }

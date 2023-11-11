@@ -14,7 +14,7 @@
 	</Design.DataContext>
 
 	<Grid RowDefinitions="*,auto">
-		<Grid RowDefinitions="*,2*">
+		<Grid RowDefinitions="*,50,2*">
 
 
 			<Grid RowDefinitions="*,*">
@@ -26,10 +26,10 @@
 					<views:TemperatureSelector CurrentTemperature="{Binding PredictedOutdoorTemperature}"   Title="Temperatur Morgen" MinTemperature="-30" MaxTemperature="30" />
 				</Viewbox>
 			</Grid>
-		
 
 
-			<views:LineChartView Grid.Row="1" Values="{Binding Temperatures}" SecondaryBrush="Teal" YTitle="VORLAUFTEMPERATUR" SecondYTitle="Außentemperatur" SecondaryValues="{Binding TemperaturesToday}" XTitle="Tageszeit" YPostfix="h" ValuePostfix="°" MaxY="90" XValues="{Binding Times}" x:Name="LineChartViewVar" />
+			<ToggleButton Grid.Row="1" IsChecked="true" Command="{Binding SwitchSuplayView}" Content="Hallo" VerticalAlignment="Stretch" HorizontalAlignment="Right" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+			<views:LineChartView Grid.Row="2" Values="{Binding Temperatures}" SecondaryBrush="Teal" YTitle="VORLAUFTEMPERATUR" SecondYTitle="Außentemperatur" SecondaryValues="{Binding TemperaturesToday}" XTitle="Tageszeit" YPostfix="h" ValuePostfix="°" MaxY="90" XValues="{Binding Times}" x:Name="LineChartViewVar" />
 
 
 		</Grid>

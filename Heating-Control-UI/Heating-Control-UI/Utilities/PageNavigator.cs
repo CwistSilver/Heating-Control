@@ -19,6 +19,15 @@ public class PageNavigator
     private readonly Carousel _mainContentControl;
     private readonly ServiceProvider _serviceProvider;
     private readonly List<ContentControl> _stack = new();
+
+    public IReadOnlyList<ContentControl> PageStack
+    {
+        get
+        {
+            return _stack;
+        }
+    }
+
     public ContentControl? CurrentPage
     {
         get

@@ -7,16 +7,21 @@
 			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:DataType="vm:HeatingControlSettingsViewModel"
 			 x:Class="Heating_Control_UI.HeatingControlSettingsView">
-	<Grid RowDefinitions="*,auto">
-		<StackPanel>
-			<views:TemperatureSelector CurrentTemperature="{Binding Gradient}" Title="Neigung" ValueStep="0.5" />
-			<views:TemperatureSelector CurrentTemperature="{Binding Baseline}" Title="Level" ValueStep="0.5"/>
-			<views:TemperatureSelector CurrentTemperature="{Binding MaxSupplyTemperature}" Title="Max Supply Temperature" MinTemperature="0" MaxTemperature="300" />
-		</StackPanel>
+	
+	<Grid RowDefinitions="5*,*">
+
+		<Grid RowDefinitions="*,*,*">
+				<views:TemperatureSelector Grid.Row="0" CurrentTemperature="{Binding Gradient}" Title="Neigung" ValueStep="0.5" />
+
+				<views:TemperatureSelector Grid.Row="1" CurrentTemperature="{Binding Baseline}" Title="Level" ValueStep="0.5"/>
+
+				<views:TemperatureSelector Grid.Row="2" CurrentTemperature="{Binding MaxSupplyTemperature}" Title="Max Supply Temperature" MinTemperature="0" MaxTemperature="300" />
+
+		</Grid>
 
 		<Grid Grid.Row="1" ColumnDefinitions="*,*">
-			<Button Grid.Column="0" Content="Abbrechen" Command="{Binding CancelAction}" HorizontalAlignment="Stretch"/>
-			<Button Grid.Column="1" Content="Speichern" Command="{Binding Save}" HorizontalAlignment="Stretch"/>
+			<Button Grid.Column="0" Content="Abbrechen" Command="{Binding CancelAction}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
+			<Button Grid.Column="1" Content="Speichern" Command="{Binding Save}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
 		</Grid>
 
 		<Grid Grid.RowSpan="2" RowDefinitions="*,*,*" IsVisible="{Binding IsSaving}">

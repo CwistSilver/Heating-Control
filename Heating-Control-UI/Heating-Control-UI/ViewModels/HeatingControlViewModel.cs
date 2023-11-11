@@ -1,4 +1,6 @@
-﻿using Heating_Control.Data;
+﻿using Avalonia.Animation.Easings;
+using Avalonia.Animation;
+using Heating_Control.Data;
 using Heating_Control.ML;
 using Heating_Control_UI.Utilities;
 using ReactiveUI;
@@ -76,19 +78,19 @@ public class HeatingControlViewModel : ViewModelBase
     }
 
 
-    private string _stettings = "Settings";
-
-    public string Settings
-    {
-        get => _stettings;
-        set => this.RaiseAndSetIfChanged(ref _stettings, value);
-    }
 
     public void ButtonAction()
     {
-
-        Settings = $"{Settings}2";
         App.Navigator.Push<HeatingControlSettingsView>(PageNavigator.DefaultSlideTransition);
+    }
+
+    public void SwitchDayView()
+    {
+
+        var pageTransition = new PageSlide(TimeSpan.FromMilliseconds(1_000),PageSlide.SlideAxis.Vertical);
+        pageTransition.SlideOutEasing = new SineEaseInOut();
+        pageTransition.SlideInEasing = new SineEaseInOut();
+        App.Navigator.Push<DayChart>(pageTransition);
     }
 
 

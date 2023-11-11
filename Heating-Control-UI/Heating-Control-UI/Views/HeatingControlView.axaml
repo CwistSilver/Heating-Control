@@ -10,32 +10,30 @@
 			 IsHitTestVisible="True"
 			 x:DataType="vm:HeatingControlViewModel">
 	<Design.DataContext>
-		<!-- This only sets the DataContext for the previewer in an IDE,
-         to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
 		<vm:HeatingControlViewModel />
 	</Design.DataContext>
-	<Grid RowDefinitions="*,auto">
+
+	<Grid>
+
+		<Grid RowDefinitions="*,50,2*">
+			<views:TemperatureSelector CurrentTemperature="{Binding PreferredIndoorTemperature}" FontSize="30" Title="Wohlfühltemperatur"  />
+
+			<ToggleButton Grid.Row="1" IsChecked="true" Command="{Binding SwitchDayView}" Content="Hallo" VerticalAlignment="Stretch" HorizontalAlignment="Right" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
 
 
 
-		<Grid RowDefinitions="*,2*">
-
-			
-				<views:TemperatureSelector CurrentTemperature="{Binding PreferredIndoorTemperature}" FontSize="30" Title="Wohlfühltemperatur"  />
-			
-
-		
-			<views:LineChartView Grid.Row="1" Values="{Binding Temperatures}" YTitle="AUSSENTEMPERATUR" XTitle="VORLAUFTEMPERATUR" ShowSign="True" YPostfix="°C" ValuePostfix="°" MaxY="{Binding MaxTemperatur}" x:Name="LineChartViewVar" />
-
-
+			<views:LineChartView Grid.Row="2" Values="{Binding Temperatures}" YTitle="AUSSENTEMPERATUR" XTitle="VORLAUFTEMPERATUR" ShowSign="True" YPostfix="°C" ValuePostfix="°" MaxY="{Binding MaxTemperatur}" x:Name="LineChartViewVar" />
 		</Grid>
 
-		<Button Command="{Binding ButtonAction}" VerticalAlignment="Top" HorizontalAlignment="Right" Height="50" Width="50">
+
+
+		<Button Command="{Binding ButtonAction}" Background="Transparent" VerticalAlignment="Top" HorizontalAlignment="Right" Height="50" Width="50">
 			<Viewbox>
-				<views:SvgImage Source="/Assets/settings.svg" Stretch="Uniform"  HorizontalAlignment="Center" VerticalAlignment="Center" />
+				<views:SvgImage Source="/Assets/settings.svg" Stretch="Uniform"  HorizontalAlignment="Center" VerticalAlignment="Center" ImageTint="{DynamicResource SvgColor}" />
 			</Viewbox>
-			
 		</Button>
+
+
 	</Grid>
 
 </UserControl>
