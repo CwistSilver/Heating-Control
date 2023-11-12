@@ -65,10 +65,10 @@ public class HeatingControlSettingsViewModel : ViewModelBase
     }
 
 
-    public void CancelAction()
+    public async void CancelAction()
     {
         //App.Navigator.Pop();
-        App.Navigator.Pop(PageNavigator.DefaultSlideTransition);
+        await App.Navigator.PopAsync(PageNavigator.DefaultHorizontalSlideTransition);
     }
 
     public ReactiveCommand<Unit, Unit> Save { get; private set; }
@@ -92,7 +92,7 @@ public class HeatingControlSettingsViewModel : ViewModelBase
         };
 
         await Task.WhenAll(tasks);
-        await App.Navigator.PopAsync(PageNavigator.DefaultSlideTransition);
+        await App.Navigator.PopAsync(PageNavigator.DefaultHorizontalSlideTransition);
 
     }
 }

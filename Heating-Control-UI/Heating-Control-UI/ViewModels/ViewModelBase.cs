@@ -1,12 +1,22 @@
-﻿using ReactiveUI;
+﻿using Heating_Control_UI.Utilities;
+using ReactiveUI;
 
 namespace Heating_Control_UI.ViewModels;
 public class ViewModelBase : ReactiveObject
 {
-    private bool _isPaneOpen = false;
-    public bool IsPaneOpen
+    private string _selectedMode = nameof(HeatingControlView);
+    public string SelectedMode
     {
-        get => _isPaneOpen;
-        set => this.RaiseAndSetIfChanged(ref _isPaneOpen, value);
+        get => _selectedMode;
+        set
+        {
+            App.Storage.AddOrSet(value);
+            this.RaiseAndSetIfChanged(ref _selectedMode, value);
+        }
+    }
+
+    public void NavigateToSettings()
+    {
+        App.Navigator.Push<HeatingControlSettingsView>(PageNavigator.DefaultHorizontalSlideTransition);
     }
 }

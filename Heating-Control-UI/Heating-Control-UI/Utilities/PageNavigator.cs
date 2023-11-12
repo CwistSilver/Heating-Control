@@ -2,87 +2,56 @@
 using Avalonia.Animation.Easings;
 using Avalonia.Controls;
 using Avalonia.Threading;
-using DynamicData;
 using Microsoft.Extensions.DependencyInjection;
-using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Heating_Control_UI.Utilities;
 public class PageNavigator
 {
-    private readonly SemaphoreSlim _semaphore = new(1, 1);
-    private readonly Carousel _mainContentControl;
-    private readonly ServiceProvider _serviceProvider;
-    private readonly List<ContentControl> _stack = new();
+    public IReadOnlyList<ContentControl> PageStack => _stack;
 
-    public IReadOnlyList<ContentControl> PageStack
+    public static IPageTransition DefaultHorizontalSlideTransition { get; private set; } = new PageSlide(TimeSpan.FromMilliseconds(400), PageSlide.SlideAxis.Horizontal)
+    {
+        SlideOutEasing = new SineEaseInOut(),
+        SlideInEasing = new SineEaseInOut(),
+    };
+
+    private static IPageTransition? _defaultVerticalSlideTransition = null;
+    public static IPageTransition DefaultVerticalSlideTransition
     {
         get
         {
-            return _stack;
+            if(_defaultVerticalSlideTransition is not  null) return _defaultVerticalSlideTransition;
+
+            var compositeTransition = new CompositePageTransition();
+            compositeTransition.PageTransitions.Add(new PageSlide(TimeSpan.FromMilliseconds(1_000), PageSlide.SlideAxis.Vertical));
+            compositeTransition.PageTransitions.Add(new CrossFade(TimeSpan.FromMilliseconds(1_000)));
+            return _defaultVerticalSlideTransition = compositeTransition;
         }
     }
+
+    private readonly SemaphoreSlim _semaphore = new(1, 1);
+    private readonly Carousel _mainCarousel;
+    private readonly ServiceProvider _serviceProvider;
+    private readonly List<ContentControl> _stack = new();
 
     public ContentControl? CurrentPage
     {
         get
         {
-            if (_mainContentControl.Items.Count == 0) return null;
-            return (ContentControl?)_mainContentControl.Items.Last();
+            if (_mainCarousel.Items.Count == 0) return null;
+            return (ContentControl?)_mainCarousel.Items.Last();
         }
     }
 
-    private void Next(ContentControl contentControl)
+    public PageNavigator(Carousel mainCarousel, ServiceProvider serviceProvider)
     {
-        Dispatcher.UIThread.Post(() =>
-        {
-            _mainContentControl.Items.Add(contentControl);
-            _mainContentControl.Next();
-
-            var type = contentControl.GetType();
-            if (type.BaseType == typeof(PageControl))
-                ((PageControl)contentControl).TriggerNavigatedTo();
-
-        });
-    }
-
-
-    private async Task Previous()
-    {
-        if (_mainContentControl.Items.Count <= 1) return;
-
-        _mainContentControl.Previous();
-
-        var current = _mainContentControl.Items[_mainContentControl.Items.Count - 2];
-        var type = current.GetType();
-        if (type.BaseType == typeof(PageControl))
-            ((PageControl)current).TriggerNavigatedTo();
-
-        await Task.Delay(2_000);
-        _mainContentControl.Items.RemoveAt(_mainContentControl.Items.Count - 1);
-
-
-
-        //_mainContentControl.
-    }
-
-    public PageNavigator(Carousel mainContentControl, ServiceProvider serviceProvider)
-    {
-        _mainContentControl = mainContentControl;
+        _mainCarousel = mainCarousel;
         _serviceProvider = serviceProvider;
-        //var transition = new PageSlide(TimeSpan.FromMilliseconds(2000), PageSlide.SlideAxis.Horizontal);
-        ////var transition = new CrossFade(TimeSpan.FromMilliseconds(2000));
-        //mainContentControl.PageTransition = transition;
-    }
-
-    private void SetPageTransition(IPageTransition? pageTransition)
-    {
-        _mainContentControl.PageTransition = pageTransition;
     }
 
     public void Pop(IPageTransition? pageTransition = null)
@@ -90,13 +59,10 @@ public class PageNavigator
         _semaphore.Wait();
         try
         {
-            //if (_stack.Count <= 1) return;
-            //_stack.RemoveAt(_stack.Count - 1);
-            //var lastPage = _stack.Last();
+            if (_stack.Count <= 1) return;
+            _stack.RemoveAt(_stack.Count - 1);
 
-            SetPageTransition(pageTransition);
-            Previous();
-            //CurrentPage = lastPage;
+            _ = Previous(pageTransition);
         }
         finally
         {
@@ -109,12 +75,9 @@ public class PageNavigator
         await _semaphore.WaitAsync();
         try
         {
-            //if (_stack.Count <= 1) return;
-            //_stack.RemoveAt(_stack.Count - 1);
-            //var lastPage = _stack.Last();
-            SetPageTransition(pageTransition);
-            await Previous();
-            //CurrentPage = lastPage;
+            if (_stack.Count <= 1) return;
+
+            await Previous(pageTransition);
         }
         finally
         {
@@ -125,17 +88,13 @@ public class PageNavigator
 
     public viewT Push<viewT>(IPageTransition? pageTransition = null) where viewT : ContentControl
     {
-        var view = _serviceProvider.GetService<viewT>();
+        var view = _serviceProvider.GetService<viewT>() ?? throw new Exception("Unknown view!");
         Push(view, pageTransition);
 
         return view;
     }
 
-    public static IPageTransition DefaultSlideTransition { get; private set; } = new PageSlide(TimeSpan.FromMilliseconds(400), PageSlide.SlideAxis.Horizontal)
-    {
-        SlideOutEasing = new SineEaseInOut(),
-        SlideInEasing = new SineEaseInOut(),
-    };
+
 
     public void Push(ContentControl contentControl, IPageTransition? pageTransition = null)
     {
@@ -144,10 +103,8 @@ public class PageNavigator
         {
             if (contentControl == CurrentPage) return;
 
-            //_stack.Add(contentControl);
-            SetPageTransition(pageTransition);
-            Next(contentControl);
-            //CurrentPage = contentControl;
+            _stack.Add(contentControl);
+            Next(contentControl, pageTransition);
         }
         finally
         {
@@ -156,32 +113,49 @@ public class PageNavigator
     }
 
 
-    private TimeSpan TryGetAnimationDuration(IPageTransition pageTransition)
+    private static TimeSpan TryGetAnimationDuration(IPageTransition pageTransition)
     {
         if (pageTransition is null)
             throw new ArgumentNullException(nameof(pageTransition));
 
+        if (pageTransition is CompositePageTransition compositePageTransition)
+        {
+            var durationList = new List<TimeSpan>();
+            foreach (var transitions in compositePageTransition.PageTransitions)
+            {
+                var transitionsTimeSpan = TryGetAnimationDuration(transitions);
+                if (transitionsTimeSpan != TimeSpan.Zero)
+                    durationList.Add(transitionsTimeSpan);
+            }
+
+
+            var maxTransition = TimeSpan.Zero;
+            foreach (var transitionsTimeSpan in durationList)
+            {
+                if (maxTransition < transitionsTimeSpan)
+                    maxTransition = transitionsTimeSpan;
+            }
+
+            return maxTransition;
+        }
 
         Type pageTransitionType = pageTransition.GetType();
 
-        PropertyInfo durationProperty = pageTransitionType.GetProperty("Duration");
+        var durationProperty = pageTransitionType.GetProperty("Duration");
+        if (durationProperty is null)
+            return TimeSpan.Zero;
 
         if (durationProperty is not null && durationProperty.PropertyType == typeof(TimeSpan))
         {
-            object durationValue = durationProperty.GetValue(pageTransition);
+            var durationValue = durationProperty.GetValue(pageTransition);
 
-            if (durationValue != null)
-            {
-                return (TimeSpan)durationValue;
-            }
+            if (durationValue is null)
+                return TimeSpan.Zero;
+
+            return (TimeSpan)durationValue;
         }
 
         return TimeSpan.Zero;
-    }
-    public void DestroyPage(ContentControl contentControl)
-    {
-        _stack.Remove(contentControl);
-        _mainContentControl.Items.Remove(contentControl);
     }
 
     public async Task<viewT> PushAsync<viewT>(IPageTransition? pageTransition = null) where viewT : ContentControl
@@ -200,8 +174,7 @@ public class PageNavigator
             if (contentControl == CurrentPage) return;
 
             _stack.Add(contentControl);
-            SetPageTransition(pageTransition);
-            Next(contentControl);
+            Next(contentControl, pageTransition);
 
             if (pageTransition is not null)
             {
@@ -214,4 +187,55 @@ public class PageNavigator
             _semaphore.Release();
         }
     }
+
+    public void DestroyPage(ContentControl contentControl)
+    {
+        _stack.Remove(contentControl);
+        _mainCarousel.Items.Remove(contentControl);
+    }
+
+    public void DestroyPage<viewT>() where viewT : ContentControl
+    {
+        var foundView = _stack.FirstOrDefault(view => view.GetType() == typeof(viewT)) ?? throw new Exception("View not Found!");
+        _stack.Remove(foundView);
+        _mainCarousel.Items.Remove(foundView);
+    }
+
+    private void Next(ContentControl contentControl, IPageTransition? pageTransition)
+    {
+        SetPageTransition(pageTransition);
+
+        Dispatcher.UIThread.Post(() =>
+        {
+            _mainCarousel.Items.Add(contentControl);
+            _mainCarousel.Next();
+
+            var type = contentControl.GetType();
+            if (type.BaseType == typeof(PageControl))
+                ((PageControl)contentControl).TriggerNavigatedTo();
+        });
+    }
+
+    private async Task Previous(IPageTransition? pageTransition)
+    {
+        if (_mainCarousel.Items.Count <= 1) return;
+
+        SetPageTransition(pageTransition);
+        _mainCarousel.Previous();
+
+        var current = _mainCarousel.Items[_mainCarousel.Items.Count - 2];
+        var type = current.GetType();
+        if (type.BaseType == typeof(PageControl))
+            ((PageControl)current).TriggerNavigatedTo();
+
+        if (pageTransition is not null)
+        {
+            var duration = TryGetAnimationDuration(pageTransition);
+            await Task.Delay(duration);
+        }
+
+        _mainCarousel.Items.RemoveAt(_mainCarousel.Items.Count - 1);
+    }
+
+    private void SetPageTransition(IPageTransition? pageTransition) => _mainCarousel.PageTransition = pageTransition;
 }

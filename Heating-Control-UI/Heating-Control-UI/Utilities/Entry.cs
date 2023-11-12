@@ -9,6 +9,8 @@ internal class Entry
 {
     internal static void ConfigureServices(ServiceCollection services)
     {
+        services.AddSingleton<IAppStorage, AppStorage>();
+
         var assembly = Assembly.GetAssembly(typeof(App));
         RegisterWindows(assembly, services);
         RegisterUserControls(assembly, services);

@@ -13,7 +13,9 @@
 
 	<ItemGroup>
 	  <None Remove="Assets\add.svg" />
+	  <None Remove="Assets\mulit-chart.svg" />
 	  <None Remove="Assets\remove.svg" />
+	  <None Remove="Assets\singel-chart.svg" />
 	</ItemGroup>
 
 	<ItemGroup>

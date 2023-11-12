@@ -6,6 +6,7 @@
 			 xmlns:views="clr-namespace:Heating_Control_UI"
 			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Heating_Control_UI.DayChart"
+			 x:Name="DayChartVar"
 			  x:DataType="vm:DayChartModel">
 	<Design.DataContext>
 		<!-- This only sets the DataContext for the previewer in an IDE,
@@ -21,20 +22,28 @@
 				<Viewbox>
 					<views:TemperatureSelector CurrentTemperature="{Binding PreferredIndoorTemperature}"  Title="Wohlfühltemperatur"  />
 				</Viewbox>
-				
+
 				<Viewbox Grid.Row="1">
 					<views:TemperatureSelector CurrentTemperature="{Binding PredictedOutdoorTemperature}"   Title="Temperatur Morgen" MinTemperature="-30" MaxTemperature="30" />
 				</Viewbox>
 			</Grid>
 
 
-			<ToggleButton Grid.Row="1" IsChecked="true" Command="{Binding SwitchSuplayView}" Content="Hallo" VerticalAlignment="Stretch" HorizontalAlignment="Right" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+			<Button Grid.Row="1" Command="{Binding SwitchSuplayView}" Background="{DynamicResource Accent}" HorizontalAlignment="Right">
+				<Grid ColumnDefinitions="*,*">				
+					<TextBlock Text="Vorlauftemperatur Modus" FontWeight="Bold" VerticalAlignment="Center" TextAlignment="Center"/>
+					<views:SvgImage Opacity="{Binding #DayChartVar.Opacity}" Grid.Column="2" Margin="10,0,0,0"  Source="/Assets/singel-chart.svg" Stretch="Uniform"  HorizontalAlignment="Center" VerticalAlignment="Center" ImageTint="{DynamicResource SvgColor}" />
+				</Grid>
+			</Button>
 			<views:LineChartView Grid.Row="2" Values="{Binding Temperatures}" SecondaryBrush="Teal" YTitle="VORLAUFTEMPERATUR" SecondYTitle="Außentemperatur" SecondaryValues="{Binding TemperaturesToday}" XTitle="Tageszeit" YPostfix="h" ValuePostfix="°" MaxY="90" XValues="{Binding Times}" x:Name="LineChartViewVar" />
-
 
 		</Grid>
 
-		
+		<Button Command="{Binding NavigateToSettings}" Background="Transparent" VerticalAlignment="Top" HorizontalAlignment="Right" Height="50" Width="50">
+			<Viewbox>
+				<views:SvgImage Opacity="{Binding #DayChartVar.Opacity}" Source="/Assets/settings.svg" Stretch="Uniform"  HorizontalAlignment="Center" VerticalAlignment="Center" ImageTint="{DynamicResource SvgColor}" />
+			</Viewbox>
+		</Button>
 
 	</Grid>
 

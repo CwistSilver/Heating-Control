@@ -21,7 +21,7 @@
 
 		<Grid Grid.Row="1" ColumnDefinitions="*,*">
 			<Button Grid.Column="0" Content="Abbrechen" Command="{Binding CancelAction}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
-			<Button Grid.Column="1" Content="Speichern" Command="{Binding Save}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
+			<Button Grid.Column="1" Content="Speichern" Command="{Binding Save}" Background="{DynamicResource Accent}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
 		</Grid>
 
 		<Grid Grid.RowSpan="2" RowDefinitions="*,*,*" IsVisible="{Binding IsSaving}">

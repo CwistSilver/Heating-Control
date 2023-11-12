@@ -7,6 +7,7 @@
              x:Class="Heating_Control_UI.LoadingView"
 			 x:Name="LoadingViewControl"
 			 Background="{DynamicResource RegionColor}"
+			PointerPressed="LoadingView_PointerPressed"
 			 >
 	<Grid >
 		<views:TemperaturProgressBar Opacity="{Binding #LoadingViewControl.Opacity}" x:Name="TemperaturProgressBarControl" Finished="TemperaturProgressBarControl_Finished" Foreground="{DynamicResource FontColor}" Background="{DynamicResource RegionColor}"/>

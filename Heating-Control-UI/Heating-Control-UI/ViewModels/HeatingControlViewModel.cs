@@ -1,39 +1,30 @@
-﻿using Avalonia.Animation.Easings;
-using Avalonia.Animation;
-using Heating_Control.Data;
+﻿using Heating_Control.Data;
 using Heating_Control.ML;
 using Heating_Control_UI.Utilities;
 using ReactiveUI;
 using System;
 using System.Collections.ObjectModel;
-using System.Threading.Tasks;
 
 namespace Heating_Control_UI.ViewModels;
 public class HeatingControlViewModel : ViewModelBase
 {
-    private readonly IHeatingControlNeuralNetwork _heatingControlNeuralNetwork;
-    public HeatingControlViewModel(IHeatingControlNeuralNetwork heatingControlNeuralNetwork)
+    private ObservableCollection<float> _temperatures = new ObservableCollection<float>() { 20, 35, 47, 57, 68, 80 };
+    public ObservableCollection<float> Temperatures
     {
-        if (heatingControlNeuralNetwork is null) return;
-        this.PropertyChanged += HeatingControlViewModel_PropertyChanged;
-        _heatingControlNeuralNetwork = heatingControlNeuralNetwork;
-        Inizialize();
+        get => _temperatures;
+        set => this.RaiseAndSetIfChanged(ref _temperatures, value);
     }
 
-    private void Inizialize()
+    private int _preferredIndoorTemperature = 26;
+    public int PreferredIndoorTemperature
     {
-        MaxTemperatur = _heatingControlNeuralNetwork.UsedTrainingDataOptions.MaxSupplyTemperature;
-        Calculate();
-    }
-
-    public HeatingControlViewModel()
-    {
-    }
-
-    private void HeatingControlViewModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
-    {
-        Calculate();
-        // TODO save to App settings when changed!
+        get => _preferredIndoorTemperature;
+        set
+        {
+            App.Storage.AddOrSet(value);
+            this.RaiseAndSetIfChanged(ref _preferredIndoorTemperature, value);
+            Calculate();
+        }
     }
 
     private float _maxTemperatur = 90f;
@@ -43,17 +34,29 @@ public class HeatingControlViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _maxTemperatur, value);
     }
 
-    private ObservableCollection<float> _temperatures = new ObservableCollection<float>() { 20, 35, 47, 57, 68, 80 };
-    public ObservableCollection<float> Temperatures
+    private readonly IHeatingControlNeuralNetwork _heatingControlNeuralNetwork;
+    public HeatingControlViewModel(IHeatingControlNeuralNetwork heatingControlNeuralNetwork)
     {
-        get => _temperatures;
-        set => this.RaiseAndSetIfChanged(ref _temperatures, value);
+        _heatingControlNeuralNetwork = heatingControlNeuralNetwork;
+        Inizialize();
     }
+
+    private void Inizialize()
+    {
+        _preferredIndoorTemperature = App.Storage.Get<int>(nameof(PreferredIndoorTemperature), 26);
+        MaxTemperatur = _heatingControlNeuralNetwork.UsedTrainingDataOptions.MaxSupplyTemperature;
+        Calculate();
+    }
+
+    public HeatingControlViewModel()
+    {
+    }
+
+
 
     public void NavigatedTo()
     {
-        MaxTemperatur = _heatingControlNeuralNetwork.UsedTrainingDataOptions.MaxSupplyTemperature;
-        Calculate();
+        Inizialize();
     }
 
     private void Calculate()
@@ -70,29 +73,13 @@ public class HeatingControlViewModel : ViewModelBase
 
     }
 
-    private int _preferredIndoorTemperature = 26;
-    public int PreferredIndoorTemperature
+
+
+
+    public async void NavigateToDayView()
     {
-        get => _preferredIndoorTemperature;
-        set => this.RaiseAndSetIfChanged(ref _preferredIndoorTemperature, value);
+        await App.Navigator.PushAsync<DayChart>(PageNavigator.DefaultVerticalSlideTransition);
+        App.Navigator.DestroyPage<HeatingControlView>();
+        SelectedMode = nameof(DayChart);
     }
-
-
-
-    public void ButtonAction()
-    {
-        App.Navigator.Push<HeatingControlSettingsView>(PageNavigator.DefaultSlideTransition);
-    }
-
-    public void SwitchDayView()
-    {
-
-        var pageTransition = new PageSlide(TimeSpan.FromMilliseconds(1_000),PageSlide.SlideAxis.Vertical);
-        pageTransition.SlideOutEasing = new SineEaseInOut();
-        pageTransition.SlideInEasing = new SineEaseInOut();
-        App.Navigator.Push<DayChart>(pageTransition);
-    }
-
-
-
 }

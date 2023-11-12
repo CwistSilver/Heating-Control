@@ -61,7 +61,7 @@ public class SvgImage : SkiaControl
 
 
     private Size _imageSize;
-    private readonly SKPaint _imagePaint = new SKPaint() { IsAntialias = true };
+    private SKPaint _imagePaint = new SKPaint() { IsAntialias = true };
     private Stream? _sourceStream;
     private readonly SkiaSharp.Extended.Svg.SKSvg _svgImage = new();
 
@@ -175,7 +175,7 @@ public class SvgImage : SkiaControl
     {
         if(brush is null)
         {
-            _imagePaint.ColorFilter = null;
+            _imagePaint = new SKPaint() { IsAntialias = true };
             return;
         }
 

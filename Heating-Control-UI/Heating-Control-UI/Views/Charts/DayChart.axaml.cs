@@ -9,11 +9,18 @@ public partial class DayChart : PageControl
     {
         InitializeComponent();
         DataContext = dayChartModel;
+        this.NavigatedTo += DayChart_NavigatedTo;
     }
 
     public DayChart()
     {
         InitializeComponent();
-        DataContext = new DayChartModel();
+        DataContext = new DayChartModel();     
+    }
+
+    private void DayChart_NavigatedTo(object? sender, System.EventArgs e)
+    {
+        if (this.DataContext is DayChartModel viewModel)
+            viewModel.NavigatedTo();
     }
 }

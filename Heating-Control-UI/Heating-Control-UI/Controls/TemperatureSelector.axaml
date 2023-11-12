@@ -3,7 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			  xmlns:views="clr-namespace:Heating_Control_UI"
-			 
+			 x:Name="TemperatureSelectorVar"
 			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
 			 FontSize="80"
              x:Class="Heating_Control_UI.TemperatureSelector">
@@ -27,14 +27,14 @@
 			<Rectangle x:Name="ItemRectangle" Grid.Column="0"  Fill="Transparent"/>
 			<Button Grid.Column="0" Background="Transparent" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Click="Remove_Click" MaxHeight="{Binding #ItemRectangle.Bounds, Converter={StaticResource MinSizeConverter}}" MaxWidth="{Binding #ItemRectangle.Bounds, Converter={StaticResource MinSizeConverter}}">
 				<Viewbox>
-					<views:SvgImage Source="/Assets/remove.svg" Stretch="Uniform"  HorizontalAlignment="Center" VerticalAlignment="Center" ImageTint="{DynamicResource SvgColor}" />
+					<views:SvgImage Opacity="{Binding #TemperatureSelectorVar.Opacity}" Source="/Assets/remove.svg" Stretch="Uniform"  HorizontalAlignment="Center" VerticalAlignment="Center" ImageTint="{DynamicResource SvgColor}" />
 				</Viewbox>
 			</Button>
 
 			<Button Grid.Column="2" Background="Transparent" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Click="Add_Click" MaxHeight="{Binding #ItemRectangle.Bounds, Converter={StaticResource MinSizeConverter}}" MaxWidth="{Binding #ItemRectangle.Bounds, Converter={StaticResource MinSizeConverter}}">
 
 				<Viewbox>
-					<views:SvgImage Source="/Assets/add.svg" Stretch="Uniform"  HorizontalAlignment="Center" VerticalAlignment="Center" ImageTint="{DynamicResource SvgColor}" />
+					<views:SvgImage Opacity="{Binding #TemperatureSelectorVar.Opacity}" Source="/Assets/add.svg" Stretch="Uniform"  HorizontalAlignment="Center" VerticalAlignment="Center" ImageTint="{DynamicResource SvgColor}" />
 				</Viewbox>
 
 			</Button>
