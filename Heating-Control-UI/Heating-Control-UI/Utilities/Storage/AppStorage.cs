@@ -24,12 +24,12 @@ internal class AppStorage : IAppStorage
         _ = Load();
     }
 
-    public void AddOrSet(object value, [CallerMemberName] string key = "", bool composeKey = false)
+    public void AddOrSet(object value, [CallerMemberName] string key = "", bool uniquePerClass = false)
     {
         var compositeKey = key;
-        if (composeKey)
+        if (uniquePerClass)
         {
-            var className = new StackFrame(1).GetMethod().ReflectedType.FullName;
+            var className = new StackFrame(1).GetMethod()!.ReflectedType!.FullName;
             compositeKey = $"{className}.{key}";
         }
 
@@ -41,12 +41,12 @@ internal class AppStorage : IAppStorage
         _debounceTimer.Change((int)_debounceTime.TotalMilliseconds, Timeout.Infinite);
     }
 
-    public T? Get<T>([CallerMemberName] string key = "", T? defaultValue = default, bool composeKey = false)
+    public T? Get<T>([CallerMemberName] string key = "", T? defaultValue = default, bool uniquePerClass = false)
     {
         var compositeKey = key;
-        if (composeKey)
+        if (uniquePerClass)
         {
-            var className = new StackFrame(1).GetMethod().ReflectedType.FullName;
+            var className = new StackFrame(1).GetMethod()!.ReflectedType!.FullName;
             compositeKey = $"{className}.{key}";
         }
 
@@ -102,7 +102,10 @@ internal class AppStorage : IAppStorage
             return;
 
         using var fs = new FileStream(_storagePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-        _cachedValues = await JsonSerializer.DeserializeAsync<ConcurrentDictionary<string, object>>(fs);
+        var dictionary = await JsonSerializer.DeserializeAsync<ConcurrentDictionary<string, object>>(fs);
+        if (dictionary is not null)
+            _cachedValues = dictionary;
+
         fs.Close();
     }
 

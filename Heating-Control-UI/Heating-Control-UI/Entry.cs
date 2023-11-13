@@ -6,8 +6,15 @@ using System.Linq;
 using System.Reflection;
 
 namespace Heating_Control_UI;
-internal class Entry
+/// <summary>
+/// Provides methods for configuring services and registering UI components in the Avalonia application.
+/// </summary>
+internal static class Entry
 {
+    /// <summary>
+    /// Configures and adds essential services to the provided service collection.
+    /// </summary>
+    /// <param name="services">The service collection to which services and UI components will be added.</param>
     internal static void ConfigureServices(ServiceCollection services)
     {
         services.AddSingleton<IAppStorage, AppStorage>();
@@ -20,10 +27,10 @@ internal class Entry
 
     private static void RegisterReactiveObjects(Assembly assembly, ServiceCollection services)
     {
-        var windows = assembly.GetTypes().Where(t => t.IsClass && typeof(ReactiveObject).IsAssignableFrom(t));
-        foreach (var window in windows)
+        var reactiveObjects = assembly.GetTypes().Where(t => t.IsClass && typeof(ReactiveObject).IsAssignableFrom(t));
+        foreach (var reactiveObject in reactiveObjects)
         {
-            services.AddTransient(window);
+            services.AddTransient(reactiveObject);
         }
     }
 
@@ -38,10 +45,10 @@ internal class Entry
 
     private static void RegisterUserControls(Assembly assembly, ServiceCollection services)
     {
-        var views = assembly.GetTypes().Where(t => t.IsClass && typeof(UserControl).IsAssignableFrom(t));
-        foreach (var view in views)
+        var userControls = assembly.GetTypes().Where(t => t.IsClass && typeof(UserControl).IsAssignableFrom(t));
+        foreach (var userControl in userControls)
         {
-            services.AddTransient(view);
+            services.AddTransient(userControl);
         }
     }
 }
