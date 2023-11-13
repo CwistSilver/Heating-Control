@@ -22,38 +22,26 @@ public sealed class HeatingControlNeuralNetwork : IHeatingControlNeuralNetwork
 
     public HeatingControlPrediction Predict(HeatingControlInputData inputData)
     {
-        if (_transformer is null || _predictionEngine is null)
-            throw new Exception("Neural network has not been initialized yet");
+        if (_predictionEngine is null)
+            throw new InvalidOperationException("Neural network has not been initialized yet");
 
         var predictionResult = _predictionEngine.Predict(inputData);
         return predictionResult;
     }
 
-    public async Task Inizialize(TrainingDataOptions? options = null, bool retrain = false)
+    public void Inizialize()
     {
-        if (retrain)
-        {
-            await TrainModel(options);
-            return;
-        }
-
         if (_transformer is not null)
-            throw new Exception("Neural network has already been Inizialize");
+            throw new InvalidOperationException("Neural network has already been Inizialize");
 
-        var modelData = _modelStorage.Load();
-        if (modelData is null)
-        {
-            await TrainModel(options);
-            return;
-        }
-
+        var modelData = _modelStorage.Load() ?? throw new FileLoadException("Neural network could not be loaded");
         _transformer = modelData.Transformer;
         UsedTrainingDataOptions = modelData.Options;
 
         _predictionEngine = new MLContext().Model.CreatePredictionEngine<HeatingControlInputData, HeatingControlPrediction>(_transformer);
     }
 
-    private async Task TrainModel(TrainingDataOptions? options)
+    public async Task TrainModel(TrainingDataOptions? options = null)
     {
         _transformer = await _heatingControlTrainer.TrainNeuralNetworkAsync(options);
         _predictionEngine = new MLContext().Model.CreatePredictionEngine<HeatingControlInputData, HeatingControlPrediction>(_transformer);

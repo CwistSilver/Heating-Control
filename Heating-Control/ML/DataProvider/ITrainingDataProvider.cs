@@ -1,6 +1,9 @@
 ﻿using Heating_Control.Data;
 
 namespace Heating_Control.ML.DataProvider;
+/// <summary>
+/// Provides functionality to generate training data for heating control models.
+/// </summary>
 public interface ITrainingDataProvider
 {
     /// <summary>

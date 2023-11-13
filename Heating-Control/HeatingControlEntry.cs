@@ -5,8 +5,16 @@ using Heating_Control.ML.Trainer;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Heating_Control;
+/// <summary>
+/// Provides a centralized configuration method for setting up heating control services.
+/// This class is responsible for adding all the necessary service dependencies to the service collection.
+/// </summary>
 public static class HeatingControlEntry
 {
+    /// <summary>
+    /// Configures and adds essential heating control services to the provided service collection.
+    /// </summary>
+    /// <param name="services">The service collection to which the heating control services will be added.</param>
     public static void ConfigureServices(ServiceCollection services)
     {
         services.AddTransient<IModelStorage, ModelStorage>();

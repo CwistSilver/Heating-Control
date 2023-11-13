@@ -16,6 +16,17 @@ public sealed class HeatingControlTrainer : IHeatingControlTrainer
         _modelStorage = modelStorage;
     }
 
+    /// <summary>
+    /// Creates and trains a new neural network asynchronously.
+    /// <para>
+    /// The
+    /// <a href="https://learn.microsoft.com/de-de/dotnet/api/microsoft.ml.standardtrainerscatalog.sdca?view=ml-dotnet" target="_blank">
+    /// SdcaRegressionTrainer
+    /// </a>is used for this.<br/>
+    /// </para>
+    /// </summary>
+    /// <param name="options">The options with which the neural network is to be trained.</param>
+    /// <returns>The transformer of the NeuralNetwork</returns>
     public async Task<ITransformer> TrainNeuralNetworkAsync(TrainingDataOptions? options = null)
     {
         options ??= new TrainingDataOptions() { RecordsToGenerate = 10_000 };     

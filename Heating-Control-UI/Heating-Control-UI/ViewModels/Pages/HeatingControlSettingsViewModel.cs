@@ -75,7 +75,7 @@ public class HeatingControlSettingsViewModel : ViewModelBase
             var tasks = new Task[2]
             {
             Task.Delay(3_000),
-            _heatingControlNeuralNetwork.Inizialize(options, true)
+            _heatingControlNeuralNetwork.TrainModel(options)
             };
 
             await Task.WhenAll(tasks);
