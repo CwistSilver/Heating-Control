@@ -17,12 +17,7 @@ internal static class ColorExtention
         return new SKColor(color.R, color.G, color.B, colorAlpha);
     }
 
-
-    internal static Color ToColor(this IBrush brush)
-    {
-        return ((ImmutableSolidColorBrush)brush).Color;
-    }
-
+    internal static Color ToColor(this IBrush brush) => ((ImmutableSolidColorBrush)brush).Color;
     internal static Color ToColor(this IBrush brush, byte alpha = 255)
     {
         var color = brush.ToColor();

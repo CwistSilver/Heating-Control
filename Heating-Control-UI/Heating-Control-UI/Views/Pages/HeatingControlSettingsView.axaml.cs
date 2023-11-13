@@ -1,11 +1,6 @@
-using Avalonia;
-using Avalonia.Controls;
-using Avalonia.Markup.Xaml;
-using Heating_Control_UI.Utilities;
-using Heating_Control_UI.ViewModels;
+using Heating_Control_UI.ViewModels.Pages;
 
-namespace Heating_Control_UI;
-
+namespace Heating_Control_UI.Views.Pages;
 public partial class HeatingControlSettingsView : PageControl
 {
     public HeatingControlSettingsView()

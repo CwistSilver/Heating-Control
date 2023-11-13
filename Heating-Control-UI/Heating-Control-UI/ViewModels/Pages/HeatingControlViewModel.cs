@@ -1,11 +1,12 @@
 ﻿using Heating_Control.Data;
 using Heating_Control.ML;
-using Heating_Control_UI.Utilities;
+using Heating_Control_UI.Utilities.Navigation;
+using Heating_Control_UI.Views.Pages;
 using ReactiveUI;
 using System;
 using System.Collections.ObjectModel;
 
-namespace Heating_Control_UI.ViewModels;
+namespace Heating_Control_UI.ViewModels.Pages;
 public class HeatingControlViewModel : ViewModelBase
 {
     private ObservableCollection<float> _temperatures = new ObservableCollection<float>() { 20, 35, 47, 57, 68, 80 };
@@ -34,25 +35,23 @@ public class HeatingControlViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _maxTemperatur, value);
     }
 
-    private readonly IHeatingControlNeuralNetwork _heatingControlNeuralNetwork;
+    private readonly IHeatingControlNeuralNetwork? _heatingControlNeuralNetwork;
     public HeatingControlViewModel(IHeatingControlNeuralNetwork heatingControlNeuralNetwork)
     {
         _heatingControlNeuralNetwork = heatingControlNeuralNetwork;
         Inizialize();
     }
 
+    public HeatingControlViewModel() { }
+
     private void Inizialize()
     {
-        _preferredIndoorTemperature = App.Storage.Get<int>(nameof(PreferredIndoorTemperature), 26);
-        MaxTemperatur = _heatingControlNeuralNetwork.UsedTrainingDataOptions.MaxSupplyTemperature;
+        if (_heatingControlNeuralNetwork is null) return;
+
+        _preferredIndoorTemperature = App.Storage.Get(nameof(PreferredIndoorTemperature), 26);
+        MaxTemperatur = _heatingControlNeuralNetwork.UsedTrainingDataOptions!.MaxSupplyTemperature;
         Calculate();
     }
-
-    public HeatingControlViewModel()
-    {
-    }
-
-
 
     public void NavigatedTo()
     {
@@ -61,6 +60,7 @@ public class HeatingControlViewModel : ViewModelBase
 
     private void Calculate()
     {
+        if (_heatingControlNeuralNetwork is null) return;
         _temperatures.Clear();
 
         _temperatures.Add((int)Math.Clamp(_heatingControlNeuralNetwork.Predict(new HeatingControlInputData() { OutdoorTemperature = 20, PredictedOutdoorTemperature = 20, PreferredIndoorTemperature = _preferredIndoorTemperature }).SupplyTemperature, 0, MaxTemperatur));
@@ -69,12 +69,7 @@ public class HeatingControlViewModel : ViewModelBase
         _temperatures.Add((int)Math.Clamp(_heatingControlNeuralNetwork.Predict(new HeatingControlInputData() { OutdoorTemperature = -10, PredictedOutdoorTemperature = -10, PreferredIndoorTemperature = _preferredIndoorTemperature }).SupplyTemperature, 0, MaxTemperatur));
         _temperatures.Add((int)Math.Clamp(_heatingControlNeuralNetwork.Predict(new HeatingControlInputData() { OutdoorTemperature = -20, PredictedOutdoorTemperature = -20, PreferredIndoorTemperature = _preferredIndoorTemperature }).SupplyTemperature, 0, MaxTemperatur));
         _temperatures.Add((int)Math.Clamp(_heatingControlNeuralNetwork.Predict(new HeatingControlInputData() { OutdoorTemperature = -30, PredictedOutdoorTemperature = -30, PreferredIndoorTemperature = _preferredIndoorTemperature }).SupplyTemperature, 0, MaxTemperatur));
-
-
     }
-
-
-
 
     public async void NavigateToDayView()
     {

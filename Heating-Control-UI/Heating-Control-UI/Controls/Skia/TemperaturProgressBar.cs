@@ -2,7 +2,7 @@
 using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Media.Immutable;
-using Heating_Control_UI.Controls;
+using Heating_Control_UI.Controls.Skia;
 using Heating_Control_UI.Utilities;
 using SkiaSharp;
 using System;

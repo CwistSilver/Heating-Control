@@ -1,7 +1,7 @@
 ﻿using Avalonia;
 using Avalonia.Interactivity;
 using Avalonia.Media;
-using Heating_Control_UI.Controls;
+using Heating_Control_UI.Controls.Skia;
 using Heating_Control_UI.Utilities;
 using SkiaSharp;
 using System;

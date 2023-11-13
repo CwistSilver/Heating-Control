@@ -1,7 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
-namespace Heating_Control_UI.Utilities;
+namespace Heating_Control_UI.Utilities.Storage;
 public interface IAppStorage
 {
     public void AddOrSet(object value, [CallerMemberName] string key = "", bool composeKey = false);

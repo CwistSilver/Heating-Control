@@ -3,8 +3,6 @@
              xmlns:local="using:Heating_Control_UI"
              x:Class="Heating_Control_UI.App"
              RequestedThemeVariant="Default">
-             <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
-
 	<Application.Resources>
 	
 		<ResourceDictionary>
@@ -21,14 +19,13 @@
     </Application.DataTemplates>
 
 
-
 	<Application.Styles>
 		<FluentTheme>
 			<FluentTheme.Palettes>
 				<ColorPaletteResources x:Key="Light" Accent="#705697" RegionColor="#F5F5F5" ErrorText="Red" />
-
 				<ColorPaletteResources x:Key="Dark" Accent="#88304E" RegionColor="#1F1F1F" ErrorText="Yellow" />
 			</FluentTheme.Palettes>
 		</FluentTheme>
     </Application.Styles>
+	
 </Application>

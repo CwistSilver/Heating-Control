@@ -8,7 +8,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Heating_Control_UI.Utilities;
+namespace Heating_Control_UI.Utilities.Storage;
 internal class AppStorage : IAppStorage
 {
     private ConcurrentDictionary<string, object> _cachedValues = new();
@@ -102,7 +102,7 @@ internal class AppStorage : IAppStorage
             return;
 
         using var fs = new FileStream(_storagePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-        _cachedValues = await JsonSerializer.DeserializeAsync<ConcurrentDictionary<string,object>>(fs);
+        _cachedValues = await JsonSerializer.DeserializeAsync<ConcurrentDictionary<string, object>>(fs);
         fs.Close();
     }
 

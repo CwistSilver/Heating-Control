@@ -1,4 +1,5 @@
-﻿using Heating_Control_UI.Utilities;
+﻿using Heating_Control_UI.Utilities.Navigation;
+using Heating_Control_UI.Views.Pages;
 using ReactiveUI;
 
 namespace Heating_Control_UI.ViewModels;

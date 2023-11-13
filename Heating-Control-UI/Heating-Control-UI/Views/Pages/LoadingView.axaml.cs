@@ -1,7 +1,6 @@
-using Heating_Control_UI.Utilities;
-using Heating_Control_UI.ViewModels;
+using Heating_Control_UI.ViewModels.Pages;
 
-namespace Heating_Control_UI;
+namespace Heating_Control_UI.Views.Pages;
 
 public partial class LoadingView : PageControl
 {
@@ -16,7 +15,6 @@ public partial class LoadingView : PageControl
         DataContext = loadingViewModel;
     }
 
-
     private async void LoadingView_PointerPressed(object? sender, Avalonia.Input.PointerPressedEventArgs e)
     {
         if (DataContext is LoadingViewModel loadingViewModel)
@@ -28,5 +26,4 @@ public partial class LoadingView : PageControl
         if (DataContext is LoadingViewModel loadingViewModel)
             await loadingViewModel.OnFinishedAnimation();
     }
-
 }

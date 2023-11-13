@@ -2,6 +2,7 @@
 using Avalonia.Animation.Easings;
 using Avalonia.Controls;
 using Avalonia.Threading;
+using Heating_Control_UI.Views.Pages;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -9,8 +10,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Heating_Control_UI.Utilities;
-public class PageNavigator
+namespace Heating_Control_UI.Utilities.Navigation;
+public class PageNavigator : IPageNavigator
 {
     public IReadOnlyList<ContentControl> PageStack => _stack;
 
@@ -25,7 +26,7 @@ public class PageNavigator
     {
         get
         {
-            if(_defaultVerticalSlideTransition is not  null) return _defaultVerticalSlideTransition;
+            if (_defaultVerticalSlideTransition is not null) return _defaultVerticalSlideTransition;
 
             var compositeTransition = new CompositePageTransition();
             compositeTransition.PageTransitions.Add(new PageSlide(TimeSpan.FromMilliseconds(1_000), PageSlide.SlideAxis.Vertical));

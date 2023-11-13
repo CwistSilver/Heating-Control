@@ -2,21 +2,20 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                          xmlns:views="clr-namespace:Heating_Control_UI"
-			 xmlns:vm="using:Heating_Control_UI.ViewModels"
+             xmlns:views="clr-namespace:Heating_Control_UI"
+			 xmlns:vm="clr-namespace:Heating_Control_UI.ViewModels.Pages"
 			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:DataType="vm:HeatingControlSettingsViewModel"
-			 x:Class="Heating_Control_UI.HeatingControlSettingsView">
-	
+			 x:Class="Heating_Control_UI.Views.Pages.HeatingControlSettingsView">
+	<Design.DataContext>
+		<vm:HeatingControlSettingsViewModel />
+	</Design.DataContext>
 	<Grid RowDefinitions="5*,*">
 
 		<Grid RowDefinitions="*,*,*">
 				<views:TemperatureSelector Grid.Row="0" CurrentTemperature="{Binding Gradient}" Title="Neigung" ValueStep="0.5" />
-
 				<views:TemperatureSelector Grid.Row="1" CurrentTemperature="{Binding Baseline}" Title="Level" ValueStep="0.5"/>
-
 				<views:TemperatureSelector Grid.Row="2" CurrentTemperature="{Binding MaxSupplyTemperature}" Title="Max Supply Temperature" MinTemperature="0" MaxTemperature="300" />
-
 		</Grid>
 
 		<Grid Grid.Row="1" ColumnDefinitions="*,*">
@@ -25,9 +24,9 @@
 		</Grid>
 
 		<Grid Grid.RowSpan="2" RowDefinitions="*,*,*" IsVisible="{Binding IsSaving}">
-			<Rectangle Grid.RowSpan="3" Fill="Black" Opacity="0.3" />
-			<views:ProgressIndicator Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" />
-			<TextBlock Text="Is Loading" Grid.Row="2" TextAlignment="Center"/>
+			<Rectangle Grid.RowSpan="3" Fill="{DynamicResource RegionColor}" Opacity="0.7" />
+			<views:ProgressIndicator Grid.Row="1" Foreground="{DynamicResource Accent}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" />
+			<TextBlock Text="AI-Modell wird an die neue Umgebung angepasst" FontSize="24" FontWeight="Bold" Grid.Row="2" TextAlignment="Center"/>
 		</Grid>
 	</Grid>
 

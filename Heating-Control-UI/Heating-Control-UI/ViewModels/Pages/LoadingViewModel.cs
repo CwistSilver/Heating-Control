@@ -1,10 +1,11 @@
 ﻿using Avalonia.Animation;
 using Avalonia.Animation.Easings;
 using Heating_Control.ML;
+using Heating_Control_UI.Views.Pages;
 using System;
 using System.Threading.Tasks;
 
-namespace Heating_Control_UI.ViewModels;
+namespace Heating_Control_UI.ViewModels.Pages;
 public class LoadingViewModel : ViewModelBase
 {
     private const string DayChartKey = nameof(DayChart);

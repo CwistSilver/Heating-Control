@@ -4,7 +4,10 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Heating_Control;
 using Heating_Control_UI.Utilities;
+using Heating_Control_UI.Utilities.Navigation;
+using Heating_Control_UI.Utilities.Storage;
 using Heating_Control_UI.Views;
+using Heating_Control_UI.Views.Pages;
 using Microsoft.Extensions.DependencyInjection;
 using System.Diagnostics;
 using System.Linq;
@@ -12,53 +15,42 @@ using System.Linq;
 namespace Heating_Control_UI;
 public partial class App : Application
 {
-    public ServiceProvider Services { get; private set; }
-    ServiceCollection services = new ServiceCollection();
-    public static PageNavigator Navigator => ((App)Current!)._pageNavigator;
-    private PageNavigator _pageNavigator;
+    private const string PreviewStartupFunctionName = "SetupWithoutStarting";
 
-    public static IAppStorage Storage => ((App)Current!)._storage;
-    private IAppStorage _storage;
+    public ServiceProvider? Services { get; private set; }
+    public static IPageNavigator Navigator => ((App)Current!)._pageNavigator!;
+    private IPageNavigator? _pageNavigator;
 
-    public static T? GetResourceFromThemeDictionarie<T>(string name)
-    {
-        var mergedDictionaries = (ResourceDictionary)Current!.Resources.MergedDictionaries[0];
-
-        if (!mergedDictionaries.ThemeDictionaries.TryGetValue(Current.ActualThemeVariant, out var themeVariantProvider))
-            return default;
-        if (!themeVariantProvider.TryGetResource(name, null, out var resource))
-            return default;
-
-        return (T?)resource;
-    }
-
-
-    public static TopLevel? GetTopLevel()
-    {
-        return TopLevel.GetTopLevel(Navigator.CurrentPage);
-    }
+    public static IAppStorage Storage => ((App)Current!)._storage!;
+    private IAppStorage? _storage;
 
     bool _isPrewview = false;
+
+    public static TopLevel? GetTopLevel() => TopLevel.GetTopLevel(Navigator.CurrentPage);
+
     public override void Initialize()
     {
-        StackTrace stackTrace = new StackTrace();
-        StackFrame[] stackFrames = stackTrace.GetFrames();
-        _isPrewview = stackFrames.Any(i => i.GetMethod().Name.Contains("SetupWithoutStarting"));
-             
-
-        AvaloniaXamlLoader.Load(this);
+        try
+        {
+            var stackFrames = new StackTrace().GetFrames();
+            _isPrewview = stackFrames.Any(i => i.GetMethod()!.Name.Contains(PreviewStartupFunctionName));
+        }
+        finally
+        {
+            AvaloniaXamlLoader.Load(this);
+        }
     }
 
     public override void RegisterServices()
     {
         base.RegisterServices();
 
+        var services = new ServiceCollection();
         HeatingControlEntry.ConfigureServices(services);
         Entry.ConfigureServices(services);
 
         Services = services.BuildServiceProvider();
         _storage = Services.GetRequiredService<IAppStorage>();
-        
     }
 
     public override void OnFrameworkInitializationCompleted()
@@ -66,19 +58,13 @@ public partial class App : Application
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            var mainWindow = new MainWindow();
-            desktop.MainWindow = mainWindow;
-
-            _pageNavigator = new PageNavigator(mainWindow.CarouselControl, Services);
+            desktop.MainWindow = new MainWindow();
+            _pageNavigator = new PageNavigator(((MainWindow)desktop.MainWindow).CarouselControl, Services!);
         }
         else if (ApplicationLifetime is ISingleViewApplicationLifetime singleViewPlatform)
         {
-            var mainView = new MainView();
-
             singleViewPlatform.MainView = new MainView();
-            _pageNavigator = new PageNavigator(mainView.CarouselControl, Services);
-
-            singleViewPlatform.MainView = mainView;
+            _pageNavigator = new PageNavigator(((MainView)singleViewPlatform.MainView).CarouselControl, Services!);
         }
 
         if (!_isPrewview)

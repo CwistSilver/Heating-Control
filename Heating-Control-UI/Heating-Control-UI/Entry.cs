@@ -1,16 +1,16 @@
 ﻿using Avalonia.Controls;
+using Heating_Control_UI.Utilities.Storage;
 using Microsoft.Extensions.DependencyInjection;
 using ReactiveUI;
 using System.Linq;
 using System.Reflection;
 
-namespace Heating_Control_UI.Utilities;
+namespace Heating_Control_UI;
 internal class Entry
 {
     internal static void ConfigureServices(ServiceCollection services)
     {
         services.AddSingleton<IAppStorage, AppStorage>();
-        
 
         var assembly = Assembly.GetAssembly(typeof(App));
         RegisterWindows(assembly, services);

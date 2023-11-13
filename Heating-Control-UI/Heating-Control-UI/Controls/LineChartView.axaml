@@ -4,14 +4,13 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
 			 ChartBackground="{DynamicResource RegionColor}"
-			 ChartForeground="{DynamicResource Accent}"
+			 ChartForeground="{DynamicResource Accent}"			 
 			 FontSize="17"
 			 Loaded="LineChartView_Loaded"
 	x:Class="Heating_Control_UI.LineChartView">
 	<Grid x:Name="GridTest">
 		<TextBlock x:Name="XAxisTextBox"  FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Bottom" />
 
-		<!--TODO ADD Y-Achse-->
 		<Grid x:Name="YAxisGrid" ColumnDefinitions="*,*" Background="Transparent" Width="{Binding #GridTest.Bounds.Height}" Height="{Binding #GridTest.Bounds.Width}" >
 			<Grid.RenderTransform>
 				<RotateTransform Angle="-90"/>

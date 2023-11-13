@@ -1,14 +1,13 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-              xmlns:views="clr-namespace:Heating_Control_UI"
+             xmlns:views="clr-namespace:Heating_Control_UI"
 			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="Heating_Control_UI.LoadingView"
+             x:Class="Heating_Control_UI.Views.Pages.LoadingView"
 			 x:Name="LoadingViewControl"
 			 Background="{DynamicResource RegionColor}"
-			PointerPressed="LoadingView_PointerPressed"
-			 >
+			 PointerPressed="LoadingView_PointerPressed">
 	<Grid >
 		<views:TemperaturProgressBar Opacity="{Binding #LoadingViewControl.Opacity}" x:Name="TemperaturProgressBarControl" Finished="TemperaturProgressBarControl_Finished" Foreground="{DynamicResource FontColor}" Background="{DynamicResource RegionColor}"/>
 	</Grid>

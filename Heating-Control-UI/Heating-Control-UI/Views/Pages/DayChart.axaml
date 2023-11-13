@@ -2,21 +2,18 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:vm="clr-namespace:Heating_Control_UI.ViewModels"
+			 xmlns:vm="clr-namespace:Heating_Control_UI.ViewModels.Pages"
 			 xmlns:views="clr-namespace:Heating_Control_UI"
 			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="Heating_Control_UI.DayChart"
+             x:Class="Heating_Control_UI.Views.Pages.DayChart"
 			 x:Name="DayChartVar"
-			  x:DataType="vm:DayChartModel">
+			 x:DataType="vm:DayChartModel">
 	<Design.DataContext>
-		<!-- This only sets the DataContext for the previewer in an IDE,
-         to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
 		<vm:DayChartModel />
 	</Design.DataContext>
 
 	<Grid RowDefinitions="*,auto">
 		<Grid RowDefinitions="*,50,2*">
-
 
 			<Grid RowDefinitions="*,*">
 				<Viewbox>
@@ -27,7 +24,6 @@
 					<views:TemperatureSelector CurrentTemperature="{Binding PredictedOutdoorTemperature}"   Title="Temperatur Morgen" MinTemperature="-30" MaxTemperature="30" />
 				</Viewbox>
 			</Grid>
-
 
 			<Button Grid.Row="1" Command="{Binding SwitchSuplayView}" Background="{DynamicResource Accent}" HorizontalAlignment="Right">
 				<Grid ColumnDefinitions="*,*">				

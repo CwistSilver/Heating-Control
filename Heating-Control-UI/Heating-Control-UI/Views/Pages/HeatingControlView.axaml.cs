@@ -1,8 +1,6 @@
-using Heating_Control_UI.Utilities;
-using Heating_Control_UI.ViewModels;
+using Heating_Control_UI.ViewModels.Pages;
 
-namespace Heating_Control_UI;
-
+namespace Heating_Control_UI.Views.Pages;
 public partial class HeatingControlView : PageControl
 {
     public HeatingControlView(HeatingControlViewModel heatingControlViewModel)
@@ -15,7 +13,7 @@ public partial class HeatingControlView : PageControl
     public HeatingControlView()
     {
         InitializeComponent();
-        DataContext = new HeatingControlViewModel(null);
+        DataContext = new HeatingControlViewModel();
     }
 
     private void HeatingControlView_NavigatedTo(object? sender, System.EventArgs e)
@@ -23,11 +21,4 @@ public partial class HeatingControlView : PageControl
         if (this.DataContext is HeatingControlViewModel viewModel)
             viewModel.NavigatedTo();
     }
-
-    //private void UserControl_AttachedToVisualTree(object? sender, Avalonia.VisualTreeAttachmentEventArgs e)
-    //{
-    //    if (this.DataContext is HeatingControlViewModel viewModel)
-    //        viewModel.AttachedToVisualTree(sender, e);
-    //}
-
 }

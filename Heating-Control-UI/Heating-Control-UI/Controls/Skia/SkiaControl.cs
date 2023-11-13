@@ -10,7 +10,7 @@ using SkiaSharp;
 using System;
 using System.Threading.Tasks;
 
-namespace Heating_Control_UI.Controls;
+namespace Heating_Control_UI.Controls.Skia;
 public class SkiaControl : Control, IDisposable
 {
     private DateTime _lastInvalidateSkiaUpdate = DateTime.MinValue;

@@ -15,8 +15,8 @@ public partial class LineChartView : UserControl
     private const int _xMargin = 40;
     public const int _bottomMargin = 80;
 
-    private static CultureInfo _de = new("de-DE");
-    private static Color _gradientRed = new(100, 255, 105, 105);
+    private static readonly CultureInfo _de = new("de-DE");
+    private static readonly Color _gradientRed = new(100, 255, 105, 105);
 
     private int _selectedXIndex = -1;
     private int _selectedGraph = 0;
@@ -125,6 +125,13 @@ public partial class LineChartView : UserControl
         set => SetValue(ShowSignProperty, value);
     }
 
+    public static readonly StyledProperty<bool> IsEditableProperty = AvaloniaProperty.Register<LineChartView, bool>(nameof(IsEditable), false);
+    public bool IsEditable
+    {
+        get => GetValue(IsEditableProperty);
+        set => SetValue(IsEditableProperty, value);
+    }
+
     public static readonly StyledProperty<string> YPostfixProperty = AvaloniaProperty.Register<LineChartView, string>(nameof(YPostfix), string.Empty);
     public string YPostfix
     {
@@ -219,8 +226,9 @@ public partial class LineChartView : UserControl
     #endregion
 
     public LineChartView()
-    {
+    {             
         InitializeComponent();
+
         this.GetObservable(GridBrushProperty).Subscribe(newBrush =>
         {
             XAxisTextBox.Foreground = newBrush;
@@ -498,6 +506,8 @@ public partial class LineChartView : UserControl
     {
         if (_selectedXIndex == -1)
             return;
+
+        if(!IsEditable) return;
 
         var point = e.GetCurrentPoint(sender as Control);
 
