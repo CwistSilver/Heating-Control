@@ -58,6 +58,7 @@ public partial class App : Application
 
         Services = services.BuildServiceProvider();
         _storage = Services.GetRequiredService<IAppStorage>();
+        
     }
 
     public override void OnFrameworkInitializationCompleted()

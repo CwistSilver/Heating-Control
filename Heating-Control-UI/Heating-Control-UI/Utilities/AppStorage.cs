@@ -15,7 +15,7 @@ internal class AppStorage : IAppStorage
     private const string FileName = "app-storage.json";
     private readonly string _storagePath;
     private readonly Timer _debounceTimer;
-    private readonly TimeSpan _debounceTime = TimeSpan.FromSeconds(1);
+    private readonly TimeSpan _debounceTime = TimeSpan.FromMilliseconds(500);
     public AppStorage()
     {
         var directory = GetDataDirectorPath();
