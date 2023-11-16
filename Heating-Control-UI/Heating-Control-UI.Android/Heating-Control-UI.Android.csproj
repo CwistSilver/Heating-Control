@@ -10,12 +10,14 @@
 		<AndroidPackageFormat>apk</AndroidPackageFormat>
 		<AndroidEnableProfiledAot>False</AndroidEnableProfiledAot>
 		<RootNamespace>Heating_Control_UI</RootNamespace>
+		<ApplicationIcon>hc.ico</ApplicationIcon>
 	</PropertyGroup>
+	<ItemGroup>
+	  <None Remove="Resources\drawable\Icon.png" />
+	</ItemGroup>
 
 	<ItemGroup>
-		<AndroidResource Include="Icon.png">
-			<Link>Resources\drawable\Icon.png</Link>
-		</AndroidResource>
+	  <Content Include="hc.ico" />
 	</ItemGroup>
 
 	<ItemGroup>

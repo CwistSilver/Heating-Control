@@ -5,6 +5,7 @@
 		<LangVersion>latest</LangVersion>
 		<AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
 		<RootNamespace>Heating_Control_UI</RootNamespace>
+		<ApplicationIcon>Assets\hc.ico</ApplicationIcon>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -13,9 +14,14 @@
 
 	<ItemGroup>
 	  <None Remove="Assets\add.svg" />
+	  <None Remove="Assets\hc.ico" />
 	  <None Remove="Assets\mulit-chart.svg" />
 	  <None Remove="Assets\remove.svg" />
 	  <None Remove="Assets\singel-chart.svg" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Content Include="Assets\hc.ico" />
 	</ItemGroup>
 
 	<ItemGroup>

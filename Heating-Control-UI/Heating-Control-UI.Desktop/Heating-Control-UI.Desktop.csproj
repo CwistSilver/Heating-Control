@@ -11,7 +11,12 @@
 
 	<PropertyGroup>
 		<ApplicationManifest>app.manifest</ApplicationManifest>
+		<ApplicationIcon>hc.ico</ApplicationIcon>
 	</PropertyGroup>
+
+	<ItemGroup>
+	  <Content Include="hc.ico" />
+	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Avalonia.Desktop" Version="11.0.5" />
