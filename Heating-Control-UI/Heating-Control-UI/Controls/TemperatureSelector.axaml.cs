@@ -2,7 +2,9 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Data;
 using Avalonia.Interactivity;
+using Avalonia.VisualTree;
 using System;
+using System.Collections.Generic;
 
 namespace Heating_Control_UI;
 
@@ -10,17 +12,14 @@ public partial class TemperatureSelector : UserControl
 {
     static TemperatureSelector()
     {
-
         AffectsRender<TemperatureSelector>(
             CurrentTemperatureProperty,
             TitleProperty,
             PostfixProperty
             );
-
     }
 
-    public static readonly RoutedEvent<RoutedEventArgs> TemperatureChangedEvent =
-    RoutedEvent.Register<TemperatureSelector, RoutedEventArgs>(nameof(TemperatureChanged), RoutingStrategies.Bubble);
+    public static readonly RoutedEvent<RoutedEventArgs> TemperatureChangedEvent = RoutedEvent.Register<TemperatureSelector, RoutedEventArgs>(nameof(TemperatureChanged), RoutingStrategies.Bubble);
     public event EventHandler<RoutedEventArgs> TemperatureChanged
     {
         add { AddHandler(TemperatureChangedEvent, value); }
@@ -70,14 +69,34 @@ public partial class TemperatureSelector : UserControl
         set => SetValue(PostfixProperty, value);
     }
 
+    private readonly List<IDisposable> _disposables = new(2);
     public TemperatureSelector()
     {
         InitializeComponent();
-        this.GetObservable(TitleProperty).Subscribe(newTitle => TitleLabel.Content = newTitle);
-        this.GetObservable(CurrentTemperatureProperty).Subscribe(newValue => CurrentTemperatureText.Text = $"{newValue}{Postfix}");
+        _disposables.Add(this.GetObservable(TitleProperty).Subscribe(newTitle => TitleLabel.Content = newTitle));
+        _disposables.Add(this.GetObservable(CurrentTemperatureProperty).Subscribe(newValue => CurrentTemperatureText.Text = $"{newValue}{Postfix}"));
+        App.GetTopLevel()!.PointerPressed += GetTopLevel_PointerPressed;
 
+        DetachedFromLogicalTree += TemperatureSelector_DetachedFromLogicalTree;
     }
 
+    private void TemperatureSelector_DetachedFromLogicalTree(object? sender, Avalonia.LogicalTree.LogicalTreeAttachmentEventArgs e)
+    {
+        this.DetachedFromLogicalTree -= TemperatureSelector_DetachedFromLogicalTree;
+        App.GetTopLevel()!.PointerPressed -= GetTopLevel_PointerPressed;
+        
+
+        foreach (var disposable in _disposables)
+        {
+            disposable.Dispose();
+        }
+    }
+
+    private void GetTopLevel_PointerPressed(object? sender, Avalonia.Input.PointerPressedEventArgs e)
+    {
+        if (ValueTextBox.IsVisible)
+            CloseTextBox();
+    }
 
     private void Add_Click(object? sender, RoutedEventArgs e)
     {

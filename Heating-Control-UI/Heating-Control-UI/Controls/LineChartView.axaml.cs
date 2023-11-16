@@ -17,6 +17,7 @@ public partial class LineChartView : UserControl
 
     private static readonly CultureInfo _de = new("de-DE");
     private static readonly Color _gradientRed = new(100, 255, 105, 105);
+    private readonly List<IDisposable> _disposables = [];
 
     private int _selectedXIndex = -1;
     private int _selectedGraph = 0;
@@ -229,26 +230,31 @@ public partial class LineChartView : UserControl
     {             
         InitializeComponent();
 
-        this.GetObservable(GridBrushProperty).Subscribe(newBrush =>
+        
+
+        var disposable = this.GetObservable(GridBrushProperty).Subscribe(newBrush =>
         {
             XAxisTextBox.Foreground = newBrush;
             _gridPen = null;
         });
+        _disposables.Add(disposable);
 
-        this.GetObservable(SecondaryBrushProperty).Subscribe(newBrush =>
+        disposable = this.GetObservable(SecondaryBrushProperty).Subscribe(newBrush =>
         {
             SecondaryYAxisTextBox.Foreground = newBrush;
             _secondaryPen = null;
         });
+        _disposables.Add(disposable);
 
-        this.GetObservable(ChartForegroundProperty).Subscribe(newBrush =>
+        disposable = this.GetObservable(ChartForegroundProperty).Subscribe(newBrush =>
         {
             _primaryPen = null;
         });
+        _disposables.Add(disposable);
 
-        this.GetObservable(XTitleProperty).Subscribe(newTitle => XAxisTextBox.Text = newTitle);
-        this.GetObservable(YTitleProperty).Subscribe(newTitle => YAxisTextBox.Text = newTitle);
-        this.GetObservable(SecondYTitleProperty).Subscribe(newTitle =>
+        _disposables.Add(this.GetObservable(XTitleProperty).Subscribe(newTitle => XAxisTextBox.Text = newTitle));
+        _disposables.Add(this.GetObservable(YTitleProperty).Subscribe(newTitle => YAxisTextBox.Text = newTitle));
+        disposable = this.GetObservable(SecondYTitleProperty).Subscribe(newTitle =>
         {
             if (string.IsNullOrEmpty(newTitle))
             {
@@ -264,35 +270,60 @@ public partial class LineChartView : UserControl
 
             SecondaryYAxisTextBox.Text = newTitle;
         });
+        _disposables.Add(disposable);
 
-        this.GetObservable(XValuesProperty).Subscribe(newCollection =>
+        disposable = this.GetObservable(XValuesProperty).Subscribe(newCollection =>
         {
             XValues.CollectionChanged -= RedrawOnCollectionChange;
             newCollection.CollectionChanged += RedrawOnCollectionChange;
             InvalidateVisual();
         });
+        _disposables.Add(disposable);
 
-        this.GetObservable(ValuesProperty).Subscribe(newCollection =>
+        disposable = this.GetObservable(ValuesProperty).Subscribe(newCollection =>
         {
             Values.CollectionChanged -= RedrawOnCollectionChange;
             newCollection.CollectionChanged += RedrawOnCollectionChange;
             InvalidateVisual();
         });
-             
+        _disposables.Add(disposable);
 
-        this.GetObservable(SecondaryValuesProperty).Subscribe(newCollection =>
+        disposable = this.GetObservable(SecondaryValuesProperty).Subscribe(newCollection =>
         {
             SecondaryValues.CollectionChanged -= RedrawOnCollectionChange;
             newCollection.CollectionChanged += RedrawOnCollectionChange;
             InvalidateVisual();
         });
+        _disposables.Add(disposable);
 
         PointerPressed += LineChartView_PointerPressed;
         PointerReleased += LineChartView_PointerReleased;
         PointerMoved += LineChartView_PointerMoved;
         Values.CollectionChanged += RedrawOnCollectionChange;
         XValues.CollectionChanged += RedrawOnCollectionChange;
-        SecondaryValues.CollectionChanged += RedrawOnCollectionChange;        
+        SecondaryValues.CollectionChanged += RedrawOnCollectionChange;
+        DetachedFromLogicalTree += LineChartView_DetachedFromLogicalTree;
+    }
+
+    private void LineChartView_DetachedFromLogicalTree(object? sender, Avalonia.LogicalTree.LogicalTreeAttachmentEventArgs e)
+    {
+        Dispose();
+    }
+
+    private void Dispose()
+    {
+        PointerPressed -= LineChartView_PointerPressed;
+        PointerReleased -= LineChartView_PointerReleased;
+        PointerMoved -= LineChartView_PointerMoved;
+        Values.CollectionChanged -= RedrawOnCollectionChange;
+        XValues.CollectionChanged -= RedrawOnCollectionChange;
+        SecondaryValues.CollectionChanged -= RedrawOnCollectionChange;
+        DetachedFromLogicalTree -= LineChartView_DetachedFromLogicalTree;
+
+        foreach (var disposable in _disposables)
+        {
+            disposable.Dispose();
+        }
     }
 
     #region Render Logic

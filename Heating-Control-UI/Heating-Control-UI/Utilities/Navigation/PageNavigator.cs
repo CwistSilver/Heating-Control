@@ -39,6 +39,7 @@ public class PageNavigator : IPageNavigator
     private readonly Carousel _mainCarousel;
     private readonly ServiceProvider _serviceProvider;
     private readonly List<ContentControl> _stack = new();
+    public Carousel MainCarousel => _mainCarousel;
 
     public ContentControl? CurrentPage
     {

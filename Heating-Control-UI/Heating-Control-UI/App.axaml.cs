@@ -42,7 +42,7 @@ public partial class App : Application
     /// Retrieves the top-level control for the current page in the navigator.
     /// </summary>
     /// <returns>The top-level control if available.</returns>
-    public static TopLevel? GetTopLevel() => TopLevel.GetTopLevel(Navigator.CurrentPage);
+    public static TopLevel? GetTopLevel() => TopLevel.GetTopLevel(Navigator.MainCarousel);
 
     public override void Initialize()
     {

@@ -15,6 +15,11 @@ public interface IPageNavigator
     ContentControl? CurrentPage { get; }
 
     /// <summary>
+    /// Gets the Mmain carousel for the navigator.
+    /// </summary>
+    Carousel MainCarousel { get; }
+
+    /// <summary>
     /// Gets the stack of pages currently managed by the navigator.
     /// </summary>
     IReadOnlyList<ContentControl> PageStack { get; }
