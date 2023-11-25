@@ -1,23 +1,33 @@
 ﻿using Heating_Control.Data;
+using Microsoft.Extensions.Logging;
+using System.Diagnostics;
 
 namespace Heating_Control.ML.DataProvider;
 public sealed class TrainingDataProvider : ITrainingDataProvider
 {
     private readonly Random _random;
-    public TrainingDataProvider()
+    private readonly ILogger<ITrainingDataProvider> _logger;
+    public TrainingDataProvider(ILogger<ITrainingDataProvider> logger)
     {
         _random = new Random();
+        _logger = logger;
     }
 
     public async Task<IReadOnlyList<HeatingControlTrainingData>> GenerateAsync(TrainingDataOptions options)
     {
+        _logger.LogInformation("Starting to generate training data. Records to generate: {0}", options.RecordsToGenerate);
+
         return await Task.Run(() =>
         {
+            Stopwatch stopwatch = Stopwatch.StartNew();
             var trainingDatas = new HeatingControlTrainingData[options.RecordsToGenerate];
             for (int i = 0; i < trainingDatas.Length; i++)
             {
                 trainingDatas[i] = GenerateRandom(options);
             }
+
+            stopwatch.Stop();
+            _logger.LogInformation("Finished generating training data. Duration: {0} ms, Records Generated: {1}", stopwatch.ElapsedMilliseconds, trainingDatas.Length);
             return trainingDatas as IReadOnlyList<HeatingControlTrainingData>;
         });
     }

@@ -3,6 +3,7 @@ using Heating_Control.ML.DataProvider;
 using Heating_Control.ML.Storage;
 using Heating_Control.ML.Trainer;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Heating_Control;
 /// <summary>
@@ -22,5 +23,12 @@ public static class HeatingControlEntry
         services.AddTransient<IHeatingControlTrainer, HeatingControlTrainer>();
 
         services.AddSingleton<IHeatingControlNeuralNetwork, HeatingControlNeuralNetwork>();
+
+        services.AddLogging(builder =>
+        {
+            builder.AddConsole();
+            builder.AddDebug();
+            builder.SetMinimumLevel(LogLevel.Information);
+        });
     }
 }
