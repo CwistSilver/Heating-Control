@@ -32,8 +32,8 @@ public sealed class HeatingControlTrainer : IHeatingControlTrainer
     /// <param name="options">The options with which the neural network is to be trained.</param>
     /// <returns>The transformer of the NeuralNetwork</returns>
     public async Task<ITransformer> TrainNeuralNetworkAsync(TrainingDataOptions? options = null)
-    {        
-        options ??= new TrainingDataOptions() { RecordsToGenerate = 100_000 };
+    {
+        options ??= new TrainingDataOptions() { RecordsToGenerate = 1_000_000 };
         var trainingData = await _trainingDataProvider.GenerateAsync(options);
 
         var context = new MLContext();
@@ -44,7 +44,7 @@ public sealed class HeatingControlTrainer : IHeatingControlTrainer
         var stopwatch = Stopwatch.StartNew();
         var model = await Task.Run(() =>
         {
-            var pipeline = CreateRegressionPipeline(context);           
+            var pipeline = CreateNeuralNetworkPipeline(context);
             var trainedModel = pipeline.Fit(dataView);
 
             return trainedModel;
@@ -59,13 +59,24 @@ public sealed class HeatingControlTrainer : IHeatingControlTrainer
         return model;
     }
 
-    private static EstimatorChain<RegressionPredictionTransformer<FastTreeTweedieModelParameters>> CreateRegressionPipeline(MLContext context)
+    private static IEstimator<ITransformer> CreateNeuralNetworkPipeline(MLContext context)
     {
         var pipeline = context.Transforms
             .Concatenate("Features", "OutdoorTemperature", "PredictedOutdoorTemperature", "PreferredIndoorTemperature")
             .Append(context.Transforms.NormalizeMinMax("Features"))
-            .Append(context.Regression.Trainers.FastTreeTweedie(labelColumnName: "Label", featureColumnName: "Features"));
+   .Append(context.Regression.Trainers.OnlineGradientDescent(labelColumnName: "Label", featureColumnName: "Features"));
+        // Fügen Sie hier weitere Schichten hinzu, abhängig von Ihrer spezifischen Anwendung
 
         return pipeline;
     }
+
+    //private static EstimatorChain<RegressionPredictionTransformer<FastTreeTweedieModelParameters>> CreateRegressionPipeline(MLContext context)
+    //{
+    //    var pipeline = context.Transforms
+    //        .Concatenate("Features", "OutdoorTemperature", "PredictedOutdoorTemperature", "PreferredIndoorTemperature")
+    //        .Append(context.Transforms.NormalizeMinMax("Features"))
+    //        .Append(context.Regression.Trainers.FastTreeTweedie(labelColumnName: "Label", featureColumnName: "Features"));
+
+    //    return pipeline;
+    //}
 }

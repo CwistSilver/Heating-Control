@@ -25,11 +25,33 @@ public sealed class TrainingDataProvider : ITrainingDataProvider
             {
                 trainingDatas[i] = GenerateRandom(options);
             }
+            trainingDatas[trainingDatas.Length -1] = GenerateRandomTEST(options);
+            trainingDatas[trainingDatas.Length - 2] = GenerateRandomTEST2(options);
 
             stopwatch.Stop();
             _logger.LogInformation("Finished generating training data. Duration: {0} ms, Records Generated: {1}", stopwatch.ElapsedMilliseconds, trainingDatas.Length);
             return trainingDatas as IReadOnlyList<HeatingControlTrainingData>;
         });
+    }
+
+    private HeatingControlTrainingData GenerateRandomTEST(TrainingDataOptions options)
+    {
+        var data = new HeatingControlTrainingData();
+        data.OutdoorTemperature = -20;
+        data.PreferredIndoorTemperature = 32;
+        data.PredictedOutdoorTemperature = -20;
+        data.SupplyTemperature = GenerateSupplyTemperature(options, data);
+        return data;
+    }
+
+    private HeatingControlTrainingData GenerateRandomTEST2(TrainingDataOptions options)
+    {
+        var data = new HeatingControlTrainingData();
+        data.OutdoorTemperature = 20;
+        data.PreferredIndoorTemperature = 20;
+        data.PredictedOutdoorTemperature = 20;
+        data.SupplyTemperature = GenerateSupplyTemperature(options, data);
+        return data;
     }
 
     private HeatingControlTrainingData GenerateRandom(TrainingDataOptions options)

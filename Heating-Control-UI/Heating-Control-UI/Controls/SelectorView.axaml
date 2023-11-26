@@ -6,7 +6,7 @@
 			 x:Name="TemperatureSelectorVar"
 			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
 			 FontSize="80"
-             x:Class="Heating_Control_UI.TemperatureSelector">
+             x:Class="Heating_Control_UI.SelectorView">
 	<Grid RowDefinitions="auto,*" >
 
 		<Viewbox Grid.ColumnSpan="3" Stretch="Uniform" StretchDirection="DownOnly">

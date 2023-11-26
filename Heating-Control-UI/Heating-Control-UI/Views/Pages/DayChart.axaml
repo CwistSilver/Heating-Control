@@ -17,11 +17,11 @@
 
 			<Grid RowDefinitions="*,*">
 				<Viewbox>
-					<views:TemperatureSelector CurrentTemperature="{Binding PreferredIndoorTemperature}"  Title="Wohlfühltemperatur"  />
+					<views:SelectorView CurrentTemperature="{Binding PreferredIndoorTemperature}"  Title="Wohlfühltemperatur"  />
 				</Viewbox>
 
 				<Viewbox Grid.Row="1">
-					<views:TemperatureSelector CurrentTemperature="{Binding PredictedOutdoorTemperature}"   Title="Temperatur Morgen" MinTemperature="-30" MaxTemperature="30" />
+					<views:SelectorView CurrentTemperature="{Binding PredictedOutdoorTemperature}"   Title="Temperatur Morgen" MinValue="-30" MaxValue="30" />
 				</Viewbox>
 			</Grid>
 

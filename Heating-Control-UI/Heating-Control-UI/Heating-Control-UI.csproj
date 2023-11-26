@@ -42,4 +42,10 @@
 	  <ProjectReference Include="..\..\Heating-Control\Heating-Control.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Compile Update="Controls\SelectorView.axaml.cs">
+	    <DependentUpon>SelectorView.axaml</DependentUpon>
+	  </Compile>
+	</ItemGroup>
+
 </Project>

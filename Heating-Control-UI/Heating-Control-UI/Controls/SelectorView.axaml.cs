@@ -2,24 +2,23 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Data;
 using Avalonia.Interactivity;
-using Avalonia.VisualTree;
 using System;
 using System.Collections.Generic;
 
 namespace Heating_Control_UI;
 
-public partial class TemperatureSelector : UserControl
+public partial class SelectorView : UserControl
 {
-    static TemperatureSelector()
+    static SelectorView()
     {
-        AffectsRender<TemperatureSelector>(
+        AffectsRender<SelectorView>(
             CurrentTemperatureProperty,
             TitleProperty,
             PostfixProperty
             );
     }
 
-    public static readonly RoutedEvent<RoutedEventArgs> TemperatureChangedEvent = RoutedEvent.Register<TemperatureSelector, RoutedEventArgs>(nameof(TemperatureChanged), RoutingStrategies.Bubble);
+    public static readonly RoutedEvent<RoutedEventArgs> TemperatureChangedEvent = RoutedEvent.Register<SelectorView, RoutedEventArgs>(nameof(TemperatureChanged), RoutingStrategies.Bubble);
     public event EventHandler<RoutedEventArgs> TemperatureChanged
     {
         add { AddHandler(TemperatureChangedEvent, value); }
@@ -27,42 +26,42 @@ public partial class TemperatureSelector : UserControl
     }
 
 
-    public static readonly StyledProperty<float> CurrentTemperatureProperty = AvaloniaProperty.Register<TemperatureSelector, float>(nameof(CurrentTemperature), 23f, defaultBindingMode: BindingMode.TwoWay);
+    public static readonly StyledProperty<float> CurrentTemperatureProperty = AvaloniaProperty.Register<SelectorView, float>(nameof(CurrentTemperature), 23f, defaultBindingMode: BindingMode.TwoWay);
     public float CurrentTemperature
     {
         get => GetValue(CurrentTemperatureProperty);
         set => SetValue(CurrentTemperatureProperty, value);
     }
 
-    public static readonly StyledProperty<float> ValueStepProperty = AvaloniaProperty.Register<TemperatureSelector, float>(nameof(ValueStep), 1f, defaultBindingMode: BindingMode.TwoWay);
+    public static readonly StyledProperty<float> ValueStepProperty = AvaloniaProperty.Register<SelectorView, float>(nameof(ValueStep), 1f, defaultBindingMode: BindingMode.TwoWay);
     public float ValueStep
     {
         get => GetValue(ValueStepProperty);
         set => SetValue(ValueStepProperty, value);
     }
 
-    public static readonly StyledProperty<float> MinTemperatureProperty = AvaloniaProperty.Register<TemperatureSelector, float>(nameof(MinTemperature), 0);
-    public float MinTemperature
+    public static readonly StyledProperty<float> MinValueProperty = AvaloniaProperty.Register<SelectorView, float>(nameof(MinValue), 0);
+    public float MinValue
     {
-        get => GetValue(MinTemperatureProperty);
-        set => SetValue(MinTemperatureProperty, value);
+        get => GetValue(MinValueProperty);
+        set => SetValue(MinValueProperty, value);
     }
 
-    public static readonly StyledProperty<float> MaxTemperatureProperty = AvaloniaProperty.Register<TemperatureSelector, float>(nameof(MaxTemperature), 32);
-    public float MaxTemperature
+    public static readonly StyledProperty<float> MaxValueProperty = AvaloniaProperty.Register<SelectorView, float>(nameof(MaxValue), 32);
+    public float MaxValue
     {
-        get => GetValue(MaxTemperatureProperty);
-        set => SetValue(MaxTemperatureProperty, value);
+        get => GetValue(MaxValueProperty);
+        set => SetValue(MaxValueProperty, value);
     }
 
-    public static readonly StyledProperty<string> TitleProperty = AvaloniaProperty.Register<TemperatureSelector, string>(nameof(Title), string.Empty);
+    public static readonly StyledProperty<string> TitleProperty = AvaloniaProperty.Register<SelectorView, string>(nameof(Title), string.Empty);
     public string Title
     {
         get => GetValue(TitleProperty);
         set => SetValue(TitleProperty, value);
     }
 
-    public static readonly StyledProperty<string> PostfixProperty = AvaloniaProperty.Register<TemperatureSelector, string>(nameof(Postfix), string.Empty);
+    public static readonly StyledProperty<string> PostfixProperty = AvaloniaProperty.Register<SelectorView, string>(nameof(Postfix), string.Empty);
     public string Postfix
     {
         get => GetValue(PostfixProperty);
@@ -70,7 +69,7 @@ public partial class TemperatureSelector : UserControl
     }
 
     private readonly List<IDisposable> _disposables = new(2);
-    public TemperatureSelector()
+    public SelectorView()
     {
         InitializeComponent();
         _disposables.Add(this.GetObservable(TitleProperty).Subscribe(newTitle => TitleLabel.Content = newTitle));
@@ -100,21 +99,21 @@ public partial class TemperatureSelector : UserControl
 
     private void Add_Click(object? sender, RoutedEventArgs e)
     {
-        if (MaxTemperature <= CurrentTemperature)
+        if (MaxValue <= CurrentTemperature)
             return;
 
         var newValue = CurrentTemperature + ValueStep;
-        CurrentTemperature = Math.Clamp(newValue, MinTemperature, MaxTemperature);
+        CurrentTemperature = Math.Clamp(newValue, MinValue, MaxValue);
         this.OnTemperatureChanged();
     }
 
     private void Remove_Click(object? sender, RoutedEventArgs e)
     {
-        if (MinTemperature >= CurrentTemperature)
+        if (MinValue >= CurrentTemperature)
             return;
 
         var newValue = CurrentTemperature - ValueStep;
-        CurrentTemperature = Math.Clamp(newValue, MinTemperature, MaxTemperature);
+        CurrentTemperature = Math.Clamp(newValue, MinValue, MaxValue);
         this.OnTemperatureChanged();
     }
 
@@ -145,8 +144,6 @@ public partial class TemperatureSelector : UserControl
     {
         ValueTextBox.IsVisible = false;
         if (float.TryParse(ValueTextBox.Text, out var floatValue))
-            CurrentTemperature = Math.Clamp(floatValue, MinTemperature, MaxTemperature);
+            CurrentTemperature = Math.Clamp(floatValue, MinValue, MaxValue);
     }
-
-
 }
