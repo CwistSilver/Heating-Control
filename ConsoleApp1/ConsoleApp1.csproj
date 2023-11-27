@@ -9,7 +9,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Heating-Control\Heating-Control.csproj" />
-    <ProjectReference Include="..\Simple-Neural-Network\Simple-Neural-Network.csproj" />
   </ItemGroup>
 
 </Project>
