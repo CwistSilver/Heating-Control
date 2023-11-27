@@ -1,4 +1,5 @@
-﻿using Microsoft.ML;
+﻿using System.Text.Json.Serialization;
+using Tensorflow;
 
 namespace Heating_Control.Data;
 /// <summary>
@@ -7,9 +8,10 @@ namespace Heating_Control.Data;
 public class ModelData
 {
     /// <summary>
-    /// The transformer used in the neural network model.
+    /// The model used in the neural network.
     /// </summary>
-    public required ITransformer Transformer { get; set; }
+    [JsonIgnore]
+    public required Session Data { get; set; }
 
     /// <summary>
     /// The training data options for the neural network model.

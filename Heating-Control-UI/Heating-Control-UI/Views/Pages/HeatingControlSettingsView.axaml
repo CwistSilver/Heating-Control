@@ -13,14 +13,14 @@
 	<Grid RowDefinitions="5*,*">
 
 		<Grid RowDefinitions="*,*,*">
-			<views:SelectorView AutomationProperties.Name="Einstellung, um die Neigung der Heizkurve anzupassen." Grid.Row="0" CurrentTemperature="{Binding Gradient}" Title="Neigung" ValueStep="0.5" />
-			<views:SelectorView AutomationProperties.Name="Einstellung, um das Niveau der Heizkurve anzupassen." Grid.Row="1" CurrentTemperature="{Binding Baseline}" Title="Level" ValueStep="0.5"/>
-			<views:SelectorView AutomationProperties.Name="Einstellung, um die Maximale Kesseltemperatur anzupassen, die KI wird diesen Wert nicht überschreiten." Grid.Row="2" CurrentTemperature="{Binding MaxSupplyTemperature}" Title="Maximale Kesseltemperatur" MinValue="0" MaxValue="300" />
+			<views:SelectorView Grid.Row="0" CurrentTemperature="{Binding Gradient}"  Title="Neigung" ValueStep="0.5" />
+			<views:SelectorView Grid.Row="1" CurrentTemperature="{Binding Baseline}" Title="Level" ValueStep="0.5"/>
+			<views:SelectorView Grid.Row="2" CurrentTemperature="{Binding MaxSupplyTemperature}" Title="Max Supply Temperature" MinValue="0" MaxValue="300" />
 		</Grid>
 
 		<Grid Grid.Row="1" ColumnDefinitions="*,*">
-			<Button AutomationProperties.Name="Abbrechen" Grid.Column="0" Content="Abbrechen" Command="{Binding CancelAction}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
-			<Button AutomationProperties.Name="Einstellungen speichern" Grid.Column="1" Content="Speichern" Command="{Binding Save}" Background="{DynamicResource Accent}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
+			<Button Grid.Column="0" Content="Abbrechen" Command="{Binding CancelAction}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
+			<Button Grid.Column="1" Content="Speichern" Command="{Binding Save}" Background="{DynamicResource Accent}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
 		</Grid>
 
 		<Grid Grid.RowSpan="2" RowDefinitions="*,*,*" IsVisible="{Binding IsSaving}">
