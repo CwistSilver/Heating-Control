@@ -126,7 +126,7 @@ public partial class LineChartView : UserControl
         set => SetValue(ShowSignProperty, value);
     }
 
-    public static readonly StyledProperty<bool> IsEditableProperty = AvaloniaProperty.Register<LineChartView, bool>(nameof(IsEditable), false);
+    public static readonly StyledProperty<bool> IsEditableProperty = AvaloniaProperty.Register<LineChartView, bool>(nameof(IsEditable), true);
     public bool IsEditable
     {
         get => GetValue(IsEditableProperty);
