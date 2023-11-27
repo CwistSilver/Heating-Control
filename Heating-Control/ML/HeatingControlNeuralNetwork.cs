@@ -40,11 +40,11 @@ public sealed class HeatingControlNeuralNetwork : IHeatingControlNeuralNetwork
             throw new InvalidOperationException("Neural network has already been initialized");
         }
 
-        var modelData = _modelStorage.Load() ?? throw new FileLoadException("Neural network could not be loaded");
-        _transformer = modelData.Transformer;
-        UsedTrainingDataOptions = modelData.Options;
+        //var modelData = _modelStorage.Load() ?? throw new FileLoadException("Neural network could not be loaded");
+        //_transformer = modelData.Data;
+        //UsedTrainingDataOptions = modelData.Options;
 
-        _predictionEngine = new MLContext().Model.CreatePredictionEngine<HeatingControlInputData, HeatingControlPrediction>(_transformer);
+        //_predictionEngine = new MLContext().Model.CreatePredictionEngine<HeatingControlInputData, HeatingControlPrediction>(_transformer);
         _logger.LogInformation("Neural network initialized successfully.");
     }
 
@@ -52,9 +52,9 @@ public sealed class HeatingControlNeuralNetwork : IHeatingControlNeuralNetwork
     {
         _logger.LogInformation("Starting to train the neural network model.");
 
-        _transformer = await _heatingControlTrainer.TrainNeuralNetworkAsync(options);
-        _predictionEngine = new MLContext().Model.CreatePredictionEngine<HeatingControlInputData, HeatingControlPrediction>(_transformer);
-        UsedTrainingDataOptions = options is null ? new TrainingDataOptions() : options;
+        //_transformer = await _heatingControlTrainer.TrainNeuralNetworkAsync(options);
+        //_predictionEngine = new MLContext().Model.CreatePredictionEngine<HeatingControlInputData, HeatingControlPrediction>(_transformer);
+        //UsedTrainingDataOptions = options is null ? new TrainingDataOptions() : options;
 
         _logger.LogInformation("Model training completed.");
     }

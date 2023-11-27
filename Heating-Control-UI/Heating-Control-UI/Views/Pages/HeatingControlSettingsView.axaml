@@ -13,7 +13,7 @@
 	<Grid RowDefinitions="5*,*">
 
 		<Grid RowDefinitions="*,*,*">
-			<views:SelectorView Grid.Row="0" CurrentTemperature="{Binding Gradient}" Title="Neigung" ValueStep="0.5" />
+			<views:SelectorView Grid.Row="0" CurrentTemperature="{Binding Gradient}"  Title="Neigung" ValueStep="0.5" />
 			<views:SelectorView Grid.Row="1" CurrentTemperature="{Binding Baseline}" Title="Level" ValueStep="0.5"/>
 			<views:SelectorView Grid.Row="2" CurrentTemperature="{Binding MaxSupplyTemperature}" Title="Max Supply Temperature" MinValue="0" MaxValue="300" />
 		</Grid>

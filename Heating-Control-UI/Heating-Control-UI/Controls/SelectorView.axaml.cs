@@ -61,6 +61,20 @@ public partial class SelectorView : UserControl
         set => SetValue(TitleProperty, value);
     }
 
+    public static readonly StyledProperty<string> AddButtonAccessabilityTitleProperty = AvaloniaProperty.Register<SelectorView, string>(nameof(AddButtonAccessabilityTitle), string.Empty);
+    public string AddButtonAccessabilityTitle
+    {
+        get => GetValue(AddButtonAccessabilityTitleProperty);
+        set => SetValue(AddButtonAccessabilityTitleProperty, value);
+    }
+
+    public static readonly StyledProperty<string> RemoveButtonAccessabilityTitleProperty = AvaloniaProperty.Register<SelectorView, string>(nameof(RemoveButtonAccessabilityTitle), string.Empty);
+    public string RemoveButtonAccessabilityTitle
+    {
+        get => GetValue(RemoveButtonAccessabilityTitleProperty);
+        set => SetValue(RemoveButtonAccessabilityTitleProperty, value);
+    }
+
     public static readonly StyledProperty<string> PostfixProperty = AvaloniaProperty.Register<SelectorView, string>(nameof(Postfix), string.Empty);
     public string Postfix
     {
@@ -72,7 +86,12 @@ public partial class SelectorView : UserControl
     public SelectorView()
     {
         InitializeComponent();
-        _disposables.Add(this.GetObservable(TitleProperty).Subscribe(newTitle => TitleLabel.Content = newTitle));
+        _disposables.Add(this.GetObservable(TitleProperty).Subscribe(newTitle =>
+        {
+            TitleLabel.Content = newTitle;
+            AddButtonAccessabilityTitle = $"Der Wert für {newTitle} wurde erhöht.";
+            RemoveButtonAccessabilityTitle = $"Der Wert für {newTitle} wurde verringert.";
+        }));
         _disposables.Add(this.GetObservable(CurrentTemperatureProperty).Subscribe(newValue => CurrentTemperatureText.Text = $"{newValue}{Postfix}"));
         App.GetTopLevel()!.PointerPressed += GetTopLevel_PointerPressed;
 

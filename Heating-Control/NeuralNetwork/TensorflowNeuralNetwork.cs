@@ -8,12 +8,12 @@ namespace Heating_Control.NeuralNetwork;
 public class TensorflowNeuralNetwork
 {
     private const float learning_rate = 0.01f;
-    //private const int n_hidden = 10;
     private const uint batchSize = 1_000;
     private const uint training_epochs = 100_000;
+    private readonly int[] hiddenLayers = new int[3] { 5, 10, 5 };
 
     private const string FileName = "HeatingControl.ckpt";
-    private string _storagePath;
+    private readonly string _storagePath;
     private readonly Session _session;
     private readonly NeuralNetworkModel _model;
     private readonly Saver _saver;
@@ -24,7 +24,7 @@ public class TensorflowNeuralNetwork
         _storagePath = Path.Combine(directory, FileName);
         tf.compat.v1.disable_eager_execution();
         _session = tf.compat.v1.Session();
-        var hiddenLayers = new int[] { 5, 10, 5 };
+
         _model = CreateModel(3, 1, hiddenLayers);
 
         _saver = tf.train.Saver();
@@ -80,21 +80,13 @@ public class TensorflowNeuralNetwork
         return _model;
     }
 
-
-
-
-
-    private NeuralNetworkModel CreateModel(int inputSize, int outputSize, int[] hiddenLayers)
+    private static NeuralNetworkModel CreateModel(int inputSize, int outputSize, int[] hiddenLayers)
     {
         var X = tf.placeholder(tf.float32);
         var Y = tf.placeholder(tf.float32);
 
         Tensor lastLayerOutput = X;
-        List<ResourceVariable> variables = new List<ResourceVariable>();
-
-        // Dropout-Rate
-        //float dropoutRate = 0.5f; // Beispiel: 50% Dropout
-
+        var variables = new List<ResourceVariable>();
 
         for (int i = 0; i < hiddenLayers.Length; i++)
         {
@@ -102,11 +94,8 @@ public class TensorflowNeuralNetwork
             var W = tf.Variable(tf.random_uniform(new Shape(layerInputSize, hiddenLayers[i]), -1.0f, 1.0f));
             var b = tf.Variable(tf.zeros(new Shape(hiddenLayers[i])));
 
-            // Verwendung der Sigmoid-Aktivierungsfunktion anstelle von ReLU
             lastLayerOutput = tf.nn.sigmoid(tf.matmul(lastLayerOutput, W) + b);
             //lastLayerOutput = tf.nn.relu(tf.matmul(lastLayerOutput, W) + b);
-            //lastLayerOutput = tf.nn.dropout(lastLayerOutput, rate: dropoutRate);
-
 
             variables.Add(W);
             variables.Add(b);
@@ -114,7 +103,6 @@ public class TensorflowNeuralNetwork
 
         var W_output = tf.Variable(tf.random_uniform(new Shape(hiddenLayers.Last(), outputSize), -1.0f, 1.0f));
         var b_output = tf.Variable(tf.zeros(new Shape(outputSize)));
-
 
         var pred = tf.matmul(lastLayerOutput, W_output) + b_output;
 
@@ -134,7 +122,6 @@ public class TensorflowNeuralNetwork
             Optimizer = optimizer
         };
     }
-
 
     private static string GetDataDirectorPath()
     {

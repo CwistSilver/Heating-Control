@@ -1,8 +1,10 @@
 ﻿using Heating_Control.Data;
+using Heating_Control.NeuralNetwork.Model;
 using Microsoft.Extensions.Logging;
-using Microsoft.ML;
 using System.Runtime.InteropServices;
 using System.Text.Json;
+using Tensorflow;
+using static Tensorflow.Binding;
 
 namespace Heating_Control.ML.Storage;
 public sealed class ModelStorage : IModelStorage
@@ -12,12 +14,21 @@ public sealed class ModelStorage : IModelStorage
     private readonly string _storagePath;
     private readonly string _optionsStoragePath;
     private readonly ILogger<IModelStorage> _logger;
-    public ModelStorage(ILogger<IModelStorage> logger)
+    private readonly IModelCreator _modelCreator;
+    private readonly int[] hiddenLayers = new int[3] { 5, 10, 5 };
+    private readonly Saver _saver;
+
+    public ModelStorage(ILogger<IModelStorage> logger, IModelCreator modelCreator)
     {
+        _logger = logger;
+        _modelCreator = modelCreator;
+        _modelCreator.CreateModel();
+
         var directory = GetDataDirectorPath();
         _storagePath = Path.Combine(directory, FileName);
         _optionsStoragePath = Path.Combine(directory, OptionsFileName);
-        _logger = logger;
+
+        _saver = tf.train.Saver();
 
         _logger.LogInformation("ModelStorage initialized. Model path: {0}, Options path: {1}", _storagePath, _optionsStoragePath);
     }
@@ -42,17 +53,12 @@ public sealed class ModelStorage : IModelStorage
         }
     }
 
-    public ModelData? Load()
+    public ModelData? Load(Session session)
     {
         try
         {
             _logger.LogInformation("Loading model from {0}", _storagePath);
 
-            if (!File.Exists(_storagePath))
-            {
-                _logger.LogWarning("Model file not found at {0}", _storagePath);
-                return null;
-            }
 
             if (!File.Exists(_optionsStoragePath))
             {
@@ -60,8 +66,9 @@ public sealed class ModelStorage : IModelStorage
                 return null;
             }
 
-            var context = new MLContext();
-            var transformer = context.Model.Load(_storagePath, out _);
+            _saver.restore(session, _storagePath);
+
+          
 
             var jsonTest = File.ReadAllText(_optionsStoragePath);
             var options = JsonSerializer.Deserialize<TrainingDataOptions>(jsonTest);
@@ -72,7 +79,7 @@ public sealed class ModelStorage : IModelStorage
             }
 
             _logger.LogInformation("Model and options loaded successfully");
-            return new ModelData() { Transformer = transformer, Options = options };
+            return new ModelData() { Data = session, Options = options };
         }
         catch (Exception ex)
         {
@@ -80,7 +87,7 @@ public sealed class ModelStorage : IModelStorage
             return null;
         }
     }
-    public void Save(ModelData modelData, DataViewSchema inputSchema)
+    public void Save(ModelData modelData)
     {
         _logger.LogInformation("Saving model to {0}", _storagePath);
 
@@ -97,9 +104,8 @@ public sealed class ModelStorage : IModelStorage
         }
 
         try
-        {
-            var context = new MLContext();
-            context.Model.Save(modelData.Transformer, inputSchema, _storagePath);
+        {           
+            _saver.save(modelData.Data, _storagePath);
 
             var jsonText = JsonSerializer.Serialize(modelData.Options, new JsonSerializerOptions() { WriteIndented = true });
             File.WriteAllText(_optionsStoragePath, jsonText);

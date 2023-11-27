@@ -17,7 +17,7 @@ public partial class LineChartView : UserControl
 
     private static readonly CultureInfo _de = new("de-DE");
     private static readonly Color _gradientRed = new(100, 255, 105, 105);
-    private readonly List<IDisposable> _disposables = [];
+    private readonly List<IDisposable> _disposables = new();
 
     private int _selectedXIndex = -1;
     private int _selectedGraph = 0;
@@ -126,7 +126,7 @@ public partial class LineChartView : UserControl
         set => SetValue(ShowSignProperty, value);
     }
 
-    public static readonly StyledProperty<bool> IsEditableProperty = AvaloniaProperty.Register<LineChartView, bool>(nameof(IsEditable), false);
+    public static readonly StyledProperty<bool> IsEditableProperty = AvaloniaProperty.Register<LineChartView, bool>(nameof(IsEditable), true);
     public bool IsEditable
     {
         get => GetValue(IsEditableProperty);

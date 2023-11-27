@@ -10,19 +10,19 @@ public sealed class TrainingDataOptions
     /// The number of records to generate.
     /// </summary>
     [JsonPropertyName("recordsToGenerate")]
-    public uint RecordsToGenerate { get; init; } = 1_000;
+    public uint RecordsToGenerate { get; set; } = 1_000;
 
     /// <summary>
     /// The imprecision applied to the generation of the supply temperature in percent.
     /// </summary>
     [JsonPropertyName("supplyTemperatureInaccuracy")]
-    public uint SupplyTemperatureInaccuracy { get; init; } = 5;
+    public uint SupplyTemperatureInaccuracy { get; set; } = 5;
 
     /// <summary>
     /// The offset range for the predicted outdoor temperature.
     /// </summary>
     [JsonPropertyName("predictedOutdoorTemperatureOffsetRange")]
-    public TemperatureRange PredictedOutdoorTemperatureOffsetRange { get; init; } = new TemperatureRange() { Min = -10.00f, Max = 10.00f };
+    public TemperatureRange PredictedOutdoorTemperatureOffsetRange { get; set; } = new TemperatureRange() { Min = -10.00f, Max = 10.00f };
 
     /// <summary>
     /// Represents the gradient or "slope" in the mathematical formula used to model heating behavior.<br/>
@@ -35,7 +35,7 @@ public sealed class TrainingDataOptions
     /// </para>    
     /// </summary> 
     [JsonPropertyName("gradient")]
-    public float Gradient { get; init; } = 1.5f;
+    public float Gradient { get; set; } = 1.5f;
 
     /// <summary>
     /// Represents the baseline or "offset" in the mathematical formula.<br/>
@@ -48,23 +48,23 @@ public sealed class TrainingDataOptions
     /// </para>    
     /// </summary>
     [JsonPropertyName("baseline")]
-    public float Baseline { get; init; } = 1.5f;
+    public float Baseline { get; set; } = 1.5f;
 
     /// <summary>
     /// The maximum supply temperature.
     /// </summary>
     [JsonPropertyName("maxSupplyTemperature")]
-    public float MaxSupplyTemperature { get; init; } = 90f;
+    public float MaxSupplyTemperature { get; set; } = 90f;
 
     /// <summary>
     /// The range for the preferred indoor temperature.
     /// </summary>
     [JsonPropertyName("preferredIndoorTemperatureRange")]
-    public TemperatureRange PreferredIndoorTemperatureRange { get; init; } = new TemperatureRange() { Min = 19.0f, Max = 28.0f };
+    public TemperatureRange PreferredIndoorTemperatureRange { get; set; } = new TemperatureRange() { Min = 19.0f, Max = 28.0f };
 
     /// <summary>
     /// The range for the outdoor temperature.
     /// </summary>
     [JsonPropertyName("outdoorTemperatureRange")]
-    public TemperatureRange OutdoorTemperatureRange { get; init; } = new TemperatureRange() { Min = -20.0f, Max = 20.0f };
+    public TemperatureRange OutdoorTemperatureRange { get; set; } = new TemperatureRange() { Min = -20.0f, Max = 20.0f };
 }
