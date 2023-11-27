@@ -19,8 +19,8 @@
 		</Grid>
 
 		<Grid Grid.Row="1" ColumnDefinitions="*,*">
-			<Button AutomationProperties.Name="Button, der das Speichern der Einstellungen abbricht." Grid.Column="0" Content="Abbrechen" Command="{Binding CancelAction}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
-			<Button AutomationProperties.Name="Button, der die obigen Einstellungen speichert." Grid.Column="1" Content="Speichern" Command="{Binding Save}" Background="{DynamicResource Accent}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
+			<Button AutomationProperties.Name="Abbrechen" Grid.Column="0" Content="Abbrechen" Command="{Binding CancelAction}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
+			<Button AutomationProperties.Name="Einstellungen speichern" Grid.Column="1" Content="Speichern" Command="{Binding Save}" Background="{DynamicResource Accent}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
 		</Grid>
 
 		<Grid Grid.RowSpan="2" RowDefinitions="*,*,*" IsVisible="{Binding IsSaving}">
