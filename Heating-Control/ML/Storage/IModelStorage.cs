@@ -12,12 +12,12 @@ public interface IModelStorage
     /// Loads the model data from storage.
     /// </summary>
     /// <returns>A <see cref="ModelData"/> object if successful, null otherwise.</returns>
-    ModelData? Load(Session session);
+    ModelData? Load(Session session, Saver saver);
 
     /// <summary>
     /// Saves the provided model data and input schema to storage.
     /// </summary>
     /// <param name="modelData">The model data to be saved.</param>
     /// <param name="inputSchema">The schema of the input data used for the model.</param>
-    void Save(ModelData modelData);
+    void Save(ModelData modelData, Saver saver);
 }

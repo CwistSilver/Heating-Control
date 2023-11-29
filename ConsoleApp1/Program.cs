@@ -1,5 +1,6 @@
 ﻿using Heating_Control;
 using Heating_Control.Data;
+using Heating_Control.ML;
 using Heating_Control.ML.DataProvider;
 using Heating_Control.ML.Trainer;
 using Heating_Control.NeuralNetwork;
@@ -27,27 +28,36 @@ internal class Program
 
         serviceProvider = services.BuildServiceProvider();
 
-        var heatingControlTrainer = (TensorflowTrainer)serviceProvider.GetRequiredService<IHeatingControlTrainer>();
+        //var heatingControlTrainer = (TensorflowTrainer)serviceProvider.GetRequiredService<IHeatingControlTrainer>();
         //await heatingControlTrainer.TrainNeuralNetworkAsync();
-        heatingControlTrainer.Load();
-        Console.WriteLine("Fertig!");
+        ////heatingControlTrainer.Load();
+        //Console.WriteLine("Fertig!");
 
-        var trainingData = await GetTraingData();
-        var testDatas = await GetTraingData(20);
+        var heatingControlNeuralNetwork = serviceProvider.GetRequiredService<IHeatingControlNeuralNetwork>();
+        var trainingDataProvider = serviceProvider.GetRequiredService<ITrainingDataProvider>();
 
-        //var trainingDataProvider = serviceProvider.GetRequiredService<ITrainingDataProvider>();
-        //var tensorflowNeuralNetwork = serviceProvider.GetRequiredService<TensorflowNeuralNetwork>();
+        MachineAcademy machineAcademy = new MachineAcademy();
+        await machineAcademy.TrainAsync(trainingDataProvider);
+        //IHeatingControlNeuralNetwork
+        //heatingControlNeuralNetwork.Inizialize();
+        //await heatingControlNeuralNetwork.TrainModel();
+
+        //var trainingData = await GetTraingData();
+        //var testDatas = await GetTraingData(20);
+
+        ////var trainingDataProvider = serviceProvider.GetRequiredService<ITrainingDataProvider>();
+        ////var tensorflowNeuralNetwork = serviceProvider.GetRequiredService<TensorflowNeuralNetwork>();
         ////tensorflowNeuralNetwork.Load();
-        //await tensorflowNeuralNetwork.Train(trainingDataProvider);
-        //tensorflowNeuralNetwork.Save();
+        ////await tensorflowNeuralNetwork.Train(trainingDataProvider);
+        ////tensorflowNeuralNetwork.Save();
 
-        foreach (var data in testDatas)
-        {
-            Console.WriteLine();
-            var prediction = heatingControlTrainer.Predict(new HeatingControlInputData() { OutdoorTemperature = data.OutdoorTemperature, PredictedOutdoorTemperature = data.PredictedOutdoorTemperature, PreferredIndoorTemperature = data.PreferredIndoorTemperature });
-            Console.WriteLine($"Vorhergesagte Vorlauftemperatur für Testdaten: {prediction.SupplyTemperature}");
-            Console.WriteLine($"Tatsächliche Vorlauftemperatur der Testdaten: {data.SupplyTemperature}");
-        }
+        //foreach (var data in testDatas)
+        //{
+        //    Console.WriteLine();
+        //    var prediction = heatingControlNeuralNetwork.Predict(new HeatingControlInputData() { OutdoorTemperature = data.OutdoorTemperature, PredictedOutdoorTemperature = data.PredictedOutdoorTemperature, PreferredIndoorTemperature = data.PreferredIndoorTemperature });
+        //    Console.WriteLine($"Vorhergesagte Vorlauftemperatur für Testdaten: {prediction.SupplyTemperature}");
+        //    Console.WriteLine($"Tatsächliche Vorlauftemperatur der Testdaten: {data.SupplyTemperature}");
+        //}
 
     }
 

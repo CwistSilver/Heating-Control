@@ -3,5 +3,9 @@
 namespace Heating_Control.NeuralNetwork.Model;
 public interface IModelCreator
 {
-    NeuralNetworkModel CreateModel();
+    public NeuralNetworkModel CurrentModel
+    {
+        get;
+    }
+    //NeuralNetworkModel CreateModel();
 }

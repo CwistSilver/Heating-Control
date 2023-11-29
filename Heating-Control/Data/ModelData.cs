@@ -16,5 +16,5 @@ public class ModelData
     /// <summary>
     /// The training data options for the neural network model.
     /// </summary>
-    public required TrainingDataOptions Options { get; set; }
+    public required TrainingDataOptions? Options { get; set; }
 }

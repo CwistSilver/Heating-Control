@@ -16,13 +16,13 @@ public sealed class TrainingDataOptions
     /// The imprecision applied to the generation of the supply temperature in percent.
     /// </summary>
     [JsonPropertyName("supplyTemperatureInaccuracy")]
-    public uint SupplyTemperatureInaccuracy { get; set; } = 5;
+    public uint SupplyTemperatureInaccuracy { get; set; } = 3;
 
     /// <summary>
     /// The offset range for the predicted outdoor temperature.
     /// </summary>
     [JsonPropertyName("predictedOutdoorTemperatureOffsetRange")]
-    public TemperatureRange PredictedOutdoorTemperatureOffsetRange { get; set; } = new TemperatureRange() { Min = -10.00f, Max = 10.00f };
+    public TemperatureRange PredictedOutdoorTemperatureOffsetRange { get; set; } = new TemperatureRange() { Min = -15.00f, Max = 15.00f };
 
     /// <summary>
     /// Represents the gradient or "slope" in the mathematical formula used to model heating behavior.<br/>
@@ -60,11 +60,11 @@ public sealed class TrainingDataOptions
     /// The range for the preferred indoor temperature.
     /// </summary>
     [JsonPropertyName("preferredIndoorTemperatureRange")]
-    public TemperatureRange PreferredIndoorTemperatureRange { get; set; } = new TemperatureRange() { Min = 19.0f, Max = 28.0f };
+    public TemperatureRange PreferredIndoorTemperatureRange { get; set; } = new TemperatureRange() { Min = 15.0f, Max = 35.0f };
 
     /// <summary>
     /// The range for the outdoor temperature.
     /// </summary>
     [JsonPropertyName("outdoorTemperatureRange")]
-    public TemperatureRange OutdoorTemperatureRange { get; set; } = new TemperatureRange() { Min = -20.0f, Max = 20.0f };
+    public TemperatureRange OutdoorTemperatureRange { get; set; } = new TemperatureRange() { Min = -30.0f, Max = 25.0f };
 }

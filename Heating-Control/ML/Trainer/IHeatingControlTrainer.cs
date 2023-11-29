@@ -1,4 +1,5 @@
 ﻿using Heating_Control.Data;
+using Tensorflow;
 
 namespace Heating_Control.ML.Trainer;
 /// <summary>
@@ -11,5 +12,5 @@ public interface IHeatingControlTrainer
     /// </summary>
     /// <param name="options">The options with which the neural network is to be trained.</param>
     /// <returns>The transformer of the NeuralNetwork</returns>
-    Task<NeuralNetworkModel> TrainNeuralNetworkAsync(TrainingDataOptions? options = null);
+    Task<NeuralNetworkModel> TrainNeuralNetworkAsync(Session session, TrainingDataOptions? options = null);
 }

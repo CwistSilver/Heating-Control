@@ -15,7 +15,7 @@ public sealed class TrainingDataProvider : ITrainingDataProvider
 
     public async Task<IReadOnlyList<HeatingControlTrainingData>> GenerateAsync(TrainingDataOptions options)
     {
-        _logger.LogInformation("Starting to generate training data. Records to generate: {0}", options.RecordsToGenerate);
+        //_logger.LogInformation("Starting to generate training data. Records to generate: {0}", options.RecordsToGenerate);
 
         return await Task.Run(() =>
         {
@@ -29,7 +29,7 @@ public sealed class TrainingDataProvider : ITrainingDataProvider
             trainingDatas[trainingDatas.Length - 2] = GenerateRandomTEST2(options);
 
             stopwatch.Stop();
-            _logger.LogInformation("Finished generating training data. Duration: {0} ms, Records Generated: {1}", stopwatch.ElapsedMilliseconds, trainingDatas.Length);
+            //_logger.LogInformation("Finished generating training data. Duration: {0} ms, Records Generated: {1}", stopwatch.ElapsedMilliseconds, trainingDatas.Length);
             return trainingDatas as IReadOnlyList<HeatingControlTrainingData>;
         });
     }
