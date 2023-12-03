@@ -8,7 +8,7 @@ using static Tensorflow.KerasApi;
 namespace Heating_Control.Storage;
 public sealed class ModelStorage : IModelStorage
 {
-    private const string FileName = "KerasModel.h5";
+    private const string FileName = "NeuralNetwork.h2";
     private const string OptionsFileName = "HeatingControl-Options.json";
     private readonly string _storagePath;
     private readonly string _directoryPath;

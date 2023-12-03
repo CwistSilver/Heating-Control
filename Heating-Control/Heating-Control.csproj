@@ -9,10 +9,14 @@
 
   <ItemGroup>
     <None Remove="Resources\KerasModel.h5.zip" />
+    <None Remove="Resources\NeuralNetwork.h2.zip" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="Resources\KerasModel.h5.zip">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\NeuralNetwork.h2.zip">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>
