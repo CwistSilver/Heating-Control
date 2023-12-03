@@ -1,6 +1,6 @@
 ﻿using DynamicData;
 using Heating_Control.Data;
-using Heating_Control.ML;
+using Heating_Control.NeuralNetwork;
 using Heating_Control_UI.Utilities.Navigation;
 using Heating_Control_UI.Views.Pages;
 using ReactiveUI;
@@ -18,7 +18,7 @@ public class DayChartModel : ViewModelBase
     private const string OpenWeatherMapApiKey = "d211601432e5a3ae70e858c167a94064";
     private const Measurement MetricMeasurement = Measurement.Metric;
     private const string CityName = "Krefeld";
-    private const byte MaxRecords = 9;
+    private const byte TimeSteps = 9;
 
     private float _maxTemperatur = 90f;
     public float MaxTemperatur
@@ -27,7 +27,7 @@ public class DayChartModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _maxTemperatur, value);
     }
 
-    private ObservableCollection<float> _temperatures = new ObservableCollection<float>();
+    private ObservableCollection<float> _temperatures = new();
 
     public ObservableCollection<float> Temperatures
     {
@@ -35,7 +35,7 @@ public class DayChartModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _temperatures, value);
     }
 
-    private ObservableCollection<float> _temperaturesToday = new ObservableCollection<float>();
+    private ObservableCollection<float> _temperaturesToday = new();
 
     public ObservableCollection<float> TemperaturesToday
     {
@@ -43,7 +43,7 @@ public class DayChartModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _temperaturesToday, value);
     }
 
-    private ObservableCollection<float> _times = new ObservableCollection<float>();
+    private ObservableCollection<float> _times = new();
     public ObservableCollection<float> Times
     {
         get => _times;
@@ -76,14 +76,22 @@ public class DayChartModel : ViewModelBase
     }
 
     private readonly IHeatingControlNeuralNetwork? _heatingControlNeuralNetwork = null;
-    private readonly WeatherClient _weatherClient = new WeatherClient(OpenWeatherMapApiKey);
+    private readonly WeatherClient _weatherClient = new(OpenWeatherMapApiKey);
     private bool isReady = false;
 
     public DayChartModel(IHeatingControlNeuralNetwork heatingControlNeuralNetwork)
     {
         _preferredIndoorTemperature = App.Storage.Get(nameof(PreferredIndoorTemperature), 26);
         _heatingControlNeuralNetwork = heatingControlNeuralNetwork;
-        _ = SetRealToday();
+        _ = GetWeatherData();
+
+        TemperaturesToday.CollectionChanged += TemperaturesToday_CollectionChanged;
+    }
+
+    private void TemperaturesToday_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+    {
+        if (!isReady) return;
+        Calculate();
     }
 
     public DayChartModel() { InsertFakeData(); }
@@ -94,7 +102,7 @@ public class DayChartModel : ViewModelBase
         _temperaturesToday.Clear();
         _temperatures.Clear();
 
-        for (int i = 0; i < MaxRecords; i++)
+        for (int i = 0; i < TimeSteps; i++)
         {
             _times.Add(i * 3);
             _temperaturesToday.Add(Random.Shared.Next(-5, 20));
@@ -105,19 +113,51 @@ public class DayChartModel : ViewModelBase
     public void NavigatedTo()
     {
         if (!isReady) return;
+        LoadSetting();
         Calculate();
     }
 
     private void Calculate()
     {
         _temperatures.Clear();
-        var newtemperatures = new float[MaxRecords];
-        for (int i = 0; i < MaxRecords; i++)
-        {
-            newtemperatures[i] = PredictSupplyTemperature(i);
-        }
+        _temperatures.AddRange(PredictSupplyTemperatures());
+    }
 
-        _temperatures.AddRange(newtemperatures);
+    private async Task GetWeatherData()
+    {
+        try
+        {
+            var weatherForecast = await _weatherClient.GetForecastAsync(CityName, measurement: MetricMeasurement);
+            var currentWeather = await _weatherClient.GetCurrentWeatherAsync(CityName, measurement: MetricMeasurement);
+            PredictedOutdoorTemperature = CalculateTemperatureTomorrow(weatherForecast);
+
+            _temperaturesToday.Clear();
+            _times.Clear();
+
+            _temperaturesToday.Add((int)currentWeather.Main.Temperature);
+            _times.Add(GetHour(DateTime.Now.ToLocalTime()));
+
+            foreach (var weather in weatherForecast)
+            {
+                var time = weather.AnalysisDate;
+                if (_times[0] == time.Hour && time.Day == DateTime.Today.Day)
+                {
+                    _temperaturesToday[0] = (int)weather.Main.Temperature;
+                    continue;
+                }
+                _times.Add(time.Hour);
+                _temperaturesToday.Add((int)weather.Main.Temperature);
+
+                if (_temperaturesToday.Count == TimeSteps) break;
+            }
+
+            Calculate();
+            isReady = true;
+        }
+        catch
+        {
+            return;
+        }
     }
 
     private static int CalculateTemperatureTomorrow(List<WeatherModel> weatherForecast)
@@ -139,49 +179,23 @@ public class DayChartModel : ViewModelBase
         return (int)totalTemperature / totalRecords;
     }
 
-    private async Task SetRealToday()
+    private float[] PredictSupplyTemperatures()
     {
-        try
+        var inputs = new HeatingControlInputData[_temperaturesToday.Count];
+        for (int i = 0; i < _temperaturesToday.Count; i++)
         {
-            var weatherForecast = await _weatherClient.GetForecastAsync(CityName, measurement: MetricMeasurement);          
-            var currentWeather = await _weatherClient.GetCurrentWeatherAsync(CityName, measurement: MetricMeasurement);
-            PredictedOutdoorTemperature = CalculateTemperatureTomorrow(weatherForecast);
-
-            _temperaturesToday.Clear();
-            _times.Clear();
-
-            _temperaturesToday.Add((int)currentWeather.Main.Temperature);
-            _times.Add(GetHour(DateTime.Now.ToLocalTime()));
-
-            foreach (var weather in weatherForecast)
-            {
-                var time = weather.AnalysisDate;
-                if (_times[0] == time.Hour && time.Day == DateTime.Today.Day)
-                {
-                    _temperaturesToday[0] = (int)weather.Main.Temperature;
-                    continue;
-                }
-                _times.Add(time.Hour);
-                _temperaturesToday.Add((int)weather.Main.Temperature);
-
-                if (_temperaturesToday.Count == MaxRecords) break;
-            }
-
-            Calculate();
-            isReady = true;
+            var currentOutdoorTemperature = _temperaturesToday[i];
+            inputs[i] = new HeatingControlInputData() { OutdoorTemperature = currentOutdoorTemperature, PredictedOutdoorTemperature = PredictedOutdoorTemperature, PreferredIndoorTemperature = _preferredIndoorTemperature, Baseline = Baseline, Gradient = Gradient, MaxSupplyTemperature = MaxSupplyTemperature };
         }
-        catch
+
+        var results = _heatingControlNeuralNetwork!.Predict(inputs);
+        var output = new float[_temperaturesToday.Count];
+        for (int i = 0; i < _temperaturesToday.Count; i++)
         {
-            return;
+            output[i] = (int)results[i].SupplyTemperature;
         }
-    }
 
-    private float PredictSupplyTemperature(int index)
-    {
-        if (_heatingControlNeuralNetwork is null) return 0f;
-
-        var currentOutdoorTemperature = _temperaturesToday[index];
-        return (int)Math.Clamp(_heatingControlNeuralNetwork.Predict(new HeatingControlInputData() { OutdoorTemperature = currentOutdoorTemperature, PredictedOutdoorTemperature = PredictedOutdoorTemperature, PreferredIndoorTemperature = _preferredIndoorTemperature }).SupplyTemperature, 0, MaxTemperatur);
+        return output;
     }
 
     public async void SwitchSuplayView()

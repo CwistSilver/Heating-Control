@@ -15,8 +15,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Heating-Control-UI.iOS", "H
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Heating-Control-UI.Browser", "Heating-Control-UI\Heating-Control-UI.Browser\Heating-Control-UI.Browser.csproj", "{5FAB02B1-FBF7-40AF-8F80-F5052F042320}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleApp1", "ConsoleApp1\ConsoleApp1.csproj", "{566C31F1-5668-4C97-867A-8EFE861396F4}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,10 +49,6 @@ Global
 		{5FAB02B1-FBF7-40AF-8F80-F5052F042320}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5FAB02B1-FBF7-40AF-8F80-F5052F042320}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5FAB02B1-FBF7-40AF-8F80-F5052F042320}.Release|Any CPU.Build.0 = Release|Any CPU
-		{566C31F1-5668-4C97-867A-8EFE861396F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{566C31F1-5668-4C97-867A-8EFE861396F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{566C31F1-5668-4C97-867A-8EFE861396F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{566C31F1-5668-4C97-867A-8EFE861396F4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

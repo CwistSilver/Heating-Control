@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Numerics;
+using System.Reactive.Disposables;
 
 namespace Heating_Control_UI;
 public partial class LineChartView : UserControl
@@ -229,7 +230,10 @@ public partial class LineChartView : UserControl
     public LineChartView()
     {             
         InitializeComponent();
-
+         this.GetObservable(MaxYProperty).Subscribe(newBrush =>
+        {
+            int i = 0;
+        });
         
 
         var disposable = this.GetObservable(GridBrushProperty).Subscribe(newBrush =>

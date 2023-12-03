@@ -1,9 +1,8 @@
 ﻿using Avalonia.Animation;
 using Avalonia.Animation.Easings;
-using Heating_Control.ML;
+using Heating_Control.NeuralNetwork;
 using Heating_Control_UI.Views.Pages;
 using System;
-using System.IO;
 using System.Threading.Tasks;
 
 namespace Heating_Control_UI.ViewModels.Pages;
@@ -20,6 +19,7 @@ public class LoadingViewModel : ViewModelBase
     {
         _heatingControlNeuralNetwork = heatingControlNeuralNetwork;
         _ = LoadNeuralNetwork();
+
     }
 
     public async Task SkipRequest()
@@ -32,13 +32,8 @@ public class LoadingViewModel : ViewModelBase
     {
         if (_heatingControlNeuralNetwork is null) return;
 
-        try
-        {
-            _heatingControlNeuralNetwork.Inizialize();
-        }catch
-        {
-            await _heatingControlNeuralNetwork.TrainModel();
-        }
+        _heatingControlNeuralNetwork.Inizialize();
+
         await OnFinishedInizializeNeuralNetwork();
     }
 

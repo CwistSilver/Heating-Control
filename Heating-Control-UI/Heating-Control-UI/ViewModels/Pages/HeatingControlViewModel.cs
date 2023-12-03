@@ -1,10 +1,12 @@
-﻿using Heating_Control.Data;
-using Heating_Control.ML;
+﻿using DynamicData;
+using Heating_Control.Data;
+using Heating_Control.NeuralNetwork;
 using Heating_Control_UI.Utilities.Navigation;
 using Heating_Control_UI.Views.Pages;
 using ReactiveUI;
-using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace Heating_Control_UI.ViewModels.Pages;
 public class HeatingControlViewModel : ViewModelBase
@@ -28,13 +30,6 @@ public class HeatingControlViewModel : ViewModelBase
         }
     }
 
-    private float _maxTemperatur = 90f;
-    public float MaxTemperatur
-    {
-        get => _maxTemperatur;
-        set => this.RaiseAndSetIfChanged(ref _maxTemperatur, value);
-    }
-
     private readonly IHeatingControlNeuralNetwork? _heatingControlNeuralNetwork;
     public HeatingControlViewModel(IHeatingControlNeuralNetwork heatingControlNeuralNetwork)
     {
@@ -49,26 +44,13 @@ public class HeatingControlViewModel : ViewModelBase
         if (_heatingControlNeuralNetwork is null) return;
 
         _preferredIndoorTemperature = App.Storage.Get(nameof(PreferredIndoorTemperature), 26);
-        MaxTemperatur = _heatingControlNeuralNetwork.UsedTrainingDataOptions!.MaxSupplyTemperature;
         Calculate();
     }
 
     public void NavigatedTo()
     {
+        LoadSetting();
         Inizialize();
-    }
-
-    private void Calculate()
-    {
-        if (_heatingControlNeuralNetwork is null) return;
-        _temperatures.Clear();
-
-        _temperatures.Add((int)_heatingControlNeuralNetwork.Predict(new HeatingControlInputData() { OutdoorTemperature = 20, PredictedOutdoorTemperature = 20, PreferredIndoorTemperature = _preferredIndoorTemperature }).SupplyTemperature);
-        _temperatures.Add((int)_heatingControlNeuralNetwork.Predict(new HeatingControlInputData() { OutdoorTemperature = 10, PredictedOutdoorTemperature = 10, PreferredIndoorTemperature = _preferredIndoorTemperature }).SupplyTemperature);
-        _temperatures.Add((int)_heatingControlNeuralNetwork.Predict(new HeatingControlInputData() { OutdoorTemperature = 0, PredictedOutdoorTemperature = 0, PreferredIndoorTemperature = _preferredIndoorTemperature }).SupplyTemperature);
-        _temperatures.Add((int)_heatingControlNeuralNetwork.Predict(new HeatingControlInputData() { OutdoorTemperature = -10, PredictedOutdoorTemperature = -10, PreferredIndoorTemperature = _preferredIndoorTemperature }).SupplyTemperature);
-        _temperatures.Add((int)_heatingControlNeuralNetwork.Predict(new HeatingControlInputData() { OutdoorTemperature = -30, PredictedOutdoorTemperature = -30, PreferredIndoorTemperature = _preferredIndoorTemperature }).SupplyTemperature);
-        _temperatures.Add((int)_heatingControlNeuralNetwork.Predict(new HeatingControlInputData() { OutdoorTemperature = -20, PredictedOutdoorTemperature = -20, PreferredIndoorTemperature = _preferredIndoorTemperature }).SupplyTemperature);
     }
 
     public async void NavigateToDayView()
@@ -76,5 +58,26 @@ public class HeatingControlViewModel : ViewModelBase
         await App.Navigator.PushAsync<DayChart>(PageNavigator.DefaultVerticalSlideTransition);
         App.Navigator.DestroyPage<HeatingControlView>();
         SelectedMode = nameof(DayChart);
+    }
+
+    private void Calculate()
+    {
+        if (_heatingControlNeuralNetwork is null) return;
+        _temperatures.Clear();
+
+        var inputs = new List<HeatingControlInputData>
+        {
+            new() { OutdoorTemperature = 20, PredictedOutdoorTemperature = 20, PreferredIndoorTemperature = _preferredIndoorTemperature, Baseline = Baseline, Gradient = Gradient, MaxSupplyTemperature = MaxSupplyTemperature },
+            new() { OutdoorTemperature = 10, PredictedOutdoorTemperature = 10, PreferredIndoorTemperature = _preferredIndoorTemperature, Baseline = Baseline, Gradient = Gradient, MaxSupplyTemperature = MaxSupplyTemperature },
+            new() { OutdoorTemperature = 0, PredictedOutdoorTemperature = 0, PreferredIndoorTemperature = _preferredIndoorTemperature, Baseline = Baseline, Gradient = Gradient, MaxSupplyTemperature = MaxSupplyTemperature },
+            new() { OutdoorTemperature = -10, PredictedOutdoorTemperature = -10, PreferredIndoorTemperature = _preferredIndoorTemperature, Baseline = Baseline, Gradient = Gradient, MaxSupplyTemperature = MaxSupplyTemperature },
+            new() { OutdoorTemperature = -20, PredictedOutdoorTemperature = -20, PreferredIndoorTemperature = _preferredIndoorTemperature, Baseline = Baseline, Gradient = Gradient, MaxSupplyTemperature = MaxSupplyTemperature },
+            new() { OutdoorTemperature = -30, PredictedOutdoorTemperature = -30, PreferredIndoorTemperature = _preferredIndoorTemperature, Baseline = Baseline, Gradient = Gradient, MaxSupplyTemperature = MaxSupplyTemperature }
+        };
+
+        var results = _heatingControlNeuralNetwork.Predict(inputs);
+        var output = results.Select(r => (float)(int)r.SupplyTemperature);
+
+        _temperatures.AddRange(output);
     }
 }

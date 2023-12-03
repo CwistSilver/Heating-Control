@@ -89,10 +89,16 @@ public partial class SelectorView : UserControl
         _disposables.Add(this.GetObservable(TitleProperty).Subscribe(newTitle =>
         {
             TitleLabel.Content = newTitle;
-            AddButtonAccessabilityTitle = $"Der Wert für {newTitle} wurde erhöht.";
-            RemoveButtonAccessabilityTitle = $"Der Wert für {newTitle} wurde verringert.";
+            AddButtonAccessabilityTitle = $"{newTitle} wurde auf {CurrentTemperatureText}{Postfix} erhöht.";
+            RemoveButtonAccessabilityTitle = $"{newTitle} wurde auf {CurrentTemperatureText}{Postfix} verringert.";
         }));
-        _disposables.Add(this.GetObservable(CurrentTemperatureProperty).Subscribe(newValue => CurrentTemperatureText.Text = $"{newValue}{Postfix}"));
+        _disposables.Add(this.GetObservable(CurrentTemperatureProperty).Subscribe(newValue =>
+        {
+            CurrentTemperatureText.Text = $"{newValue}{Postfix}";
+            AddButtonAccessabilityTitle = $"{Title} wurde auf {newValue}{Postfix} erhöht.";
+            RemoveButtonAccessabilityTitle = $"{Title} wurde auf {newValue}{Postfix} verringert.";
+            ChangeButtonState();
+        }));
         App.GetTopLevel()!.PointerPressed += GetTopLevel_PointerPressed;
 
         DetachedFromLogicalTree += TemperatureSelector_DetachedFromLogicalTree;
@@ -100,9 +106,8 @@ public partial class SelectorView : UserControl
 
     private void TemperatureSelector_DetachedFromLogicalTree(object? sender, Avalonia.LogicalTree.LogicalTreeAttachmentEventArgs e)
     {
-        this.DetachedFromLogicalTree -= TemperatureSelector_DetachedFromLogicalTree;
+        DetachedFromLogicalTree -= TemperatureSelector_DetachedFromLogicalTree;
         App.GetTopLevel()!.PointerPressed -= GetTopLevel_PointerPressed;
-        
 
         foreach (var disposable in _disposables)
         {
@@ -164,5 +169,26 @@ public partial class SelectorView : UserControl
         ValueTextBox.IsVisible = false;
         if (float.TryParse(ValueTextBox.Text, out var floatValue))
             CurrentTemperature = Math.Clamp(floatValue, MinValue, MaxValue);
+    }
+
+    private void ChangeButtonState()
+    {
+        if (MinValue >= CurrentTemperature)
+        {
+            RemoveButton.IsEnabled = false;
+        }
+        else
+        {
+            RemoveButton.IsEnabled = true;
+        }
+
+        if (MaxValue <= CurrentTemperature)
+        {
+            AddButton.IsEnabled = false;
+        }
+        else
+        {
+            AddButton.IsEnabled = true;
+        }
     }
 }

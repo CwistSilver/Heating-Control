@@ -23,8 +23,8 @@
 			</Viewbox>
 
 			<Rectangle x:Name="ItemRectangle" Grid.Column="0"  Fill="Transparent"/>
-			
-			<Button AutomationProperties.Name="{Binding #TemperatureSelectorVar.RemoveButtonAccessabilityTitle}" Grid.Column="0" Background="Transparent" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Click="Remove_Click" MaxHeight="{Binding #ItemRectangle.Bounds, Converter={StaticResource MinSizeConverter}}" MaxWidth="{Binding #ItemRectangle.Bounds, Converter={StaticResource MinSizeConverter}}">
+
+			<Button x:Name="RemoveButton" AutomationProperties.Name="{Binding #TemperatureSelectorVar.RemoveButtonAccessabilityTitle}" Grid.Column="0" Background="Transparent" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Click="Remove_Click" MaxHeight="{Binding #ItemRectangle.Bounds, Converter={StaticResource MinSizeConverter}}" MaxWidth="{Binding #ItemRectangle.Bounds, Converter={StaticResource MinSizeConverter}}">
 				<Viewbox>
 					<views:SvgImage Opacity="{Binding #TemperatureSelectorVar.Opacity}" Source="/Assets/remove.svg" Stretch="Uniform"  HorizontalAlignment="Center" VerticalAlignment="Center" ImageTint="{DynamicResource SvgColor}" />
 				</Viewbox>

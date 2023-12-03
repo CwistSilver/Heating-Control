@@ -1,5 +1,4 @@
-﻿using Microsoft.ML.Data;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace Heating_Control.Data;
 /// <summary>
@@ -10,7 +9,6 @@ public sealed class HeatingControlPrediction
     /// <summary>
     /// The predicted supply temperature necessary to achieve the desired indoor conditions.
     /// </summary>
-    [ColumnName("Score")]
     [JsonPropertyName("supplyTemperature")]
     public float SupplyTemperature { get; set; }
 }

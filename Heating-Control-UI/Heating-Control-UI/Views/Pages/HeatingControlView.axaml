@@ -26,7 +26,7 @@
 				</Grid>
 			</Button>
 
-			<views:LineChartView Grid.Row="2" Values="{Binding Temperatures}" YTitle="VORLAUFTEMPERATUR" XTitle="AUSSENTEMPERATUR" ShowSign="True" YPostfix="°C" ValuePostfix="°" MaxY="{Binding MaxTemperatur}" x:Name="LineChartViewVar" />
+			<views:LineChartView Grid.Row="2" Values="{Binding Temperatures}" YTitle="VORLAUFTEMPERATUR" XTitle="AUSSENTEMPERATUR" ShowSign="True" YPostfix="°C" ValuePostfix="°" MaxY="{Binding MaxSupplyTemperature}" x:Name="LineChartViewVar" />
 		</Grid>
 
 
