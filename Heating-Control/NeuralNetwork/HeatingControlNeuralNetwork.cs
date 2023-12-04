@@ -73,8 +73,6 @@ public sealed class HeatingControlNeuralNetwork : IHeatingControlNeuralNetwork
         return results;
     }
 
-
-
     private static HeatingControlPrediction PostEffect(HeatingControlInputData input, ref float prediction)
     {
         prediction = Math.Clamp(prediction, 0f, 1f) * MaxSupplyTemperature;

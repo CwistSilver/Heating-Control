@@ -1,5 +1,10 @@
 ﻿using Heating_Control.NeuralNetwork;
 using Heating_Control.Storage;
+using Heating_Control.Training;
+using Heating_Control.Training.Compiler;
+using Heating_Control.Training.DataProvider;
+using Heating_Control.Training.Storage;
+using Heating_Control.Training.Trainer;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -18,6 +23,12 @@ public static class HeatingControlEntry
     {
         services.AddTransient<IModelStorage, ModelStorage>();
         services.AddSingleton<IHeatingControlNeuralNetwork, HeatingControlNeuralNetwork>();
+
+        services.AddTransient<INeuralNetworkConfigRunner, NeuralNetworkConfigRunner>();
+        services.AddTransient<ITrainingStorage, TrainingStorage>();
+        services.AddTransient<ITrainingDataProvider, TrainingDataProvider>();
+        services.AddTransient<INeuralNetworkTrainer, NeuralNetworkTrainer>();
+        services.AddTransient<IModelCompiler, ModelCompiler>();
 
         services.AddLogging(builder =>
         {

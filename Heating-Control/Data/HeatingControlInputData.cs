@@ -4,7 +4,7 @@ namespace Heating_Control.Data;
 /// <summary>
 /// Represents input data for heating control predictions.
 /// </summary>
-public sealed class HeatingControlInputData
+public class HeatingControlInputData
 {
     /// <summary>
     /// The current temperature outside the building.
