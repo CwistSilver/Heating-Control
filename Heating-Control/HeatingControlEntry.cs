@@ -21,6 +21,9 @@ public static class HeatingControlEntry
     /// <param name="services">The service collection to which the heating control services will be added.</param>
     public static void ConfigureServices(ServiceCollection services)
     {
+        // TODO Normalisierung auslagern.
+        // Posteffekt auslagern.
+
         services.AddTransient<IModelStorage, ModelStorage>();
         services.AddSingleton<IHeatingControlNeuralNetwork, HeatingControlNeuralNetwork>();
 
