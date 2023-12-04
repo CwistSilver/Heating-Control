@@ -1,4 +1,6 @@
 ﻿using Heating_Control.NeuralNetwork;
+using Heating_Control.NeuralNetwork.PostEffect;
+using Heating_Control.Normalizer;
 using Heating_Control.Storage;
 using Heating_Control.Training;
 using Heating_Control.Training.Compiler;
@@ -21,9 +23,6 @@ public static class HeatingControlEntry
     /// <param name="services">The service collection to which the heating control services will be added.</param>
     public static void ConfigureServices(ServiceCollection services)
     {
-        // TODO Normalisierung auslagern.
-        // Posteffekt auslagern.
-
         services.AddTransient<IModelStorage, ModelStorage>();
         services.AddSingleton<IHeatingControlNeuralNetwork, HeatingControlNeuralNetwork>();
 
@@ -32,6 +31,8 @@ public static class HeatingControlEntry
         services.AddTransient<ITrainingDataProvider, TrainingDataProvider>();
         services.AddTransient<INeuralNetworkTrainer, NeuralNetworkTrainer>();
         services.AddTransient<IModelCompiler, ModelCompiler>();
+        services.AddSingleton<IDataNormalizer, DataNormalizer>();
+        services.AddSingleton<IPredictionPostEffect, PredictionPostEffect>();
 
         services.AddLogging(builder =>
         {

@@ -1,5 +1,5 @@
-﻿using Heating_Control.Data;
-using Heating_Control.Data.Training;
+﻿using Heating_Control.Data.Training;
+using Heating_Control.Normalizer;
 using Heating_Control.Training.Compiler;
 using Heating_Control.Training.DataProvider;
 using Heating_Control.Training.Storage;
@@ -17,12 +17,14 @@ public sealed class NeuralNetworkTrainer : INeuralNetworkTrainer
     private readonly ITrainingDataProvider _trainingDataProvider;
     private readonly ITrainingStorage _trainingStorage;
     private readonly IModelCompiler _modelCompiler;
+    private readonly IDataNormalizer _dataNormalizer;
 
-    public NeuralNetworkTrainer(ITrainingDataProvider trainingDataProvider, ITrainingStorage trainingStorage, IModelCompiler modelCompiler)
+    public NeuralNetworkTrainer(ITrainingDataProvider trainingDataProvider, ITrainingStorage trainingStorage, IModelCompiler modelCompiler, IDataNormalizer dataNormalizer)
     {
         _trainingDataProvider = trainingDataProvider;
         _trainingStorage = trainingStorage;
         _modelCompiler = modelCompiler;
+        _dataNormalizer = dataNormalizer;
         tf.device("/gpu:0");
     }
 
@@ -102,14 +104,14 @@ public sealed class NeuralNetworkTrainer : INeuralNetworkTrainer
 
     private ValidationDataPack CreateValidationData(NeuralNetworkConfig neuralNetworkConfig)
     {
-        var validTrainingData = GenerateTrainingData(neuralNetworkConfig.ValidationDatas);
+        var validTrainingData = _trainingDataProvider.Generate(neuralNetworkConfig.ValidationDatas);
         var validInputsList = new List<float>(neuralNetworkConfig.ValidationDatas);
         var validOutputsList = new List<float>(neuralNetworkConfig.ValidationDatas);
 
         foreach (var item in validTrainingData)
         {
-            validInputsList.AddRange(NormalizeInput(item));
-            validOutputsList.Add(NormalizeOutput(item.SupplyTemperature));
+            validInputsList.AddRange(_dataNormalizer.NormalizeInput(item));
+            validOutputsList.Add(_dataNormalizer.NormalizeOutput(item.SupplyTemperature));
         }
 
         // Konvertierung in NumPy Arrays
@@ -122,14 +124,14 @@ public sealed class NeuralNetworkTrainer : INeuralNetworkTrainer
 
     private (NDArray inputsArray, NDArray outputArray) CreateTriningData(NeuralNetworkConfig neuralNetworkConfig)
     {
-        var validTrainingData = GenerateTrainingData(neuralNetworkConfig.TrainingSize);
+        var validTrainingData = _trainingDataProvider.Generate(neuralNetworkConfig.TrainingSize);
         var inputsList = new List<float>(neuralNetworkConfig.TrainingSize * 6);
         var outputsList = new List<float>(neuralNetworkConfig.TrainingSize);
 
         foreach (var item in validTrainingData)
         {
-            inputsList.AddRange(NormalizeInput(item));
-            outputsList.Add(NormalizeOutput(item.SupplyTemperature));
+            inputsList.AddRange(_dataNormalizer.NormalizeInput(item));
+            outputsList.Add(_dataNormalizer.NormalizeOutput(item.SupplyTemperature));
         }
 
         // Konvertierung in NumPy Arrays
@@ -139,37 +141,5 @@ public sealed class NeuralNetworkTrainer : INeuralNetworkTrainer
         outputsArray = outputsArray.reshape(new Shape(neuralNetworkConfig.TrainingSize, -1));
 
         return (inputsArray, outputsArray);
-    }
-
-
-
-
-    private IReadOnlyList<HeatingControlTrainingData> GenerateTrainingData(int items)
-    {
-        return _trainingDataProvider.Generate(items);
-    }
-
-    private static float NormalizeOutput(float supplyTemperature)
-    {
-        return supplyTemperature / 100f;
-    }
-
-    private static float[] NormalizeInput(HeatingControlInputData inputData)
-    {
-        var nInput = new float[6];
-        nInput[0] = Normalize(inputData.OutdoorTemperature, -60f, 60f, 0f, 1f);
-        nInput[1] = Normalize(inputData.PredictedOutdoorTemperature, -60f, 60f, 0f, 1f);
-        nInput[2] = Normalize(inputData.PreferredIndoorTemperature, 15f, 35f, 0f, 1f);
-
-        nInput[3] = Normalize(inputData.Baseline, 0, 20f, 0f, 1f);
-        nInput[4] = Normalize(inputData.Gradient, 0, 10f, 0f, 1f);
-        nInput[5] = Normalize(inputData.MaxSupplyTemperature, 70f, 100f, 0f, 1f);
-
-        return nInput;
-    }
-
-    private static float Normalize(float val, float valMin, float valMax, float min, float max)
-    {
-        return (((val - valMin) / (valMax - valMin)) * (max - min)) + min;
     }
 }
