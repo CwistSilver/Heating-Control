@@ -4,8 +4,9 @@
 
 ## Overview
 
-**Heating Control** The Heating Control Project is an innovative solution designed to intelligently regulate indoor heating systems. Utilizing advanced machine learning algorithms, this application dynamically adjusts the supply temperature of a heating system based on current and forecasted outdoor temperatures, desired indoor temperatures, and other heating parameters.
+**Heating Control** The Heating Control Project is an innovative, educational solution developed as a school project. It is designed to intelligently regulate indoor heating systems for academic purposes. Utilizing advanced machine learning algorithms, this application dynamically adjusts the supply temperature of a heating system based on current and forecasted outdoor temperatures, desired indoor temperatures, and other heating parameters.
 
+It's important to note that this project is conceptual and developed primarily for academic exploration and learning. It is not intended for commercial use or deployment in real-world heating systems.
 ## Key Features
 
 - **Intelligent Temperature Control**: The core of this project is a machine learning model that takes input data such as outdoor temperature, predicted outdoor temperature, preferred indoor temperature, maximum supply temperature, and heating system characteristics (gradient and baseline). Based on this data, it predicts the optimal supply temperature to maintain comfortable indoor conditions efficiently.
