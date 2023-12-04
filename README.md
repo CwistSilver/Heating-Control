@@ -2,32 +2,27 @@
 
 ![Mein App-Icon](./Heating-Control-UI/Heating-Control-UI/Assets/hc.ico)
 
-## Überblick
+## Overview
 
-**Heating Control** ist eine innovative Anwendung, die darauf abzielt, die Heizungseffizienz zu optimieren und das Raumklima zu verbessern. Diese Anwendung verwendet fortschrittliche maschinelle Lernmodelle, um die Vorlauftemperatur basierend auf verschiedenen Umgebungsvariablen wie Außentemperatur, vorhergesagter Außentemperatur und bevorzugter Innentemperatur vorherzusagen.
+**Heating Control** The Heating Control Project is an innovative solution designed to intelligently regulate indoor heating systems. Utilizing advanced machine learning algorithms, this application dynamically adjusts the supply temperature of a heating system based on current and forecasted outdoor temperatures, desired indoor temperatures, and other heating parameters.
 
-## Features
+## Key Features
 
-- **Intelligente Temperaturvorhersage**: Nutzt maschinelles Lernen, um die optimale Vorlauftemperatur für Ihre Heizungsanlage zu bestimmen.
-- **Benutzerfreundliche Oberfläche**: Einfach zu bedienendes Interface für die bequeme Steuerung und Überwachung Ihrer Heizung.
-- **Energieeffizienz**: Verbessert die Energieeffizienz Ihres Hauses durch präzise Temperaturkontrolle.
+- **Intelligent Temperature Control**: The core of this project is a machine learning model that takes input data such as outdoor temperature, predicted outdoor temperature, preferred indoor temperature, maximum supply temperature, and heating system characteristics (gradient and baseline). Based on this data, it predicts the optimal supply temperature to maintain comfortable indoor conditions efficiently.
+- **Real-Time and Predictive Data Visualization**: The user interface displays the current supply temperature across an outdoor temperature spectrum ranging from -30°C to +20°C. It also presents a forecast showing the supply temperature and weather conditions for the next 12 hours, aiding in proactive temperature management.
+- **Customizable Settings:**: Users have the flexibility to adjust key heating parameters such as the maximum supply temperature, gradient, and baseline. These settings allow for fine-tuning the system's responsiveness and efficiency according to specific user needs and preferences.
 
-## Installation
+## How it Works
 
-Um die App zu installieren, folgen Sie diesen Schritten:
+- **Input Data Processing**: The system takes in various parameters, including current and predicted outdoor temperatures, desired indoor temperature, and heating system characteristics.
+- **Machine Learning Prediction**: Using the input data, the machine learning model predicts the necessary supply temperature to achieve the desired indoor conditions efficiently.
+- **Output and Display:**: The predicted supply temperature is displayed on the UI, along with real-time and forecasted outdoor temperatures, providing users with comprehensive control and insight into their heating system.
 
-1. Klonen Sie das Repository: `git clone [Repository-URL]`.
-2. Navigieren Sie in das Verzeichnis: `cd Heating-Control`.
-3. Starten Sie die Anwendung gemäß der Installationsanleitung.
+## Getting Started
 
-## Verwendung
+To get started with the Heating Control Project, please refer to the installation and setup instructions provided in the subsequent sections.
 
-Um die Anwendung zu nutzen, starten Sie die Benutzeroberfläche und geben Sie die erforderlichen Umgebungsdaten ein. Die Anwendung berechnet daraufhin die optimale Vorlauftemperatur.
-
-## Mitwirken
-
-Wir freuen uns über Beiträge von der Community. Wenn Sie zur App beitragen möchten, erstellen Sie bitte einen Pull-Request oder setzen Sie sich mit uns in Verbindung.
-
-## Lizenz
-
-Dieses Projekt steht unter [hier Lizenz einfügen], welche Ihnen die Freiheit gibt, das Projekt für Ihre Bedürfnisse anzupassen.
+## Contributors
+- **Gabriel Zerbe (CwistSilver)**
+- **Jonas Köster (jmkjonas)**
+- **Cristos Topalis (Chris7opalis)**
