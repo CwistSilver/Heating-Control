@@ -8,8 +8,6 @@
 
 While the application intelligently regulates indoor heating systems using advanced machine learning algorithms and dynamically adjusts the supply temperature based on various parameters, it's important to emphasize that this project is a learning tool. It has been created by students for educational purposes and is not intended for commercial use or implementation in real-life scenarios.
 
-The project serves as an excellent platform for us, the students, to explore and understand the complexities of AI technology in a practical setting. However, it should be noted that the project, in its current form, is not designed for production use.
-It's important to note that this project is conceptual and developed primarily for academic exploration and learning. It is not intended for commercial use or deployment in real-world heating systems.
 ## Key Features
 
 - **Intelligent Temperature Control**: The core of this project is a machine learning model that takes input data such as outdoor temperature, predicted outdoor temperature, preferred indoor temperature, maximum supply temperature, and heating system characteristics (gradient and baseline). Based on this data, it predicts the optimal supply temperature to maintain comfortable indoor conditions efficiently.
@@ -22,11 +20,7 @@ It's important to note that this project is conceptual and developed primarily f
 - **Machine Learning Prediction**: Using the input data, the machine learning model predicts the necessary supply temperature to achieve the desired indoor conditions efficiently.
 - **Output and Display:**: The predicted supply temperature is displayed on the UI, along with real-time and forecasted outdoor temperatures, providing users with comprehensive control and insight into their heating system.
 
-## Getting Started
-
-To get started with the Heating Control Project, please refer to the installation and setup instructions provided in the subsequent sections.
-
 ## Contributors
 - **Gabriel Zerbe (CwistSilver)**
 - **Jonas Köster (jmkjonas)**
-- **Cristos Topalis (Chris7opalis)**
+- **Christos Topalis (Chris7opalis)**
